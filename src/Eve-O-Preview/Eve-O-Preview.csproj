@@ -3,7 +3,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>EveOPreview</RootNamespace>
-    <AssemblyName>EVE-O Preview</AssemblyName>
+    <AssemblyName>Elite-O Preview</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <UseWindowsForms>true</UseWindowsForms>

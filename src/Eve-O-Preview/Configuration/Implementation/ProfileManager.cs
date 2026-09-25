@@ -29,10 +29,10 @@ namespace EveOPreview.Configuration.Implementation;
 
 public class ProfileManager : IProfileManager
 {
-    private const string BASE_FILENAME = "EVE-O Preview.json";
+    private const string BASE_FILENAME = "Elite-O Preview.json";
     private const string PROFILES_DIR = "Profiles";
     private const string DEFAULT_PROFILE_DIR = "Default";
-    private const string APP_FOLDER_NAME = "Eve-O Preview";
+    private const string APP_FOLDER_NAME = "Elite-O Preview";
 
     private readonly ILogger _logger;
     private readonly IMediator _mediator;

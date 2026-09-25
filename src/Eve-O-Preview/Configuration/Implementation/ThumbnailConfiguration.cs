@@ -38,8 +38,8 @@ namespace EveOPreview.Configuration.Implementation
 
             this.PerClientActiveClientHighlightColor = new Dictionary<string, Color>
             {
-                {"EVE - Example Toon 1", Color.Red},
-                {"EVE - Example Toon 2", Color.Green}
+                {"Elite - Example Cmdr 1", Color.Red},
+                {"Elite - Example Cmdr 2", Color.Green}
             };
 
             this.PerClientLayout = new Dictionary<string, Dictionary<string, Point>>();
@@ -88,7 +88,8 @@ namespace EveOPreview.Configuration.Implementation
             this.FpsLimiterSettings = new FpsLimiterSettings();
             this.AudioMuteSettings = new AudioMuteSettings();
 
-            this.EnableAutomaticCpuAffinity = true;
+            // Off for Elite: the active client would be limited to 2 CPU threads, which hurts a multi-threaded game.
+            this.EnableAutomaticCpuAffinity = false;
         }
 
         [JsonProperty("ConfigVersion")]

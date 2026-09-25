@@ -35,6 +35,13 @@ namespace EveOPreview.Services.Implementation;
 
 public class HookService : IHookService
 {
+    /// <summary>
+    /// Elite-O: never inject the Robin DLL into Elite Dangerous. Frontier does not allow code
+    /// injection into the game client, and the preview/switching features do not need it.
+    /// FPS limiter and audio mute (which live inside Robin) therefore do nothing.
+    /// </summary>
+    internal static readonly bool GameInjectionAllowed = false;
+
     private const int PipeTimeoutMs = 1000;
     private const int MaxMutedIds = 1024;
     private readonly IThumbnailConfiguration _configuration;
@@ -56,6 +63,7 @@ public class HookService : IHookService
 
     public async Task<string> GetVersionAsync(IntPtr handle)
     {
+        if (!GameInjectionAllowed) return null;
         var gate = _pipeGates.GetOrAdd(handle, _ => new SemaphoreSlim(1, 1));
         bool entered = false;
         using var timeout = new CancellationTokenSource(PipeTimeoutMs);
@@ -80,6 +88,7 @@ public class HookService : IHookService
 
     public async Task TellEveClientFocusIsComingAsync(IntPtr handle)
     {
+        if (!GameInjectionAllowed) return;
         if (_stopping || !_configuration.FpsLimiterSettings.IsEnabled) return;
         if (await TrySendFocusNowAsync(handle, new byte[] { 0xA3, 0xB1 }).ConfigureAwait(false)) return;
         await SendAsync(handle, w => { w.Write((byte)0xA3); w.Write((byte)0xB1); }, reply: false, timeoutMs: 150, takeGate: false).ConfigureAwait(false);
@@ -87,6 +96,7 @@ public class HookService : IHookService
 
     public async Task TellEveClientFocusIsMaybeComingSoonAsync(IntPtr handle, int timeoutMs = 5000)
     {
+        if (!GameInjectionAllowed) return;
         if (_stopping || !_configuration.FpsLimiterSettings.IsEnabled) return;
         byte[] payload = new byte[6] { 0xA3, 0xB3, 0, 0, 0, 0 };
         System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(payload.AsSpan(2), Math.Clamp(timeoutMs, 1, 30000));
@@ -133,6 +143,7 @@ public class HookService : IHookService
 
     public async Task TryInstallHooksAsync(IProcessInfo process)
     {
+        if (!GameInjectionAllowed) return;
         if (_stopping || process == null || process.MainWindowHandle == IntPtr.Zero) return;
         var key = (process.ProcessId, process.MainWindowHandle);
         var installation = _installations.GetOrAdd(key, _ => new Lazy<Task>(() => InstallAndConfigureAsync(process)));
@@ -304,6 +315,7 @@ public class HookService : IHookService
 
     private async Task<int> SendAsync(IntPtr handle, Action<BinaryWriter> write, bool reply = true, int timeoutMs = PipeTimeoutMs, bool takeGate = true)
     {
+        if (!GameInjectionAllowed) return -1;
         if (handle == IntPtr.Zero) return -1;
         var gate = _pipeGates.GetOrAdd(handle, _ => new SemaphoreSlim(1, 1));
         bool entered = false;

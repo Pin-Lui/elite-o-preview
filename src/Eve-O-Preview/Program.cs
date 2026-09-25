@@ -38,7 +38,7 @@ namespace EveOPreview
 {
     static class Program
     {
-        private static string MUTEX_NAME = "EVE-O Preview Single Instance Mutex";
+        private static string MUTEX_NAME = "Elite-O Preview Single Instance Mutex";
 
         private static Mutex _singleInstanceMutex;
 
@@ -91,7 +91,7 @@ namespace EveOPreview
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Is(minimumLevel)
                 .Enrich.FromLogContext()
-                .WriteTo.File("logs/EVE-O Preview Log-.txt",
+                .WriteTo.File("logs/Elite-O Preview Log-.txt",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 7,
                     fileSizeLimitBytes: 10 * 1024 * 1024,

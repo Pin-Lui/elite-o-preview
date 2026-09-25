@@ -26,8 +26,9 @@ namespace EveOPreview.Services.Implementation
     sealed class ProcessMonitor : IProcessMonitor, IDisposable
     {
         #region Private constants
-        private const string DEFAULT_PROCESS_NAME = "ExeFile";
-        private const string CURRENT_PROCESS_NAME = "EVE-O Preview";
+        // Elite Dangerous (Horizons/Odyssey) game client, e.g. started by min-ed-launcher
+        private const string DEFAULT_PROCESS_NAME = "EliteDangerous64";
+        private const string CURRENT_PROCESS_NAME = "Elite-O Preview";
         #endregion
 
         #region Private fields
@@ -36,14 +37,21 @@ namespace EveOPreview.Services.Implementation
         private IProcessInfo _currentProcessInfo;
         private readonly ILogger _logger;
         private readonly Func<Process[]> _enumerateProcesses;
+        // All Elite windows share one caption, so the client title comes from the commander in the journal.
+        private readonly Func<Process, string> _titleOf;
+        private readonly EliteCommanderResolver _commanderResolver;
         #endregion
 
-        public ProcessMonitor(ILogger logger) : this(logger, () => Process.GetProcessesByName(DEFAULT_PROCESS_NAME)) { }
+        public ProcessMonitor(ILogger logger) : this(logger, () => Process.GetProcessesByName(DEFAULT_PROCESS_NAME), new EliteCommanderResolver()) { }
 
-        internal ProcessMonitor(ILogger logger, Func<Process[]> enumerateProcesses)
+        internal ProcessMonitor(ILogger logger, Func<Process[]> enumerateProcesses) : this(logger, enumerateProcesses, null) { }
+
+        private ProcessMonitor(ILogger logger, Func<Process[]> enumerateProcesses, EliteCommanderResolver commanderResolver)
         {
             _logger = logger;
             _enumerateProcesses = enumerateProcesses;
+            _commanderResolver = commanderResolver;
+            _titleOf = commanderResolver != null ? new Func<Process, string>(commanderResolver.GetClientTitle) : p => p.MainWindowTitle;
             this.ProcessCache = new Dictionary<IntPtr, IProcessInfo>(512);
             
             // This field cannot be initialized properly in constructor
@@ -110,14 +118,24 @@ namespace EveOPreview.Services.Implementation
             lock (_lockObj)
             {
             var knownProcesses = new HashSet<IntPtr>(ProcessCache.Keys);
-            foreach (Process process in _enumerateProcesses())
+            var usedTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var runningPids = new HashSet<int>();
+            // Stable order so duplicate titles always get the same suffix.
+            foreach (Process process in _enumerateProcesses().OrderBy(p => p.Id))
             using (process)
             {
                 try
                 {
                 IntPtr mainWindowHandle = process.MainWindowHandle;
                 if (mainWindowHandle == IntPtr.Zero) continue;
-                string title = process.MainWindowTitle;
+                runningPids.Add(process.Id);
+                string title = _titleOf(process);
+                // Two clients must never share a title (e.g. two games of one Windows user before login).
+                if (!usedTitles.Add(title))
+                {
+                    title = $"{title} [{process.Id}]";
+                    usedTitles.Add(title);
+                }
                 ProcessCache.TryGetValue(mainWindowHandle, out IProcessInfo cachedProcess);
                 knownProcesses.Remove(mainWindowHandle);
 
@@ -148,12 +166,14 @@ namespace EveOPreview.Services.Implementation
                 }
             }
 
+            _commanderResolver?.Retain(runningPids);
+
             foreach (IntPtr index in knownProcesses)
             {
                 var cachedProcess = this.ProcessCache[index];
                 removedProcesses.Add(cachedProcess);
                 this.ProcessCache.Remove(index);
-                _logger.Verbose("EVE client process removed: {Title} (Handle: 0x{Handle:X}, PID: {ProcessId})", 
+                _logger.Verbose("Elite client process removed: {Title} (Handle: 0x{Handle:X}, PID: {ProcessId})", 
                     cachedProcess.Title, index, cachedProcess.ProcessId);
             }
 

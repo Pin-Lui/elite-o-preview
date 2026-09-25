@@ -132,7 +132,9 @@ namespace EveOPreview.View
             set
             {
                 this.Text = value;
-                this._overlay.SetOverlayLabel(value.Replace("EVE - ", ""));
+                this._overlay.SetOverlayLabel(value.StartsWith(EveOPreview.Services.Implementation.EliteCommanderResolver.TitlePrefix, StringComparison.Ordinal)
+                    ? value.Substring(EveOPreview.Services.Implementation.EliteCommanderResolver.TitlePrefix.Length)
+                    : value.Replace("EVE - ", ""));
                 SetDefaultBorderColor();
             }
         }

@@ -259,7 +259,7 @@ namespace EveOPreview.View
             TitleMenuItem.Enabled = false;
             TitleMenuItem.Name = "TitleMenuItem";
             TitleMenuItem.Size = new Size(151, 22);
-            TitleMenuItem.Text = "EVE-O Preview";
+            TitleMenuItem.Text = "Elite-O Preview";
             // 
             // SeparatorMenuItem
             // 
@@ -1434,7 +1434,7 @@ namespace EveOPreview.View
             NameLabel.Name = "NameLabel";
             NameLabel.Size = new Size(130, 20);
             NameLabel.TabIndex = 3;
-            NameLabel.Text = "EVE-O Preview";
+            NameLabel.Text = "Elite-O Preview";
             // 
             // DocumentationLink
             // 
@@ -1805,7 +1805,7 @@ namespace EveOPreview.View
             // 
             NotifyIcon.ContextMenuStrip = TrayMenu;
             NotifyIcon.Icon = (Icon)resources.GetObject("NotifyIcon.Icon");
-            NotifyIcon.Text = "EVE-O Preview";
+            NotifyIcon.Text = "Elite-O Preview";
             NotifyIcon.Visible = true;
             NotifyIcon.MouseDoubleClick += RestoreMainForm_Handler;
             // 
@@ -1836,7 +1836,7 @@ namespace EveOPreview.View
             MinimizeBox = false;
             MinimumSize = new Size(476, 444);
             Name = "MainForm";
-            Text = "EVE-O Preview";
+            Text = "Elite-O Preview";
             TopMost = true;
             FormClosing += MainFormClosing_Handler;
             Load += MainFormResize_Handler;
