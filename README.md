@@ -1,288 +1,167 @@
+# Elite-O Preview
 
+Live thumbnails of every running **Elite Dangerous** client, with click or hotkey switching between them. Made for multiboxing several commanders on one PC.
 
-## Notice
-This software is no longer licensed under the MIT License. Commits prior to b8b25d9 may still be used under MIT. All subsequent commits are provided under GPLv3.
+Elite-O Preview is adapted from [EVE-O Preview](https://github.com/EveOPlus/eve-o-preview) by Aura Asuna and is licensed under the GPLv3, like the original. It is not affiliated with or endorsed by Frontier Developments.
 
 ## License
-Copyright © 2026 Aura Asuna. All Rights Reserved.
+Original work Copyright © 2026 Aura Asuna. Elite Dangerous adaptation © 2026.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-## Join us on Discord
-Chat with the devs and eachother here on Eve-O Plus Discord https://discord.gg/HzQHBtTEcB
+## What it does and does not do
 
-## Overview
+It is a task switcher. It shows a live preview of each game window and brings the one you pick to the front.
 
-The purpose of this application is to provide a simple way to keep an eye on several simultaneously running EVE Online clients and to easily switch between them. While running it shows a set of live thumbnails for each of the active EVE Online clients. These thumbnails allow fast switch to the corresponding EVE Online client either using mouse or configurable hotkeys.
-
-It's essentially a task switcher, it does not relay any keyboard/mouse events and suchlike. The application works with EVE, EVE through Steam, or any combination thereof.
-
-The program does NOT (and will NOT ever) do the following things:
-
-* modify EVE Online interface
-* display modified EVE Online interface
+The program does NOT:
+* modify the Elite Dangerous interface
+* inject code into Elite Dangerous
 * broadcast any keyboard or mouse events
-* anyhow interact with EVE Online in a way that changes gameplay or provides an unfair advantage.
+* interact with Elite Dangerous except to resize it, bring it to the foreground, and read its journal files to find out which commander is playing.
 
-<div style="page-break-after: always;"></div>
+## Build
 
-**Under any conditions you should NOT use EVE-O Preview for any actions that break EULA or ToS of EVE Online.**
+1. Install the **.NET 10 SDK** (Windows x64): https://dotnet.microsoft.com/download/dotnet/10.0
+2. Double-click `build.cmd`. The app is placed in the `Elite-O Preview` folder next to it.
 
-If you have find out that some of the features or their combination of EVE-O Preview might cause actions that can be considered as breaking EULA or ToS of EVE Online you should consider them as a bug and immediately notify the Developer ( Aura Asuna ) via Discord.
+## Install & Use
 
-<div style="page-break-after: always;"></div>
+1. Start `Elite-O Preview\Elite-O Preview.exe`. It asks for **administrator rights**, which it needs to see which Windows user runs each game and to read that user's journals.
+2. Launch your games as usual, for example with min-ed-launcher. The start order does not matter.
+3. Set Elite's display mode to **Windowed** or **Borderless**. Exclusive fullscreen cannot be previewed.
 
-## How To Install & Use
+Settings are stored in the `Profiles` folder next to the exe. `Launch Elite-O Preview with Verbose Logging.cmd` writes a detailed log to the `logs` folder, which helps when something goes wrong.
 
-1. (Optional) Trust the Eve-O Preview Root Certificate to reduce issues with Antivirus false positives by running the below command in Powershell (e.g. Windows Key + R and type powershell):
-    
-       powershell -ExecutionPolicy Bypass -Command "Start-Process powershell -Verb RunAs -ArgumentList '-ExecutionPolicy Bypass -Command', 'Invoke-WebRequest -Uri ''https://github.com/EveOPlus/eve-o-preview/releases/download/10.0.0.4/EveoPreviewRootCA.crt'' -OutFile ''$env:TEMP\cert.crt''; Import-Certificate -FilePath ''$env:TEMP\cert.crt'' -CertStoreLocation ''Cert:\LocalMachine\Root''; Remove-Item ''$env:TEMP\cert.crt'''"
-    
-3. Download and extract the contents of the .zip archive to a location of your choice (ie: Desktop, CCP folder, etc)
-..**Note**: While we make a best effort to support installing the program into *Program Files* or *Program files (x86)* folders. These folders in general do not allow applications to write anything there while EVE-O Preview stores its logs and configuration files next to its executable, thus making it difficult to support.
-4. Start up both EVE-O Preview and your EVE Clients (the order does not matter)
-5. Adjust settings as you see fit. Program options are described below
+## How clients are named
 
-Video Guides:
+Every Elite window has the same caption (`Elite - Dangerous (CLIENT)`), so Elite-O Preview works out each client's name from the game's journal:
 
-* [Eve online , How To : EVE-O Preview (multiboxing; legal)](https://youtu.be/2r0NMKbogXU)
+game process → Windows user that runs it → that user's `Saved Games\Frontier Developments\Elite Dangerous` folder → newest journal written since the game started → the commander named in it.
 
+| State | Client name |
+| --- | --- |
+| Game started, commander not logged in yet | `Elite - <Windows user> (not logged in)` |
+| Commander logged in | `Elite - <COMMANDER NAME>` |
 
-## System Requirements
+The name appears within a couple of seconds of logging in. Thumbnail positions, border colours, cycle groups and window layouts are all saved under this full name, for example `Elite - DIRTYRODRIGUEZ`.
 
-* Windows 7, Windows 8/8.1, Windows 10, Windows 11
-* Microsoft .NET Framework 4.8+
-* EVE clients Display Mode should be set to **Fixed Window** or **Window Mode**. **Fullscreen** mode is not supported.
-
-<div style="page-break-after: always;"></div>
-
-## EVE Online EULA/ToS
-
-This application attempts to be legal under the EULA/ToS:
-
-CCP FoxFour wrote:
-> Please keep the discussion on topic. The legitimacy of this software has already been discussed
-> and doesn't need to be again. Assuming the functionality of the software doesn't change, it is
-> allowed in its current state.
-
-CCP Grimmi wrote:
-> Overlays which contain a full, unchanged, EVE Client instance in a view only mode, no matter
-> how large or small they are scaled, like it is done by EVE-O Preview as of today, are fine
-> with us. These overlays do not allow any direct interaction with the EVE Client and you have
-> to bring the respective EVE Client to the front/put the window focus on it, in order to
-> interact with it.
-
-**Note**: CCP have adopted a stance that they "will not authorize or otherwise sanction the use of any third party software." and "Please use such third party applications or other software at your own risk."
-
-With that said, any feature in Eve-O Preview that could be used for cheating or gaining an in game advantage, is not our intention, must be considered a bug, and reported immediately.
-
-e.g. https://www.eveonline.com/news/view/client-modification-the-eula-and-you
->It should be clear to everybody that we have no interest in banning people who do not do anything bad in New Eden.
-
-and
-
->Our stance on third-party software is that we do not endorse such software as we have no control over what it does. As such, we can’t say that multiboxing software isn’t against our EULA. But the same goes in this case, that unless we determine that people are doing things beyond “multiboxing”, we will not be taking any action. We only care about the instances where people are messing with our process for the purposes of cheating, and running multiple clients at the same time is not in violation of our EULA in and of itself unless it involves trial accounts.
-
-<div style="page-break-after: always;"></div>
+If two games run under the **same** Windows user, Windows is asked which journal file each game has open. The recommended setup is still one Windows user per commander.
 
 ## Application Options
 
-### Application Options Available Via GUI
-
-#### **General** Tab
+### **General** Tab
 | Option | Description |
 | --- | --- |
-| Minimize to System Tray | Determines whether the main window form be minimized to windows tray when it is closed |
-| Track client locations | Determines whether the client's window position should be restored when it is activated or started |
-| Hide preview of active EVE client | Determines whether the thumbnail corresponding to the active EVE client is not displayed |
-| Minimize inactive EVE clients | Allows to auto-minimize inactive EVE clients to save CPU and GPU |
-| Previews always on top | Determines whether EVE client thumbnails should stay on top of all other windows |
-| Hide previews when EVE client is not active | Determines whether all thumbnails should be visible only when an EVE client is active |
-| Unique layout for each EVE client | Determines whether thumbnails positions are different depending on the EVE client being active |
-| Dynamic CPU Affinity Strategy | Automatically manage and predict active and background clients, Then set the active client(s) run on Performance CPU Cores while background clients run on Efficient CPU Cores |
+| Minimize to System Tray | Minimize the main window to the Windows tray when it is closed |
+| Track client locations | Restore each client's window position when it is started or activated |
+| Hide preview of active Elite client | Don't show the thumbnail of the client you are currently playing |
+| Minimize inactive Elite clients | Minimize clients automatically when you switch away from them |
+| Previews always on top | Keep thumbnails above all other windows |
+| Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
+| Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
 
-#### **Thumbnail** Tab
+### **Thumbnail** Tab
 | Option | Description |
 | --- | --- |
-| Opacity | Determines the inactive EVE thumbnails opacity (from almost invisible 20% to 100% solid) |
-| Thumbnail Width | Thumbnails width. Can be set to any value from **100** to **640** points |
-| Thumbnail Height | Thumbnails Height. Can be set to any value from **80** to **400** points |
+| Opacity | Opacity of inactive thumbnails (from 20% to 100%) |
+| Thumbnail Width | **100** to **640** points |
+| Thumbnail Height | **80** to **400** points |
 
-#### **Zoom** Tab
+### **Zoom** Tab
 | Option | Description |
 | --- | --- |
-| Zoom on hover | Determines whether a thumbnail should be zoomed when the mouse pointer is over it  |
-| Zoom factor | Thumbnail zoom factor. Can be set to any value from **2** to **10** |
-| Zoom anchor | Sets the starting point of the thumbnail zoom |
+| Zoom on hover | Enlarge a thumbnail while the mouse is over it |
+| Zoom factor | **2** to **10** |
+| Zoom anchor | The corner or edge the zoomed thumbnail grows from |
 
-#### **Overlay** Tab
+### **Overlay** Tab
 | Option | Description |
 | --- | --- |
-| Show overlay | Determines whether a name of the corresponding EVE client should be displayed on the thumbnail |
-| Show frames | Determines whether thumbnails should be displays with window caption and borders |
-| Highlight active client | Determines whether the thumbnail of the active EVE client should be highlighted with a bright border |
-| Color | Color used to highlight the active client's thumbnail in case the corresponding option is set |
-| Title Font Section | Used to set the Font, Foreground Color, Outline Color, and Offset potion (from the top left) of the Clients Title
+| Show overlay | Show the commander name on each thumbnail |
+| Show frames | Show thumbnails with window caption and borders |
+| Highlight active client | Draw a coloured border around the thumbnail of the active client |
+| Color | Colour of that border |
+| Title Font | Font, colours, outline and offset of the name shown on thumbnails |
 
-#### **Active Clients** Tab
+### **Active Clients** Tab
 | Option | Description |
 | --- | --- |
-| Thumbnails list | List of currently active EVE client thumbnails. Checking an element in this list will hide the corresponding thumbnail. However these checks are not persisted and on the next EVE client or EVE-O Preview run the thumbnail will be visible again |
-| Hide Thumbnails | Temporarily hide all thumbnails until toggle back to visiblie again through the same feature. A hotkey for this feature may be set by double clicking in the space to the right of "Hotkey"
-| Minimize | Immediately minimize all Eve Clients. A hotkey for this feature may be set by double clicking in the space to the right of "Hotkey"
+| Thumbnails list | Running clients. Checking one hides its thumbnail until the client or the app restarts |
+| Hide Thumbnails | Hide all thumbnails until toggled again. Double-click the box next to "Hotkey" to set a hotkey |
+| Minimize | Minimize all Elite clients. Double-click the box next to "Hotkey" to set a hotkey |
 
-#### **Cycle Groups** Tab
+### **Cycle Groups** Tab
 | Option | Description |
 | --- | --- |
-| Select Cycle Group Dropdown | A list of Cycle Groups that have been setup. Select the group you wish to view or edit here first |
-| Select Cycle Group - | Delete the currently selected Cycle Group |
-| Select Cycle Group + | Create a new Cycle Group |
-| Description | A unique identifier / name for the selected Cycle Group |
-| Forward Hotkey | This is the hotkey used to cycle forward in your order. If you only have a Single client in the group, then set only this value (as there is no backwards for only one). Note: Double click in either of the two spaces provided to set the Primary or Secondary hotkey |
-| Backward Hotkey | This is the hotkey used to cycle backward in your order. Note: Double click in either of the two spaces provided to set the Primary or Secondary hotkey |
-| Clients and Order + | Add one of the active (currently running) Eve Clients into this Cycle Group |
-| Clients and Order - | Remove the selected client from the below list, so they no longer participate in this Cycle Group |
-| Clients and Order Up | Move the position of the currently selected client up by one, in the order in which it cycles |
+| Select Cycle Group | Pick the group to view or edit. `+` creates a group, `-` deletes it |
+| Description | Name of the group |
+| Forward Key / Backward Key | Hotkeys to cycle through the group. Double-click a box to set a primary or secondary key. With a single client, only set the forward key |
+| Clients and Order `+` / `-` / Up | Add a running client, remove the selected one, or move it up in the cycle order |
 
-#### **FPS / Audio** Tab
+### **Profiles** Tab
+Profiles are complete, independent copies of all settings that can be switched while the app is running. The app always starts with the Default profile.
+
 | Option | Description |
 | --- | --- |
-| Enable DirectX FPS Limits | Fully turn on or off the FPL Limiter, None of the below FPS limits will apply while this is disabled |
-| Active Client | The maximum FPS of the currently active / foreground Client |
-| Inactive Client | The maximum FPS of the non-active / background Clients. Please avoid setting this below 15 FPS for the best experience, although lower may be possible it is not advised |
-| Predicted Client | When using Cycle Groups, Attempt to predict the next next client upcoming in the list to increase the FPS in preparation for taking foreground next |
-|  |  |
-| Mute Jump Gate Tunnel | Attempt to silence the audio when jumping through a gate |
-| Mute Asteroid Belt Warp In | Attempt to silence the audio (the big dong thing and machine gun ticking sound) when loading grid on each asteroid belt |
-
-#### **Profiles** Tab
-**Note**: Profiles are like a complete copy of all of your settings, hot swappable at runtime without having to close down Eve-O Preview. Each Profile can be setup completely different to one another and do not currently share any settings.
-
-At this time, Eve-O Preview will always launch with the Default profile, and does not remember the last profile used.
-| Option | Description |
-| --- | --- |
-| Clone Current Profile | Creates a new profile with an exact copy of your current profile |
-| Delete Current Profile | Deletes the currently selected profile. Note: Default cannot be deleted |
-| Current Profile | A unique name to help identify the currently selected profile. This matches the windows Folder name |
-
-<div style="page-break-after: always;"></div>
+| Clone Current Profile | Create a new profile as a copy of the current one |
+| Delete Current Profile | Delete the selected profile (Default cannot be deleted) |
+| Current Profile | Name of the profile, which is also its folder name |
 
 ### Mouse Gestures and Actions
-
-Mouse gestures are applied to the thumbnail window currently being hovered over.
-
 | Action | Gesture |
 | --- | --- |
-| Activate the EVE Online client and bring it to front  | Click the thumbnail |
-| Minimize the EVE Online client | Hold Control key and click the thumbnail, or right click and select Minimize |
-| Minimize ALL EVE Online clients | Right click any thumbnail and select Minimize All |
-| Switch to the last used application that is not an EVE Online client | Hold Control + Shift keys and click any thumbnail |
-| Move thumbnail to a new position | Press and hold right click for a moment, or press right click to bring up menu, select Move, and then click when done |
-| Adjust thumbnail size | Press right click to bring up menu, select Resize, and then click when done |
-| Adjust thumbnail size, maintaining aspect ratio | Hold Shift key while re-sizing. See steps above to reside |
-
-<div style="page-break-after: always;"></div>
+| Bring the Elite client to the front | Click its thumbnail |
+| Minimize the Elite client | Ctrl + click the thumbnail, or right-click → Minimize |
+| Minimize all Elite clients | Right-click any thumbnail → Minimize All |
+| Switch to the last used window that is not an Elite client | Ctrl + Shift + click any thumbnail |
+| Move a thumbnail | Hold the right mouse button for a moment, or right-click → Move, then click when done |
+| Resize a thumbnail | Right-click → Resize, then click when done. Hold Shift to keep the aspect ratio |
 
 ### Configuration File-Only Options
 
-Some of the application options are not exposed in the GUI. They can be adjusted directly in the configuration file.
-
-**Note:** Do any changes to the configuration file only while the EVE-O Preview itself is closed. Otherwise the changes you made might be lost.
+Edit `Profiles\<profile>\Elite-O Preview.json` only while Elite-O Preview is closed, and keep a backup.
 
 | Option | Description |
 | --- | --- |
-| **ActiveClientHighlightThickness** | <div style="font-size: small">Thickness of the border used to highlight the active client's thumbnail.<br />Allowed values are **1**...**6**.<br />The default value is **3**<br />For example: **"ActiveClientHighlightThickness": 3**</div> |
-| **CompatibilityMode** | <div style="font-size: small">Enables the alternative render mode (see below)<br />The default value is **false**<br />For example: **"CompatibilityMode": true**</div> |
-| **EnableThumbnailSnap** | <div style="font-size: small">Allows to disable thumbnails snap feature by setting its value to **false**<br />The default value is **true**<br />For example: **"EnableThumbnailSnap": true**</div> |
-| **HideThumbnailsDelay** | <div style="font-size: small">Delay before thumbnails are hidden if the **General** -> **Hide previews when EVE client is not active** option is enabled<br />The delay is measured in thumbnail refresh periods<br />The default value is **2** (corresponds to 1 second delay)<br />For example: **"HideThumbnailsDelay": 2**</div> |
-| **PriorityClients** | <div style="font-size: small">Allows to set a list of clients that are not auto-minimized on inactivity even if the **Minimize inactive EVE clients** option is enabled. Listed clients still can be minimized using Windows hotkeys or via _Ctrl+Click_ on the corresponding thumbnail<br />The default value is empty list **[]**<br />For example: **"PriorityClients": [ "EVE - Phrynohyas Tig-Rah", "EVE - Ondatra Patrouette" ]**</div> |
-| **ThumbnailMinimumSize** | <div style="font-size: small">Minimum thumbnail size that can be set either via GUI or by resizing a thumbnail window. Value is written in the form "width, height"<br />The default value is **"100, 80"**.<br />For example: **"ThumbnailMinimumSize": "100, 80"**</div> |
-| **ThumbnailMaximumSize** | <div style="font-size: small">Maximum thumbnail size that can be set either via GUI or by resizing a thumbnail window. Value is written in the form "width, height"<br />The default value is **"640, 400"**.<br />For example: **"ThumbnailMaximumSize": "640, 400"**</div> |
-| **ThumbnailRefreshPeriod** | <div style="font-size: small">Thumbnail refresh period in milliseconds. This option accepts values between **300** and **1000** only.<br />The default value is **500** milliseconds.<br />For example: **"ThumbnailRefreshPeriod": 500**</div> |
-
-<div style="page-break-after: always;"></div>
-
-### Cycle Clients with Hotkeys
-
-It is possible to set a key combinations to immediately jump to certain EVE window. This applied to either a single client or an ordered list of clients. 
-
-There are an unlimited number of Cycle Groups that you can create which may provide useful if you want to have one HotKey to cycle through a group of DPS characters, while another HotKey cycles through support roles such as gate scouts, or a group of logi.
-
-**Hints** 
-* Minimise the use of modifiers or standard keys to minimise issues with the client playing up. In the default example unusual Function keys (e.g. F14) are used which are then bound to a game pad or gaming mouse.
-* The Eve client can be somewhat less than stable, often getting confused as client focus switches. It is near certain that you will experience issues such as keys sticking or even in some cases D-Scan running each time the client swaps. So far I have found no perfect solution and opt for the most stable solution instead, of sticking to the F14+ keys.
-* For the best experience try to use the Control modifier. In the default example F14 is used to cycle to the next client, but if pressed mid locking a target (Control + Clicking) then the client will not cycle. By registering Control+F4 as an additional hotkey, the client will cycle.
-* For a list of supported keys, see: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys
+| **ActiveClientHighlightThickness** | Border thickness of the active client highlight, **1**...**6** (default **3**) |
+| **CompatibilityMode** | Screenshot-based thumbnails instead of live DWM previews (default **false**). Works over remote desktop, but uses more memory and refreshes at 1 FPS |
+| **EnableThumbnailSnap** | Snap thumbnails to each other when moved (default **true**) |
+| **HideThumbnailsDelay** | Delay, in refresh periods, before thumbnails hide when no Elite client is active (default **2**, about 1 second) |
+| **PriorityClients** | Clients that are never auto-minimized, e.g. `"PriorityClients": [ "Elite - DIRTYRODRIGUEZ" ]` |
+| **ThumbnailMinimumSize** / **ThumbnailMaximumSize** | Size limits, e.g. `"100, 80"` and `"640, 400"` |
+| **ThumbnailRefreshPeriod** | Refresh period in milliseconds, **300**...**1000** (default **500**) |
 
 ### Per Client Border Color
-Have you ever wanted your main client to show up in a different color so that it more easily catches your eye? Or maybe your Logi to stand out?
 
-EVE-O Preview doesn't provide any GUI to set the these per client overrides as yet. Though, It can be done via editing the configuration file directly. 
-**Note** Don't forget to make a backup copy of the file before editing it.
-
-Open the file using any text editor. find the entry **PerClientActiveClientHighlightColor**. Most probably it will look like
+To give one commander its own highlight colour, edit **PerClientActiveClientHighlightColor** in the profile file:
 
     "PerClientActiveClientHighlightColor": {
-      "EVE - Example Toon 1": "Red",
-      "EVE - Example Toon 2": "Green"
+      "Elite - DIRTYRODRIGUEZ": "Red",
+      "Elite - PIN-LUI": "Green"
     }
 
-You should modify this entry with a list of each of your clients replacing "Example Toon 1", etc with the name of your character. The names on the right represent which highligh color to use for that clients border.
+Clients not listed use the global highlight colour. Supported colour names: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color#properties
 
-If a client does not appear in this list, then it will use the global highlight color by default.
+### Hotkey hints
+* Hotkeys are global. Unusual keys such as F13–F24, bound to a mouse or game pad button, avoid clashes with Elite's own bindings.
+* Supported keys: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys
 
-**Hint** For a list of supported colors see: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color#properties
-
-### Compatibility Mode
-
-This setting allows to enable an alternate thumbnail render. This render doesn't use advanced DWM API to create live previews. Instead it is a screenshot-based render with the following pros and cons:
-* `+`  Should work even in remote desktop environments
-* `-`  Consumes significantly more memory. In the testing environment EVE-O Preview did consume around 180 MB to manage 3 thumbnails using this render. At the same time the primary render did consume around 50 MB when run in the same environment.
-* `-`  Thumbnail images are refreshed at 1 FPS rate
-* `-`  Possible short mouse cursor freezes
-
-<div style="page-break-after: always;"></div>
+## Differences from EVE-O Preview
+* Watches `EliteDangerous64.exe` and names clients by commander (see above).
+* The **FPS / Audio** features (FPS limiter, audio muting, focus prediction) are removed. They depend on a DLL injected into the game client.
+* **Dynamic CPU affinity** is removed. It limits the active client to two CPU threads, which suits EVE but slows Elite down.
+* Uses its own settings, log and single-instance names, so it can run next to EVE-O Preview.
 
 ## Credits
 
-### Maintained by
+Elite-O Preview is based on EVE-O Preview.
 
-* Aura Asuna
+* EVE-O Preview maintained by **Aura Asuna**. Source: https://github.com/EveOPlus/eve-o-preview
+* Created by **StinkRay**
+* Previous maintainers: **Phrynohyas Tig-Rah**, **Makari Aeron**, **StinkRay**
+* With contributions from **CCP FoxFour**
+* Original repository: https://bitbucket.org/ulph/eve-o-preview-git
 
-
-### Created by
-
-* StinkRay
-
-
-
-### Previous maintainers
-
-* Phrynohyas Tig-Rah
- 
-* Makari Aeron
-
-* StinkRay
-
-
-### With contributions from
-
-* CCP FoxFour
-
-
-### Forum thread
-
-https://forums.eveonline.com/t/4202
-
-
-### Original repository
-
-https://bitbucket.org/ulph/eve-o-preview-git
-
-<div style="page-break-after: always;"></div>
-
-## CCP Copyright Notice
-
-EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. CCP hf. has granted permission to pyfa to use EVE Online and all associated logos and designs for promotional and information purposes on its website but does not endorse, and is not in any way affiliated with, pyfa. CCP is in no way responsible for the content on or functioning of this program, nor can it be liable for any damage arising from the use of this program. 
+Elite Dangerous is a trademark of Frontier Developments plc. This program is not affiliated with or endorsed by Frontier Developments. EVE Online is a trademark of CCP hf.

@@ -307,8 +307,8 @@
     <value>True</value>
   </metadata>
   <data name="label1.Text" xml:space="preserve">
-    <value>Limit client FPS and choose sounds to mute.
-Audio settings apply to all EVE clients.</value>
+    <value>FPS limiting and audio muting are not available in Elite-O Preview.
+They require injecting code into the game client.</value>
   </data>
   <metadata name="lblFpsPredictiveLimit.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -335,13 +335,9 @@ Audio settings apply to all EVE clients.</value>
     <value>False</value>
   </metadata>
   <data name="lblLiabilityDisclaimer.Text" xml:space="preserve">
-    <value>Eve-O Preview is developed by Aura Asuna
+    <value>Adapted for Elite Dangerous from EVE-O Preview by Aura Asuna. Not affiliated with Frontier Developments.
 
-This program comes with ABSOLUTELY NO WARRANTY. This program is licensed under GPLv3 (see https://www.gnu.org/licenses/)
-
-
-
-</value>
+This program comes with ABSOLUTELY NO WARRANTY. This program is licensed under GPLv3 (see https://www.gnu.org/licenses/)</value>
   </data>
   <metadata name="CreditMaintLabel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -354,12 +350,12 @@ This program comes with ABSOLUTELY NO WARRANTY. This program is licensed under G
   </metadata>
   <data name="DescriptionLabel.Text" xml:space="preserve">
     <value>The program does NOT
-• modify EVE Online interface
-• display modified EVE Online interface
+• modify the Elite Dangerous interface
+• inject code into Elite Dangerous
 • broadcast any keyboard or mouse events
-• interact with EVE Online except of;
+• interact with Elite Dangerous except:
     - resizing or bringing it to the foreground
-    - hooking into DirectX for FPS throttling</value>
+    - reading journal files to name each client</value>
   </data>
   <metadata name="VersionLabel.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

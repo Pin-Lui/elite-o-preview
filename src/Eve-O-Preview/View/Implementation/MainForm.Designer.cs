@@ -281,7 +281,6 @@ namespace EveOPreview.View
             // GeneralSettingsPanel
             // 
             GeneralSettingsPanel.BorderStyle = BorderStyle.FixedSingle;
-            GeneralSettingsPanel.Controls.Add(chbAutoCpuAffinity);
             GeneralSettingsPanel.Controls.Add(MinimizeInactiveClientsCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableClientLayoutTrackingCheckBox);
             GeneralSettingsPanel.Controls.Add(HideActiveClientThumbnailCheckBox);
@@ -299,8 +298,8 @@ namespace EveOPreview.View
             // chbAutoCpuAffinity
             // 
             chbAutoCpuAffinity.AutoSize = true;
-            chbAutoCpuAffinity.Checked = true;
-            chbAutoCpuAffinity.CheckState = CheckState.Checked;
+            chbAutoCpuAffinity.Checked = false;
+            chbAutoCpuAffinity.CheckState = CheckState.Unchecked;
             chbAutoCpuAffinity.Location = new Point(9, 199);
             chbAutoCpuAffinity.Margin = new Padding(4, 3, 4, 3);
             chbAutoCpuAffinity.Name = "chbAutoCpuAffinity";
@@ -319,7 +318,7 @@ namespace EveOPreview.View
             MinimizeInactiveClientsCheckBox.Name = "MinimizeInactiveClientsCheckBox";
             MinimizeInactiveClientsCheckBox.Size = new Size(178, 19);
             MinimizeInactiveClientsCheckBox.TabIndex = 24;
-            MinimizeInactiveClientsCheckBox.Text = "Minimize inactive EVE clients";
+            MinimizeInactiveClientsCheckBox.Text = "Minimize inactive Elite clients";
             MinimizeInactiveClientsCheckBox.UseVisualStyleBackColor = true;
             MinimizeInactiveClientsCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
@@ -345,7 +344,7 @@ namespace EveOPreview.View
             HideActiveClientThumbnailCheckBox.Name = "HideActiveClientThumbnailCheckBox";
             HideActiveClientThumbnailCheckBox.Size = new Size(197, 19);
             HideActiveClientThumbnailCheckBox.TabIndex = 20;
-            HideActiveClientThumbnailCheckBox.Text = "Hide preview of active EVE client";
+            HideActiveClientThumbnailCheckBox.Text = "Hide preview of active Elite client";
             HideActiveClientThumbnailCheckBox.UseVisualStyleBackColor = true;
             HideActiveClientThumbnailCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
@@ -374,7 +373,7 @@ namespace EveOPreview.View
             HideThumbnailsOnLostFocusCheckBox.Name = "HideThumbnailsOnLostFocusCheckBox";
             HideThumbnailsOnLostFocusCheckBox.Size = new Size(252, 19);
             HideThumbnailsOnLostFocusCheckBox.TabIndex = 22;
-            HideThumbnailsOnLostFocusCheckBox.Text = "Hide previews when EVE client is not active";
+            HideThumbnailsOnLostFocusCheckBox.Text = "Hide previews when no Elite client is active";
             HideThumbnailsOnLostFocusCheckBox.UseVisualStyleBackColor = true;
             HideThumbnailsOnLostFocusCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
@@ -388,7 +387,7 @@ namespace EveOPreview.View
             EnablePerClientThumbnailsLayoutsCheckBox.Name = "EnablePerClientThumbnailsLayoutsCheckBox";
             EnablePerClientThumbnailsLayoutsCheckBox.Size = new Size(200, 19);
             EnablePerClientThumbnailsLayoutsCheckBox.TabIndex = 23;
-            EnablePerClientThumbnailsLayoutsCheckBox.Text = "Unique layout for each EVE client";
+            EnablePerClientThumbnailsLayoutsCheckBox.Text = "Unique layout for each commander";
             EnablePerClientThumbnailsLayoutsCheckBox.UseVisualStyleBackColor = true;
             EnablePerClientThumbnailsLayoutsCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
@@ -440,7 +439,7 @@ namespace EveOPreview.View
             HeigthLabel.Name = "HeigthLabel";
             HeigthLabel.Size = new Size(104, 15);
             HeigthLabel.TabIndex = 24;
-            HeigthLabel.Text = "Thumbnail Heigth";
+            HeigthLabel.Text = "Thumbnail Height";
             // 
             // WidthLabel
             // 
@@ -1390,7 +1389,7 @@ namespace EveOPreview.View
             CreditMaintLabel.Padding = new Padding(9, 3, 9, 3);
             CreditMaintLabel.Size = new Size(292, 21);
             CreditMaintLabel.TabIndex = 7;
-            CreditMaintLabel.Text = "Credit to previous maintainer: Phrynohyas Tig-Rah";
+            CreditMaintLabel.Text = "EVE-O credits: Aura Asuna, Phrynohyas Tig-Rah";
             // 
             // DocumentationLinkLabel
             // 
@@ -1401,7 +1400,7 @@ namespace EveOPreview.View
             DocumentationLinkLabel.Padding = new Padding(9, 3, 9, 3);
             DocumentationLinkLabel.Size = new Size(229, 21);
             DocumentationLinkLabel.TabIndex = 6;
-            DocumentationLinkLabel.Text = "For more information visit our discord:";
+            DocumentationLinkLabel.Text = "Based on EVE-O Preview (GPLv3), source code:";
             // 
             // DescriptionLabel
             // 
@@ -1468,7 +1467,6 @@ namespace EveOPreview.View
             ContentTabControl.Controls.Add(OverlayTabPage);
             ContentTabControl.Controls.Add(ClientsTabPage);
             ContentTabControl.Controls.Add(CycleGroupTabPage);
-            ContentTabControl.Controls.Add(FpsLimiterTabPage);
             ContentTabControl.Controls.Add(tabPageProfiles);
             ContentTabControl.Controls.Add(AboutTabPage);
             ContentTabControl.Dock = DockStyle.Fill;

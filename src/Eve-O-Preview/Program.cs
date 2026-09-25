@@ -54,7 +54,7 @@ namespace EveOPreview
             {
                 SetupLogger(args);
                 
-                Log.Information("Starting new instance of Eve-O Preview");
+                Log.Information("Starting new instance of Elite-O Preview");
                 
                 // The very usual Mutex-based single-instance screening
                 // 'token' variable is used to store reference to the instance Mutex
@@ -65,7 +65,7 @@ namespace EveOPreview
                 // Nothing to do here
                 if (Program._singleInstanceMutex == null)
                 {
-                    Log.Warning("An existing instance of Eve-O Preview is already running. Exiting.");
+                    Log.Warning("An existing instance of Elite-O Preview is already running. Exiting.");
                     return;
                 }
 

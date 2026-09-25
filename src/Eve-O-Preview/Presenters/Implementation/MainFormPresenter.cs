@@ -35,7 +35,7 @@ namespace EveOPreview.Presenters
     public class MainFormPresenter : Presenter<IMainFormView>, IMainFormPresenter
     {
         #region Private constants
-        private const string DISCORD_URL = @"https://discord.gg/HzQHBtTEcB";
+        private const string DISCORD_URL = @"https://github.com/EveOPlus/eve-o-preview"; // upstream project (GPLv3 source)
         #endregion
 
         #region Private fields
@@ -440,7 +440,7 @@ namespace EveOPreview.Presenters
 
         private void OpenDocumentationLink()
         {
-            _logger.Verbose("MainFormPresenter.OpenDocumentationLink: Opening Discord documentation link");
+            _logger.Verbose("MainFormPresenter.OpenDocumentationLink: Opening project link");
             // TODO Move out to a separate service / presenter / message handler
             ProcessStartInfo processStartInfo = new ProcessStartInfo(new Uri(MainFormPresenter.DISCORD_URL).AbsoluteUri);
             Process.Start(processStartInfo);

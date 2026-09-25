@@ -21,7 +21,7 @@ namespace EveOPreview.Services
     public interface IProcessInfo
     {
         /// <summary>
-        /// Window handle (HWND) for the main window of the Eve Client.
+        /// Window handle (HWND) for the main window of the Elite Dangerous client.
         /// </summary>
         public IntPtr MainWindowHandle { get; }
 
