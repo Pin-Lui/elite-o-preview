@@ -26,6 +26,8 @@ The program does NOT:
 1. Install the **.NET 10 SDK** (Windows x64): https://dotnet.microsoft.com/download/dotnet/10.0
 2. Double-click `build.cmd`. The app is placed in the `Elite-O Preview` folder next to it.
 
+The build is a single, self-contained `Elite-O Preview.exe` with .NET built in. To use it on another PC, copying that one file is enough; nothing needs to be installed there. The other files in the folder (licence, verbose-logging shortcut) are optional.
+
 ## Install & Use
 
 1. Start `Elite-O Preview\Elite-O Preview.exe`. It asks for **administrator rights**, which it needs to see which Windows user runs each game and to read that user's journals.
