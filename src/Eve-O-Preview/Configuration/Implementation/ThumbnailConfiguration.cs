@@ -146,6 +146,9 @@ namespace EveOPreview.Configuration.Implementation
         }
 
         public bool HideThumbnailsOnLostFocus { get; set; }
+
+        // Thin frame around the focused Elite window (General tab)
+        public bool EnableActiveWindowFrame { get; set; }
         public int HideThumbnailsDelay { get; set; }
 
         public Size ThumbnailSize { get; set; }

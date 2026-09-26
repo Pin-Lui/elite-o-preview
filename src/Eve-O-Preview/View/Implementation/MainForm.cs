@@ -174,6 +174,18 @@ namespace EveOPreview.View
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EnableActiveWindowFrame
+        {
+            get => this.EnableActiveWindowFrameCheckBox.Checked;
+            set
+            {
+                this._suppressEvents = true;
+                this.EnableActiveWindowFrameCheckBox.Checked = value;
+                this._suppressEvents = false;
+            }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EnablePerClientThumbnailLayouts
         {
             get => this.EnablePerClientThumbnailsLayoutsCheckBox.Checked;

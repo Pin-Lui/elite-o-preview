@@ -63,6 +63,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Previews always on top | Keep thumbnails above all other windows |
 | Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
 | Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
+| Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in the active client highlight colour from the Overlay tab (per-commander colours included). Useful for switching windows with the cycle hotkeys while previews are hidden |
 
 ### **Thumbnail** Tab
 | Option | Description |

@@ -264,6 +264,7 @@ namespace EveOPreview.Presenters
             this.View.MinimizeInactiveClients = this._configuration.MinimizeInactiveClients;
             this.View.ShowThumbnailsAlwaysOnTop = this._configuration.ShowThumbnailsAlwaysOnTop;
             this.View.HideThumbnailsOnLostFocus = this._configuration.HideThumbnailsOnLostFocus;
+            this.View.EnableActiveWindowFrame = this._configuration.EnableActiveWindowFrame;
             this.View.EnablePerClientThumbnailLayouts = this._configuration.EnablePerClientThumbnailLayouts;
 
             this.View.SetThumbnailSizeLimitations(this._configuration.ThumbnailMinimumSize, this._configuration.ThumbnailMaximumSize);
@@ -303,6 +304,7 @@ namespace EveOPreview.Presenters
             this._configuration.MinimizeInactiveClients = this.View.MinimizeInactiveClients;
             this._configuration.ShowThumbnailsAlwaysOnTop = this.View.ShowThumbnailsAlwaysOnTop;
             this._configuration.HideThumbnailsOnLostFocus = this.View.HideThumbnailsOnLostFocus;
+            this._configuration.EnableActiveWindowFrame = this.View.EnableActiveWindowFrame;
             this._configuration.EnablePerClientThumbnailLayouts = this.View.EnablePerClientThumbnailLayouts;
 
             this._configuration.ThumbnailSize = this.View.ThumbnailSize;

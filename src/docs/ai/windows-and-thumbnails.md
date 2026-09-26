@@ -48,6 +48,8 @@ Renames update `view.Title`, publish removed/added title entries, and reapply cl
 7. Hide disabled previews, previews subject to global focus-loss hiding, or the configured active-client preview. Otherwise apply location/opacity/topmost when not hovering, overlay settings, and active highlight; then show or refresh.
 8. Restore dirty thumbnail z order and reenable callbacks.
 
+Before step 1, `RefreshThumbnails` applies `EnableActiveWindowFrame` to [ActiveClientFrame](../../Eve-O-Preview/Services/Implementation/ActiveClientFrame.cs) and refreshes it (colour/bounds safety net). The frame itself follows focus and window moves through WinEvent hooks, independent of preview visibility and the refresh period.
+
 `HideActiveClientThumbnail` and per-title disabling are independent checks. A hidden preview remains in `_thumbnailViews`, and cycling filters by running titles, not preview visibility. `_activeClient` remembers the last selected EVE client even when an external app takes foreground.
 
 ## Preserve these rendering and responsiveness decisions

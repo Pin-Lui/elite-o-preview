@@ -57,6 +57,7 @@ namespace EveOPreview.Services
         // Oldest activation first; the most recently active preview is raised last.
         private readonly List<IntPtr> _thumbnailActivationOrder = new List<IntPtr>();
         private bool _refreshThumbnailZOrder;
+        private readonly ActiveClientFrame _activeClientFrame;
         private bool _wasAlwaysOnTop;
         private IntPtr _lastForegroundWindowHandle;
         private IKeyboardMouseEvents _keyboardMouseEvents;
@@ -120,6 +121,7 @@ namespace EveOPreview.Services
 
             RegisterAllHotkeys();
             
+            this._activeClientFrame = new ActiveClientFrame(handle => this._thumbnailViews.ContainsKey(handle), this.GetActiveWindowFrameColor);
             _logger.Verbose("ThumbnailManager: Constructor completed");
         }
 
@@ -439,6 +441,7 @@ namespace EveOPreview.Services
             _logger.Verbose("ThumbnailManager.Stop: Stopping thumbnail manager");
             this._thumbnailUpdateTimer.Stop();
             _stopped = true;
+            this._activeClientFrame.Enabled = false;
             UnregisterExistingHotkeys();
             _logger.Verbose("ThumbnailManager.Stop: Service stopped");
         }
@@ -446,6 +449,7 @@ namespace EveOPreview.Services
         public void Dispose()
         {
             Stop();
+            this._activeClientFrame.Dispose();
             _globalEvents.CurrentProfileChanged -= HandleCurrentProfileChanged;
             _globalEvents.HotkeysChanged -= RegisterAllHotkeys;
             _thumbnailUpdateTimer.Tick -= ThumbnailUpdateTimerTick;
@@ -580,6 +584,10 @@ namespace EveOPreview.Services
             _logger.Verbose("ThumbnailManager.RefreshThumbnails: Starting refresh cycle. CurrentCount={RefreshCount}, ThumbnailCount={ThumbnailCount}", 
                 this._refreshCycleCount, this._thumbnailViews.Count);
             
+            // Frame around the focused Elite window follows focus by itself; this applies setting changes
+            this._activeClientFrame.Enabled = this._configuration.EnableActiveWindowFrame;
+            this._activeClientFrame.Refresh();
+
             IntPtr foregroundWindowHandle = this._windowManager.GetForegroundWindowHandle();
 
             // The foreground window can be NULL in certain circumstances, such as when a window is losing activation.
@@ -1121,6 +1129,18 @@ namespace EveOPreview.Services
         }
 
         // Check whether the currently active window belongs to EVE-O Preview itself
+        private Color GetActiveWindowFrameColor(IntPtr windowHandle)
+        {
+            // Same colour as the active-client highlight of the previews, including per-commander colours
+            if (this._thumbnailViews.TryGetValue(windowHandle, out IThumbnailView view)
+                && this._configuration.PerClientActiveClientHighlightColor.TryGetValue(view.Title, out Color color))
+            {
+                return color;
+            }
+
+            return this._configuration.ActiveClientHighlightColor;
+        }
+
         private bool IsMainWindowActive(IntPtr windowHandle)
         {
             return (this._processMonitor.GetMainProcess().MainWindowHandle == windowHandle);

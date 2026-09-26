@@ -71,6 +71,7 @@ namespace EveOPreview.View
             ShowThumbnailsAlwaysOnTopCheckBox = new CheckBox();
             HideThumbnailsOnLostFocusCheckBox = new CheckBox();
             EnablePerClientThumbnailsLayoutsCheckBox = new CheckBox();
+            EnableActiveWindowFrameCheckBox = new CheckBox();
             MinimizeToTrayCheckBox = new CheckBox();
             ThumbnailsWidthNumericEdit = new NumericUpDown();
             ThumbnailsHeightNumericEdit = new NumericUpDown();
@@ -288,6 +289,7 @@ namespace EveOPreview.View
             GeneralSettingsPanel.Controls.Add(ShowThumbnailsAlwaysOnTopCheckBox);
             GeneralSettingsPanel.Controls.Add(HideThumbnailsOnLostFocusCheckBox);
             GeneralSettingsPanel.Controls.Add(EnablePerClientThumbnailsLayoutsCheckBox);
+            GeneralSettingsPanel.Controls.Add(EnableActiveWindowFrameCheckBox);
             GeneralSettingsPanel.Controls.Add(MinimizeToTrayCheckBox);
             GeneralSettingsPanel.Dock = DockStyle.Fill;
             GeneralSettingsPanel.Location = new Point(4, 3);
@@ -391,6 +393,19 @@ namespace EveOPreview.View
             EnablePerClientThumbnailsLayoutsCheckBox.Text = "Unique layout for each commander";
             EnablePerClientThumbnailsLayoutsCheckBox.UseVisualStyleBackColor = true;
             EnablePerClientThumbnailsLayoutsCheckBox.CheckedChanged += OptionChanged_Handler;
+            // 
+            // EnableActiveWindowFrameCheckBox
+            // 
+            EnableActiveWindowFrameCheckBox.AutoSize = true;
+            EnableActiveWindowFrameCheckBox.Location = new Point(9, 202);
+            EnableActiveWindowFrameCheckBox.Margin = new Padding(4, 3, 4, 3);
+            EnableActiveWindowFrameCheckBox.Name = "EnableActiveWindowFrameCheckBox";
+            EnableActiveWindowFrameCheckBox.Size = new Size(190, 19);
+            EnableActiveWindowFrameCheckBox.TabIndex = 24;
+            EnableActiveWindowFrameCheckBox.Text = "Highlight active Elite window";
+            instantToolTip.SetToolTip(EnableActiveWindowFrameCheckBox, "Draws a thin frame around the Elite window that has focus, in the active client highlight colour from the Overlay tab. Works with previews hidden.");
+            EnableActiveWindowFrameCheckBox.UseVisualStyleBackColor = true;
+            EnableActiveWindowFrameCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
             // MinimizeToTrayCheckBox
             // 
@@ -1924,6 +1939,7 @@ namespace EveOPreview.View
 		private CheckBox ShowThumbnailsAlwaysOnTopCheckBox;
 		private CheckBox HideThumbnailsOnLostFocusCheckBox;
 		private CheckBox EnablePerClientThumbnailsLayoutsCheckBox;
+		private CheckBox EnableActiveWindowFrameCheckBox;
 		private CheckBox MinimizeToTrayCheckBox;
 		private NumericUpDown ThumbnailsWidthNumericEdit;
 		private NumericUpDown ThumbnailsHeightNumericEdit;
