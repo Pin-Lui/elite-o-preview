@@ -95,7 +95,7 @@ namespace EveOPreview.Mediator.Handlers.Configuration
 
             if (_config.ReleaseMouseHotkeyParsed != Keys.None)
             {
-                AddOrMeaningfulError(hotkeysInConfig, _config.ReleaseMouseHotkeyParsed, "Release Mouse");
+                AddOrMeaningfulError(hotkeysInConfig, _config.ReleaseMouseHotkeyParsed, "Cursor Release");
             }
 
             foreach (var cycleGroup in _config.CycleGroups)

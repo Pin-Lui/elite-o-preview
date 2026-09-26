@@ -442,9 +442,9 @@ namespace EveOPreview.View
             lblReleaseMouseHotkey.Location = new Point(9, 268);
             lblReleaseMouseHotkey.Margin = new Padding(4, 0, 4, 0);
             lblReleaseMouseHotkey.Name = "lblReleaseMouseHotkey";
-            lblReleaseMouseHotkey.Size = new Size(120, 15);
+            lblReleaseMouseHotkey.Size = new Size(126, 15);
             lblReleaseMouseHotkey.TabIndex = 26;
-            lblReleaseMouseHotkey.Text = "Release mouse hotkey";
+            lblReleaseMouseHotkey.Text = "Cursor release Hotkey";
             // 
             // txtReleaseMouseHotkey
             // 
@@ -465,7 +465,7 @@ namespace EveOPreview.View
             btnClearReleaseMouseHotkey.Size = new Size(30, 25);
             btnClearReleaseMouseHotkey.TabIndex = 28;
             btnClearReleaseMouseHotkey.Text = "X";
-            instantToolTip.SetToolTip(btnClearReleaseMouseHotkey, "Remove the release mouse hotkey");
+            instantToolTip.SetToolTip(btnClearReleaseMouseHotkey, "Remove the cursor release hotkey");
             btnClearReleaseMouseHotkey.UseVisualStyleBackColor = true;
             btnClearReleaseMouseHotkey.Click += btnClearReleaseMouseHotkey_Click;
             // 
