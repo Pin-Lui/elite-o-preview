@@ -114,6 +114,11 @@ namespace EveOPreview.View
             lblToggleHideAllActiveHotkey = new Label();
             txtToggleHideAllActiveHotkey = new TextBox();
             ThumbnailsList = new CheckedListBox();
+            ClientColorPanel = new Panel();
+            ClientColorLabel = new Label();
+            ClientColorSwatch = new Panel();
+            ClientColorChooseButton = new Button();
+            ClientColorDefaultButton = new Button();
             CycleGroupPanel = new Panel();
             splitContainerMainCycleGroup = new SplitContainer();
             CycleGroupLabel = new Label();
@@ -970,6 +975,7 @@ namespace EveOPreview.View
             // activeClientsSplitContainer.Panel2
             // 
             activeClientsSplitContainer.Panel2.Controls.Add(ThumbnailsList);
+            activeClientsSplitContainer.Panel2.Controls.Add(ClientColorPanel);
             activeClientsSplitContainer.Size = new Size(330, 407);
             activeClientsSplitContainer.SplitterDistance = 134;
             activeClientsSplitContainer.SplitterWidth = 5;
@@ -1082,6 +1088,59 @@ namespace EveOPreview.View
             ThumbnailsList.Size = new Size(330, 268);
             ThumbnailsList.TabIndex = 34;
             ThumbnailsList.ItemCheck += ThumbnailsList_ItemCheck_Handler;
+            ThumbnailsList.SelectedIndexChanged += ThumbnailsList_SelectedIndexChanged;
+            // 
+            // ClientColorPanel
+            // 
+            ClientColorPanel.Controls.Add(ClientColorLabel);
+            ClientColorPanel.Controls.Add(ClientColorSwatch);
+            ClientColorPanel.Controls.Add(ClientColorChooseButton);
+            ClientColorPanel.Controls.Add(ClientColorDefaultButton);
+            ClientColorPanel.Dock = DockStyle.Bottom;
+            ClientColorPanel.Name = "ClientColorPanel";
+            ClientColorPanel.Size = new Size(330, 72);
+            ClientColorPanel.TabIndex = 35;
+            // 
+            // ClientColorLabel
+            // 
+            ClientColorLabel.AutoEllipsis = true;
+            ClientColorLabel.Location = new Point(4, 6);
+            ClientColorLabel.Name = "ClientColorLabel";
+            ClientColorLabel.Size = new Size(322, 17);
+            ClientColorLabel.TabIndex = 0;
+            ClientColorLabel.Text = "Highlight colour: select a commander above";
+            // 
+            // ClientColorSwatch
+            // 
+            ClientColorSwatch.BorderStyle = BorderStyle.FixedSingle;
+            ClientColorSwatch.Cursor = Cursors.Hand;
+            ClientColorSwatch.Location = new Point(6, 30);
+            ClientColorSwatch.Name = "ClientColorSwatch";
+            ClientColorSwatch.Size = new Size(40, 30);
+            ClientColorSwatch.TabIndex = 1;
+            ClientColorSwatch.Click += ClientColorChooseButton_Click;
+            // 
+            // ClientColorChooseButton
+            // 
+            ClientColorChooseButton.Location = new Point(54, 30);
+            ClientColorChooseButton.Margin = new Padding(4, 3, 4, 3);
+            ClientColorChooseButton.Name = "ClientColorChooseButton";
+            ClientColorChooseButton.Size = new Size(100, 30);
+            ClientColorChooseButton.TabIndex = 2;
+            ClientColorChooseButton.Text = "Choose...";
+            ClientColorChooseButton.UseVisualStyleBackColor = true;
+            ClientColorChooseButton.Click += ClientColorChooseButton_Click;
+            // 
+            // ClientColorDefaultButton
+            // 
+            ClientColorDefaultButton.Location = new Point(160, 30);
+            ClientColorDefaultButton.Margin = new Padding(4, 3, 4, 3);
+            ClientColorDefaultButton.Name = "ClientColorDefaultButton";
+            ClientColorDefaultButton.Size = new Size(100, 30);
+            ClientColorDefaultButton.TabIndex = 3;
+            ClientColorDefaultButton.Text = "Default";
+            ClientColorDefaultButton.UseVisualStyleBackColor = true;
+            ClientColorDefaultButton.Click += ClientColorDefaultButton_Click;
             // 
             // CycleGroupTabPage
             // 
@@ -1962,6 +2021,11 @@ namespace EveOPreview.View
 		private CheckBox ShowThumbnailOverlaysCheckBox;
 		private CheckBox ShowThumbnailFramesCheckBox;
 		private CheckedListBox ThumbnailsList;
+		private Panel ClientColorPanel;
+		private Label ClientColorLabel;
+		private Panel ClientColorSwatch;
+		private Button ClientColorChooseButton;
+		private Button ClientColorDefaultButton;
 		private LinkLabel DocumentationLink;
 		private Label VersionLabel;
 		private CheckBox MinimizeInactiveClientsCheckBox;

@@ -314,9 +314,16 @@ namespace EveOPreview.View
                 this._activeClientHighlightColor = value;
                 this.ActiveClientHighlightColorButton.BackColor = value;
                 this._suppressEvents = false;
+                this.UpdateClientColorControls();
             }
         }
         private Color _activeClientHighlightColor;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Func<string, Color?> GetClientHighlightColor { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Action<string, Color?> SetClientHighlightColor { get; set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public FontSettings TitleFontSettings
@@ -620,6 +627,68 @@ namespace EveOPreview.View
             }
 
             this.OptionChanged_Handler(sender, e);
+        }
+
+        private string SelectedClientTitle() =>
+            (this.ThumbnailsList.SelectedItem as IThumbnailDescription)?.Title;
+
+        private void ThumbnailsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.UpdateClientColorControls();
+        }
+
+        // Per-commander highlight colour: used by the preview highlight and the active window frame
+        private void UpdateClientColorControls()
+        {
+            string title = this.SelectedClientTitle();
+            bool hasSelection = !string.IsNullOrEmpty(title);
+            Color? customColor = hasSelection ? this.GetClientHighlightColor?.Invoke(title) : null;
+
+            this.ClientColorChooseButton.Enabled = hasSelection;
+            this.ClientColorDefaultButton.Enabled = customColor.HasValue;
+            this.ClientColorSwatch.Enabled = hasSelection;
+            this.ClientColorSwatch.BackColor = hasSelection ? (customColor ?? this.ActiveClientHighlightColor) : this.ClientColorPanel.BackColor;
+            this.ClientColorLabel.Text = !hasSelection
+                ? "Highlight colour: select a commander above"
+                : $"Highlight colour of {title}: {(customColor.HasValue ? "own colour" : "default")}";
+        }
+
+        private void ClientColorChooseButton_Click(object sender, EventArgs e)
+        {
+            string title = this.SelectedClientTitle();
+            if (string.IsNullOrEmpty(title))
+            {
+                return;
+            }
+
+            _logger.Verbose("MainForm: ClientColorChooseButton_Click for {Title}", title);
+            using (ColorDialog dialog = new ColorDialog())
+            {
+                dialog.Color = this.GetClientHighlightColor?.Invoke(title) ?? this.ActiveClientHighlightColor;
+                dialog.FullOpen = true;
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                this.SetClientHighlightColor?.Invoke(title, dialog.Color);
+            }
+
+            this.UpdateClientColorControls();
+        }
+
+        private void ClientColorDefaultButton_Click(object sender, EventArgs e)
+        {
+            string title = this.SelectedClientTitle();
+            if (string.IsNullOrEmpty(title))
+            {
+                return;
+            }
+
+            _logger.Verbose("MainForm: ClientColorDefaultButton_Click for {Title}", title);
+            this.SetClientHighlightColor?.Invoke(title, null);
+            this.UpdateClientColorControls();
         }
 
         private void ThumbnailsList_ItemCheck_Handler(object sender, ItemCheckEventArgs e)

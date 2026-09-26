@@ -100,6 +100,8 @@ namespace EveOPreview.Presenters
             this.View.AudioSettingsChanged = this.TriggerSetAudioSettings;
             this.View.ToggleHideAllActiveClients = this.TriggerToggleHideAllActiveClients;
             this.View.MinimizeAllClients = this.TriggerMinimizeAllClientsHotkey;
+            this.View.GetClientHighlightColor = this.GetClientHighlightColor;
+            this.View.SetClientHighlightColor = this.SetClientHighlightColor;
             this.View.ResetThumbnailLayout = this.TriggerResetThumbnailLayout;
             this.View.SwitchToProfile = this.ActionSwitchToNewProfile;
             this.View.CloneCurrentProfile = this.ActionCloneCurrentProfile;
@@ -487,6 +489,26 @@ namespace EveOPreview.Presenters
             _logger.Verbose("MainFormPresenter.TriggerResetThumbnailLayout: Resetting preview size and positions");
             await this._mediator.Send(new ResetThumbnailLayout());
             this.UpdateThumbnailSize(this._configuration.ThumbnailSize);
+            await this._mediator.Send(new SaveConfiguration());
+        }
+
+        private Color? GetClientHighlightColor(string title)
+        {
+            return this._configuration.PerClientActiveClientHighlightColor.TryGetValue(title, out Color color) ? color : null;
+        }
+
+        private async void SetClientHighlightColor(string title, Color? color)
+        {
+            _logger.Verbose("MainFormPresenter.SetClientHighlightColor: {Title} -> {Color}", title, color?.ToString() ?? "default");
+            if (color.HasValue)
+            {
+                this._configuration.PerClientActiveClientHighlightColor[title] = color.Value;
+            }
+            else
+            {
+                this._configuration.PerClientActiveClientHighlightColor.Remove(title);
+            }
+
             await this._mediator.Send(new SaveConfiguration());
         }
 

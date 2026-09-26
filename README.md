@@ -63,7 +63,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Previews always on top | Keep thumbnails above all other windows |
 | Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
 | Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
-| Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in the active client highlight colour from the Overlay tab (per-commander colours included). Useful for switching windows with the cycle hotkeys while previews are hidden |
+| Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in that commander's highlight colour (Active Clients tab), otherwise the highlight colour from the Overlay tab. Useful for switching windows with the cycle hotkeys while previews are hidden |
 
 ### **Thumbnail** Tab
 | Option | Description |
@@ -95,6 +95,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Thumbnails list | Running clients. Checking one hides its thumbnail until the client or the app restarts |
 | Hide Thumbnails | Hide all thumbnails until toggled again. Double-click the box next to "Hotkey" to set a hotkey |
 | Minimize | Minimize all Elite clients. Double-click the box next to "Hotkey" to set a hotkey |
+| Highlight colour | Select a commander in the list, then **Choose...** (or click the colour square) to give it its own highlight colour, or **Default** to use the normal colour again. Used by the preview highlight and by **Highlight active Elite window** |
 
 ### **Cycle Groups** Tab
 | Option | Description |
@@ -140,7 +141,7 @@ Edit `Profiles\<profile>\Elite-O Preview.json` only while Elite-O Preview is clo
 
 ### Per Client Border Color
 
-To give one commander its own highlight colour, edit **PerClientActiveClientHighlightColor** in the profile file:
+The easiest way is the **Highlight colour** row on the **Active Clients** tab. The colours are stored in **PerClientActiveClientHighlightColor** in the profile file, which can also be edited by hand while the app is closed:
 
     "PerClientActiveClientHighlightColor": {
       "Elite - DIRTYRODRIGUEZ": "Red",
