@@ -22,9 +22,9 @@ using System.Windows.Forms;
 
 namespace EveOPreview.View.CustomControl;
 
-// Colours and styling of the Visual Studio Code "Dark+" theme with VS Code's purple accent
-// (status bar #68217A, lighter #B180D7 for thin lines), applied to whole forms and menus at runtime.
-public static class VsCodeDarkTheme
+// Colours and styling of the dark theme with a purple accent
+// (#68217A, lighter #B180D7 for thin lines), applied to whole forms and menus at runtime.
+public static class DarkTheme
 {
     public static readonly Color EditorBackground = Color.FromArgb(0x1E, 0x1E, 0x1E);
     public static readonly Color SideBarBackground = Color.FromArgb(0x25, 0x25, 0x26);
@@ -65,7 +65,7 @@ public static class VsCodeDarkTheme
 
     public static void Apply(ContextMenuStrip menu)
     {
-        menu.Renderer = new VsCodeMenuRenderer();
+        menu.Renderer = new DarkMenuRenderer();
         menu.BackColor = SideBarBackground;
         menu.ForeColor = Foreground;
         menu.Font = MenuFont;
@@ -140,7 +140,7 @@ public static class VsCodeDarkTheme
                 break;
 
             case Panel panel when panel.BorderStyle == BorderStyle.FixedSingle && panel.Controls.Count > 0:
-                // Windows draws these frames in a light colour; VS Code has none. Empty panels
+                // Windows draws these frames in a light colour, so they are removed. Empty panels
                 // (colour swatches) keep their frame.
                 panel.BorderStyle = BorderStyle.None;
                 panel.ResetBackColor();
@@ -183,9 +183,9 @@ public static class VsCodeDarkTheme
         }
     }
 
-    private sealed class VsCodeMenuRenderer : ToolStripProfessionalRenderer
+    private sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
     {
-        public VsCodeMenuRenderer() : base(new VsCodeMenuColors())
+        public DarkMenuRenderer() : base(new DarkMenuColors())
         {
             this.RoundedEdges = false;
         }
@@ -216,7 +216,7 @@ public static class VsCodeDarkTheme
         }
     }
 
-    private sealed class VsCodeMenuColors : ProfessionalColorTable
+    private sealed class DarkMenuColors : ProfessionalColorTable
     {
         public override Color ToolStripDropDownBackground => SideBarBackground;
         public override Color ImageMarginGradientBegin => SideBarBackground;

@@ -56,8 +56,8 @@ namespace EveOPreview.View
 
             InitializeComponent();
 
-            VsCodeDarkTheme.Apply(this);
-            VsCodeDarkTheme.Apply(this.TrayMenu);
+            DarkTheme.Apply(this);
+            DarkTheme.Apply(this.TrayMenu);
 
             this.ThumbnailsList.DisplayMember = "Title";
 
@@ -1267,7 +1267,7 @@ namespace EveOPreview.View
         {
             _logger.Verbose("MainForm.UpdateThumbnailToggleHideAllStatus: IsHidden={IsHidden}", notificationIsHidden);
             this.btnToggleHideAll.Text = notificationIsHidden ? "Show All" : "Hide All";
-            this.btnToggleHideAll.BackColor = notificationIsHidden ? VsCodeDarkTheme.ActiveToggleBackground : VsCodeDarkTheme.ButtonBackground;
+            this.btnToggleHideAll.BackColor = notificationIsHidden ? DarkTheme.ActiveToggleBackground : DarkTheme.ButtonBackground;
             this.ClientsTabPage.Text = notificationIsHidden ? "ALL HIDDEN" : "All Clients";
         }
 

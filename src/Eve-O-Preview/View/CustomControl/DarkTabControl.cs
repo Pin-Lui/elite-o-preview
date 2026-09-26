@@ -22,7 +22,7 @@ using System.Windows.Forms;
 namespace EveOPreview.View.CustomControl;
 
 // Tab control drawn completely by the application, so no light system-drawn areas remain
-// around the tabs in the dark theme. Tabs on the left look like the VS Code side bar.
+// around the tabs in the dark theme. Tabs on the left are drawn as a dark side bar.
 // The side bar is made wide enough for the longest tab name at the current display scaling.
 public class DarkTabControl : TabControl
 {
@@ -118,7 +118,7 @@ public class DarkTabControl : TabControl
     {
         Graphics graphics = e.Graphics;
 
-        using (var editorBrush = new SolidBrush(VsCodeDarkTheme.EditorBackground))
+        using (var editorBrush = new SolidBrush(DarkTheme.EditorBackground))
         {
             graphics.FillRectangle(editorBrush, this.ClientRectangle);
         }
@@ -128,7 +128,7 @@ public class DarkTabControl : TabControl
             return;
         }
 
-        using (var sideBarBrush = new SolidBrush(VsCodeDarkTheme.SideBarBackground))
+        using (var sideBarBrush = new SolidBrush(DarkTheme.SideBarBackground))
         {
             graphics.FillRectangle(sideBarBrush, this.GetTabStripBounds());
         }
@@ -160,14 +160,14 @@ public class DarkTabControl : TabControl
         Rectangle bounds = this.GetTabRect(index);
         bool isSelected = index == this.SelectedIndex;
 
-        using (var backgroundBrush = new SolidBrush(isSelected ? VsCodeDarkTheme.SelectedTabBackground : VsCodeDarkTheme.SideBarBackground))
+        using (var backgroundBrush = new SolidBrush(isSelected ? DarkTheme.SelectedTabBackground : DarkTheme.SideBarBackground))
         {
             graphics.FillRectangle(backgroundBrush, bounds);
         }
 
         if (isSelected)
         {
-            using var accentBrush = new SolidBrush(VsCodeDarkTheme.Accent);
+            using var accentBrush = new SolidBrush(DarkTheme.Accent);
             graphics.FillRectangle(accentBrush, bounds.Left, bounds.Top, (int)Math.Ceiling(AccentWidth * this.DpiScale), bounds.Height);
         }
 
@@ -177,6 +177,6 @@ public class DarkTabControl : TabControl
             Math.Max(0, bounds.Width - paddingLeft - paddingRight), bounds.Height);
 
         TextRenderer.DrawText(graphics, this.TabPages[index].Text, this.TabFont, textBounds,
-            isSelected ? VsCodeDarkTheme.BrightForeground : VsCodeDarkTheme.Foreground, TextFlags);
+            isSelected ? DarkTheme.BrightForeground : DarkTheme.Foreground, TextFlags);
     }
 }

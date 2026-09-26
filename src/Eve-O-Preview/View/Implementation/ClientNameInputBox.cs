@@ -32,7 +32,7 @@ namespace EveOPreview.View
         public ClientNameInputBox()
         {
             InitializeComponent();
-            VsCodeDarkTheme.Apply(this);
+            DarkTheme.Apply(this);
         }
 
         public void LoadKnownClients(List<string> clientNames)

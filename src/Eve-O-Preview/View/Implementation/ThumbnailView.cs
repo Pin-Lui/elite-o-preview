@@ -113,7 +113,7 @@ namespace EveOPreview.View
 
         private void InitializeContextMenu()
         {
-            VsCodeDarkTheme.Apply(thumbnailContextMenu);
+            DarkTheme.Apply(thumbnailContextMenu);
 
             thumbnailContextMenu.ShowImageMargin = false;
             thumbnailContextMenu.ShowCheckMargin = false;
