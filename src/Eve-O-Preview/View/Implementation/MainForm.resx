@@ -335,7 +335,7 @@ They require injecting code into the game client.</value>
     <value>False</value>
   </metadata>
   <data name="lblLiabilityDisclaimer.Text" xml:space="preserve">
-    <value>Adapted for Elite Dangerous from EVE-O Preview by Aura Asuna. Not affiliated with Frontier Developments.
+    <value>Elite-O Preview by Pin-Lui. Adapted for Elite Dangerous from EVE-O Preview by Aura Asuna. Not affiliated with Frontier Developments.
 
 This program comes with ABSOLUTELY NO WARRANTY. This program is licensed under GPLv3 (see https://www.gnu.org/licenses/)</value>
   </data>

@@ -5,7 +5,7 @@ Live thumbnails of every running **Elite Dangerous** client, with click or hotke
 Elite-O Preview is adapted from [EVE-O Preview](https://github.com/EveOPlus/eve-o-preview) by Aura Asuna and is licensed under the GPLv3, like the original. It is not affiliated with or endorsed by Frontier Developments.
 
 ## License
-Original work Copyright © 2026 Aura Asuna. Elite Dangerous adaptation © 2026.
+Original work Copyright © 2026 Aura Asuna. Elite Dangerous adaptation © 2026 Pin-Lui.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -158,8 +158,9 @@ Clients not listed use the global highlight colour. Supported colour names: http
 
 ## Credits
 
-Elite-O Preview is based on EVE-O Preview.
+Elite-O Preview is made by **Pin-Lui** and is based on EVE-O Preview.
 
+* Elite-O Preview: **Pin-Lui**. Source: https://github.com/Pin-Lui/elite-o-preview
 * EVE-O Preview maintained by **Aura Asuna**. Source: https://github.com/EveOPlus/eve-o-preview
 * Created by **StinkRay**
 * Previous maintainers: **Phrynohyas Tig-Rah**, **Makari Aeron**, **StinkRay**
