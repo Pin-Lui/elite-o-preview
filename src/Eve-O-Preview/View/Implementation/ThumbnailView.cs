@@ -113,10 +113,7 @@ namespace EveOPreview.View
 
         private void InitializeContextMenu()
         {
-            thumbnailContextMenu.Renderer = new DarkGoldRenderer();
-            thumbnailContextMenu.BackColor = Color.FromArgb(20, 20, 22);
-            thumbnailContextMenu.ForeColor = Color.FromArgb(212, 175, 55);
-            thumbnailContextMenu.Font = new Font("Segoe UI Semibold", 9.5F);
+            VsCodeDarkTheme.Apply(thumbnailContextMenu);
 
             thumbnailContextMenu.ShowImageMargin = false;
             thumbnailContextMenu.ShowCheckMargin = false;

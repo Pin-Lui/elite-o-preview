@@ -135,7 +135,7 @@ namespace EveOPreview.View
             VersionLabel = new Label();
             DocumentationLink = new LinkLabel();
             ClientsTabPage = new TabPage();
-            ContentTabControl = new TabControl();
+            ContentTabControl = new DarkTabControl();
             ZoomTabPage = new TabPage();
             FpsLimiterTabPage = new TabPage();
             fpsMainLayoutPanel = new TableLayoutPanel();
@@ -1495,8 +1495,6 @@ namespace EveOPreview.View
             ContentTabControl.Size = new Size(460, 417);
             ContentTabControl.SizeMode = TabSizeMode.Fixed;
             ContentTabControl.TabIndex = 7;
-            ContentTabControl.DrawItem += ContentTabControl_DrawItem;
-            ContentTabControl.DpiChangedAfterParent += ContentTabControl_DpiChangedAfterParent;
             // 
             // ZoomTabPage
             // 

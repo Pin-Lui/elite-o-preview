@@ -131,6 +131,10 @@ namespace EveOPreview
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            // Dark scroll bars, check boxes and drop-downs; VsCodeDarkTheme sets the colours
+#pragma warning disable WFO5001
+            Application.SetColorMode(SystemColorMode.Dark);
+#pragma warning restore WFO5001
         }
 
         private static IApplicationController InitializeApplicationController()

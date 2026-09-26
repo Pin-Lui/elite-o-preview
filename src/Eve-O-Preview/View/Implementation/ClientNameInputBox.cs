@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EveOPreview.View.CustomControl;
 
 namespace EveOPreview.View
 {
@@ -31,6 +32,7 @@ namespace EveOPreview.View
         public ClientNameInputBox()
         {
             InitializeComponent();
+            VsCodeDarkTheme.Apply(this);
         }
 
         public void LoadKnownClients(List<string> clientNames)
