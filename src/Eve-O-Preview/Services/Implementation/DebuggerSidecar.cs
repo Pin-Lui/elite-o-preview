@@ -68,14 +68,23 @@ namespace EveOPreview.Services.Implementation
                 string currentExe = Process.GetCurrentProcess().MainModule.FileName;
                 int myPid = Process.GetCurrentProcess().Id;
 
-                ProcessStartInfo newProcess = new ProcessStartInfo();
-                newProcess.FileName = currentExe;
-                newProcess.Arguments = $"--attach-debug-sidecar {myPid}";
-                newProcess.CreateNoWindow = true;
-                newProcess.WindowStyle = ProcessWindowStyle.Hidden;
-                newProcess.UseShellExecute = false;
+                // The sidecar is a GUI-subsystem process that never shows a window. Started through
+                // Process.Start, Windows shows the "app starting" (arrow + busy circle) cursor for it
+                // until its feedback timeout expires (20-30 s in practice). CreateProcess with
+                // STARTF_FORCEOFFFEEDBACK starts it without that cursor.
+                if (!LaunchWithoutStartupCursor(currentExe, $"--attach-debug-sidecar {myPid}", out int win32Error))
+                {
+                    Log.Logger.WithCallerInfo().Warning("Launching the sidecar without startup cursor failed (Win32 error {Error}). Falling back to Process.Start.", win32Error);
 
-                Process.Start(newProcess);
+                    ProcessStartInfo newProcess = new ProcessStartInfo();
+                    newProcess.FileName = currentExe;
+                    newProcess.Arguments = $"--attach-debug-sidecar {myPid}";
+                    newProcess.CreateNoWindow = true;
+                    newProcess.WindowStyle = ProcessWindowStyle.Hidden;
+                    newProcess.UseShellExecute = false;
+
+                    Process.Start(newProcess);
+                }
             }
             else
             {
@@ -186,6 +195,78 @@ namespace EveOPreview.Services.Implementation
 
                     KernelNativeMethods.ContinueDebugEvent(dbgEvent.dwProcessId, dbgEvent.dwThreadId, continueStatus);
                 }
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct STARTUPINFO
+        {
+            public int cb;
+            public IntPtr lpReserved;
+            public IntPtr lpDesktop;
+            public IntPtr lpTitle;
+            public int dwX;
+            public int dwY;
+            public int dwXSize;
+            public int dwYSize;
+            public int dwXCountChars;
+            public int dwYCountChars;
+            public int dwFillAttribute;
+            public int dwFlags;
+            public short wShowWindow;
+            public short cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public int dwProcessId;
+            public int dwThreadId;
+        }
+
+        private const int STARTF_USESHOWWINDOW = 0x00000001;
+        private const int STARTF_FORCEOFFFEEDBACK = 0x00000080;
+        private const short SW_HIDE = 0;
+        private const uint CREATE_NO_WINDOW = 0x08000000;
+
+        [DllImport("kernel32.dll", EntryPoint = "CreateProcessW", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool CreateProcess(string lpApplicationName, IntPtr lpCommandLine,
+            IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags,
+            IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
+
+        private static bool LaunchWithoutStartupCursor(string exePath, string arguments, out int win32Error)
+        {
+            win32Error = 0;
+            STARTUPINFO startupInfo = new STARTUPINFO();
+            startupInfo.cb = Marshal.SizeOf<STARTUPINFO>();
+            startupInfo.dwFlags = STARTF_USESHOWWINDOW | STARTF_FORCEOFFFEEDBACK;
+            startupInfo.wShowWindow = SW_HIDE;
+
+            // CreateProcessW may write to the command line buffer, so it must be writable memory
+            IntPtr commandLine = Marshal.StringToHGlobalUni($"\"{exePath}\" {arguments}");
+            try
+            {
+                if (!CreateProcess(exePath, commandLine, IntPtr.Zero, IntPtr.Zero, false, CREATE_NO_WINDOW,
+                        IntPtr.Zero, null, ref startupInfo, out PROCESS_INFORMATION processInfo))
+                {
+                    win32Error = Marshal.GetLastWin32Error();
+                    return false;
+                }
+
+                KernelNativeMethods.CloseHandle(processInfo.hThread);
+                KernelNativeMethods.CloseHandle(processInfo.hProcess);
+                return true;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(commandLine);
             }
         }
 

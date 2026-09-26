@@ -71,7 +71,7 @@ Preset IDs remain in HookService: jump tunnel 3689163958/1537508544/1768044352; 
 
 ## Diagnostics and validation
 
-[DebuggerSidecar](../../Eve-O-Preview/Services/Implementation/DebuggerSidecar.cs) attaches to the desktop app, not EVE. Its x64 first-chance field is at offset 152. Robin writes startup/failure diagnostics through OutputDebugString. Neither diagnostics nor a responsive pipe establish end-to-end frame timing.
+[DebuggerSidecar](../../Eve-O-Preview/Services/Implementation/DebuggerSidecar.cs) attaches to the desktop app, not EVE. Its x64 first-chance field is at offset 152. Robin writes startup/failure diagnostics through OutputDebugString. Neither diagnostics nor a responsive pipe establish end-to-end frame timing. `LaunchTheSideCar` starts the sidecar with CreateProcessW and STARTF_FORCEOFFFEEDBACK so Windows does not show the app-starting cursor for the windowless process (Process.Start left it visible for 20-30 s); it falls back to Process.Start if CreateProcessW fails.
 
 Use the optional [native smoke test](../../tests/Robin.NativeSmoke/README.md) after publishing to exercise production injection, version/hash, malformed/stalled pipes, DXGI Present/Present1 pacing, synthetic nested audio, foreign guard forwarding, owner exit and shutdown. Its separate warmed allocation checks compile the production source in managed form; they are not a native GC trace or full VEH allocation measurement.
 
