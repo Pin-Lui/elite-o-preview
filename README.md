@@ -118,7 +118,8 @@ Profiles are complete, independent copies of all settings that can be switched w
 | Minimize all Elite clients | Right-click any thumbnail → Minimize All |
 | Switch to the last used window that is not an Elite client | Ctrl + Shift + click any thumbnail |
 | Move a thumbnail | Hold the right mouse button for a moment, or right-click → Move, then click when done |
-| Resize a thumbnail | Right-click → Resize, then click when done. Hold Shift to keep the aspect ratio |
+| Resize one thumbnail | Right-click → Resize, then click when done. Only that commander's preview changes, and its size is remembered. Hold Shift to keep the aspect ratio |
+| Resize all thumbnails | Right-click → Resize All, then click when done. Every preview gets the same size (this also replaces individual sizes). Hold Shift to keep the aspect ratio |
 
 ### Configuration File-Only Options
 

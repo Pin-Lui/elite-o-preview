@@ -527,6 +527,20 @@ namespace EveOPreview.Services
                     viewsAdded.Add(view.Title);
 
                     this.ApplyClientLayout(view.Id, view.Title);
+
+                    // A commander can have an individual preview size
+                    Size titleSize = this._configuration.GetThumbnailSize(view.Title);
+                    if (view.ThumbnailSize != titleSize)
+                    {
+                        bool wasIgnoring = _ignoreViewEvents;
+                        _ignoreViewEvents = true;
+                        try
+                        {
+                            view.ThumbnailSize = titleSize;
+                            view.Refresh(false);
+                        }
+                        finally { _ignoreViewEvents = wasIgnoring; }
+                    }
                 }
             }
 
@@ -540,7 +554,7 @@ namespace EveOPreview.Services
 
         private IThumbnailView AddThumbnail(IProcessInfo process)
         {
-            IThumbnailView view = _thumbnailViewFactory.Create(process.MainWindowHandle, process.Title, _configuration.ThumbnailSize);
+            IThumbnailView view = _thumbnailViewFactory.Create(process.MainWindowHandle, process.Title, _configuration.GetThumbnailSize(process.Title));
             view.TitleFontSettings = _configuration.TitleFontSettings;
             view.IsOverlayEnabled = _configuration.ShowThumbnailOverlays;
             view.SetFrames(_configuration.ShowThumbnailFrames);
@@ -803,7 +817,16 @@ namespace EveOPreview.Services
         public void UpdateThumbnailsSize()
         {
             _logger.Verbose("ThumbnailManager.UpdateThumbnailsSize: Updating thumbnail size to {Width}x{Height}", this._configuration.ThumbnailSize.Width, this._configuration.ThumbnailSize.Height);
-            this.SetThumbnailsSize(this._configuration.ThumbnailSize);
+            // Previews resized individually keep their own size; all others use ThumbnailSize
+            this.DisableViewEvents();
+
+            foreach (KeyValuePair<IntPtr, IThumbnailView> entry in this._thumbnailViews)
+            {
+                entry.Value.ThumbnailSize = this._configuration.GetThumbnailSize(entry.Value.Title);
+                entry.Value.Refresh(false);
+            }
+
+            this.EnableViewEvents();
         }
 
         public void ResetThumbnailLayoutToDefault()
@@ -1041,6 +1064,20 @@ namespace EveOPreview.Services
             _logger.Verbose("ThumbnailManager.ThumbnailViewResized: Thumbnail resized (Handle: 0x{Handle:X})", id);
             IThumbnailView view = this._thumbnailViews[id];
 
+            if (view.IsIndividualResizeActive)
+            {
+                // "Resize" from the context menu: only this preview, remembered for its title
+                this._configuration.SetThumbnailSize(view.Title, view.ThumbnailSize);
+                view.Refresh(false);
+                // Schedules the delayed configuration save used for moved previews
+                this.EnqueueLocationChange(view);
+                return;
+            }
+
+            // "Resize all" or a frame-border drag: one size for every preview.
+            // Store it right away so previews created or renamed later use it too.
+            this._configuration.ClearIndividualThumbnailSizes();
+            this._configuration.ThumbnailSize = view.ThumbnailSize;
             this.SetThumbnailsSize(view.ThumbnailSize);
 
             view.Refresh(false);

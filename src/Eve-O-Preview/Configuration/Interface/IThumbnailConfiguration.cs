@@ -75,6 +75,9 @@ namespace EveOPreview.Configuration
         Point GetThumbnailLocation(string currentClient, string activeClient, Point defaultLocation);
         void SetThumbnailLocation(string currentClient, string activeClient, Point location);
         void ResetThumbnailLayout();
+        Size GetThumbnailSize(string currentClient);
+        void SetThumbnailSize(string currentClient, Size size);
+        void ClearIndividualThumbnailSizes();
 
         ClientLayout GetClientLayout(string currentClient);
         void SetClientLayout(string currentClient, ClientLayout layout);

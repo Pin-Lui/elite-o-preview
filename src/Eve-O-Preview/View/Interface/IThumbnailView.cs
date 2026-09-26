@@ -32,6 +32,7 @@ namespace EveOPreview.View
         Size ThumbnailSize { get; set; }
         bool IsOverlayEnabled { get; set; }
         bool IsContextMenuOpen { get; }
+        bool IsIndividualResizeActive { get; }
 
         bool IsKnownHandle(IntPtr handle);
 

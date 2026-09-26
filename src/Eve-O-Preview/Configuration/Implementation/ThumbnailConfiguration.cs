@@ -46,6 +46,7 @@ namespace EveOPreview.Configuration.Implementation
 
             this.PerClientLayout = new Dictionary<string, Dictionary<string, Point>>();
             this.FlatLayout = new Dictionary<string, Point>();
+            this.PerClientThumbnailSize = new Dictionary<string, Size>();
             this.ClientLayout = new Dictionary<string, ClientLayout>();
             this.DisableThumbnail = new Dictionary<string, bool>();
             this.PriorityClients = new List<string>();
@@ -193,6 +194,11 @@ namespace EveOPreview.Configuration.Implementation
         
         [JsonProperty]
         private Dictionary<string, Point> FlatLayout { get; set; }
+
+        // Sizes set with "Resize" from a preview's right-click menu, keyed by preview title.
+        // Previews without an entry use ThumbnailSize.
+        [JsonProperty]
+        private Dictionary<string, Size> PerClientThumbnailSize { get; set; }
         
         [JsonProperty]
         private Dictionary<string, ClientLayout> ClientLayout { get; set; }
@@ -255,13 +261,36 @@ namespace EveOPreview.Configuration.Implementation
             layoutSource[currentClient] = location;
         }
 
-        // Restores the default preview size and forgets every saved preview position,
-        // flat and per-commander. Game window layouts (ClientLayout) are kept.
+        public Size GetThumbnailSize(string currentClient)
+        {
+            return !string.IsNullOrEmpty(currentClient) && this.PerClientThumbnailSize.TryGetValue(currentClient, out Size size)
+                ? size
+                : this.ThumbnailSize;
+        }
+
+        public void SetThumbnailSize(string currentClient, Size size)
+        {
+            if (string.IsNullOrEmpty(currentClient))
+            {
+                return;
+            }
+
+            this.PerClientThumbnailSize[currentClient] = size;
+        }
+
+        public void ClearIndividualThumbnailSizes()
+        {
+            this.PerClientThumbnailSize.Clear();
+        }
+
+        // Restores the default preview size and forgets every saved preview position and
+        // individual preview size (flat and per-commander). Game window layouts (ClientLayout) are kept.
         public void ResetThumbnailLayout()
         {
             this.ThumbnailSize = ThumbnailConfiguration.DefaultThumbnailSize;
             this.FlatLayout.Clear();
             this.PerClientLayout.Clear();
+            this.PerClientThumbnailSize.Clear();
         }
 
         public ClientLayout GetClientLayout(string currentClient)
@@ -314,6 +343,7 @@ namespace EveOPreview.Configuration.Implementation
             PerClientLayout ??= new Dictionary<string, Dictionary<string, Point>>();
             foreach (var key in PerClientLayout.Where(x => x.Value == null).Select(x => x.Key).ToArray()) PerClientLayout.Remove(key);
             FlatLayout ??= new Dictionary<string, Point>();
+            PerClientThumbnailSize ??= new Dictionary<string, Size>();
             ClientLayout ??= new Dictionary<string, ClientLayout>();
             DisableThumbnail ??= new Dictionary<string, bool>();
             PriorityClients ??= new List<string>();

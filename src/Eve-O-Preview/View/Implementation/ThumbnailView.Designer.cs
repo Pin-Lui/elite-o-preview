@@ -21,6 +21,7 @@ namespace EveOPreview.View
             this.menuMinimize = new System.Windows.Forms.ToolStripMenuItem();
             this.menuReposition = new System.Windows.Forms.ToolStripMenuItem();
             this.resizeThumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resizeAllThumbnailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.minimizeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -38,7 +39,8 @@ namespace EveOPreview.View
             this.minimizeAllToolStripMenuItem,
             this.toolStripSeparator1,
             this.menuReposition,
-            this.resizeThumbnailToolStripMenuItem});
+            this.resizeThumbnailToolStripMenuItem,
+            this.resizeAllThumbnailsToolStripMenuItem});
             this.thumbnailContextMenu.Name = "thumbnailContextMenu";
             this.thumbnailContextMenu.ShowImageMargin = false;
             this.thumbnailContextMenu.Size = new System.Drawing.Size(125, 98);
@@ -62,8 +64,16 @@ namespace EveOPreview.View
             this.resizeThumbnailToolStripMenuItem.Name = "resizeThumbnailToolStripMenuItem";
             this.resizeThumbnailToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.resizeThumbnailToolStripMenuItem.Text = "Resize";
-            this.resizeThumbnailToolStripMenuItem.ToolTipText = "Hold Shift to maintain aspect ratio while resizing";
+            this.resizeThumbnailToolStripMenuItem.ToolTipText = "Resize only this preview. Hold Shift to maintain aspect ratio";
             this.resizeThumbnailToolStripMenuItem.Click += new System.EventHandler(this.resizeThumbnailToolStripMenuItem_Click);
+            // 
+            // resizeAllThumbnailsToolStripMenuItem
+            // 
+            this.resizeAllThumbnailsToolStripMenuItem.Name = "resizeAllThumbnailsToolStripMenuItem";
+            this.resizeAllThumbnailsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.resizeAllThumbnailsToolStripMenuItem.Text = "Resize All";
+            this.resizeAllThumbnailsToolStripMenuItem.ToolTipText = "Resize every preview to the same size. Hold Shift to maintain aspect ratio";
+            this.resizeAllThumbnailsToolStripMenuItem.Click += new System.EventHandler(this.resizeAllThumbnailsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -121,6 +131,7 @@ namespace EveOPreview.View
         private System.Windows.Forms.ToolStripMenuItem menuMinimize;
         private System.Windows.Forms.ToolStripMenuItem menuReposition;
         private System.Windows.Forms.ToolStripMenuItem resizeThumbnailToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resizeAllThumbnailsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem minimizeAllToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTip1;

@@ -55,6 +55,8 @@ namespace EveOPreview.View
         private bool _isSizeChanged;
 
         private MouseMode _customMouseModeActive = MouseMode.Disabled;
+        private bool _resizeOnlyThisPreview;
+        private bool _ignoreResizeEvents;
         private double _thumbnailRatioAtStartOfResize = 1;
         private Point _rightClickStartPosition;
 
@@ -317,6 +319,10 @@ namespace EveOPreview.View
         // preview with HWND_TOPMOST would put the preview above its own menu.
         public bool IsContextMenuOpen => this.thumbnailContextMenu.Visible;
 
+        // True while "Resize" (this preview only) from the context menu is in progress.
+        // "Resize all" and dragging a frame border resize every preview.
+        public bool IsIndividualResizeActive => this._resizeOnlyThisPreview && this._customMouseModeActive == MouseMode.Resize;
+
         public void SetTopMost(bool enableTopmost)
         {
             if (this._isTopMost == enableTopmost)
@@ -574,7 +580,7 @@ namespace EveOPreview.View
 
         private void Resize_Handler(object sender, EventArgs e)
         {
-            if (DateTime.UtcNow < this._suppressResizeEventsTimestamp)
+            if (this._ignoreResizeEvents || DateTime.UtcNow < this._suppressResizeEventsTimestamp)
             {
                 return;
             }
@@ -691,7 +697,17 @@ namespace EveOPreview.View
 
         private void EnterCustomMouseMode(MouseMode modeToEnter, bool snapCursorPosition = true)
         {
-            this.RestoreWindowSizeAndLocation();
+            // Undoing a hover zoom is not a user resize. Without this, it would be reported
+            // as "resize all" and overwrite individually sized previews.
+            this._ignoreResizeEvents = true;
+            try
+            {
+                this.RestoreWindowSizeAndLocation();
+            }
+            finally
+            {
+                this._ignoreResizeEvents = false;
+            }
 
             switch (modeToEnter)
             {
@@ -729,6 +745,7 @@ namespace EveOPreview.View
 
             SaveWindowSizeAndLocation();
             this._customMouseModeActive = MouseMode.Disabled;
+            this._resizeOnlyThisPreview = false;
         }
 
         private void ExitCustomMouseMode(object sender, MouseEventArgs e)
@@ -800,6 +817,13 @@ namespace EveOPreview.View
 
         private void resizeThumbnailToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this._resizeOnlyThisPreview = true;
+            this.EnterCustomMouseMode(MouseMode.Resize);
+        }
+
+        private void resizeAllThumbnailsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this._resizeOnlyThisPreview = false;
             this.EnterCustomMouseMode(MouseMode.Resize);
         }
 

@@ -231,6 +231,8 @@ namespace EveOPreview.Presenters
             if (!this._suppressSizeNotifications)
             {
                 _logger.Verbose("MainFormPresenter.UpdateThumbnailsSize: Thumbnail size changed, saving settings");
+                // The Width/Height fields set one size for every preview
+                this._configuration.ClearIndividualThumbnailSizes();
                 this.SaveApplicationSettings();
                 await this._mediator.Publish(new ThumbnailConfiguredSizeUpdated());
             }
