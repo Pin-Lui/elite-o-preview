@@ -68,6 +68,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Opacity | Opacity of inactive thumbnails (from 20% to 100%) |
 | Thumbnail Width | **100** to **640** points |
 | Thumbnail Height | **80** to **400** points |
+| Reset position and size | Asks for confirmation, then sets all previews back to the default size (384 × 216) and lines them up side by side in the top-left corner of the main screen |
 
 ### **Zoom** Tab
 | Option | Description |

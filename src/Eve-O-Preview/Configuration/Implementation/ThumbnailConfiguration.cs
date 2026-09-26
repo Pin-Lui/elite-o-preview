@@ -30,6 +30,8 @@ namespace EveOPreview.Configuration.Implementation
         private bool _enableClientLayoutTracking;
         #endregion
 
+        private static readonly Size DefaultThumbnailSize = new Size(384, 216);
+
         public ThumbnailConfiguration()
         {
             this.ConfigVersion = 3;
@@ -64,7 +66,7 @@ namespace EveOPreview.Configuration.Implementation
             this.HideThumbnailsOnLostFocus = false;
             this.HideThumbnailsDelay = 2; // 2 thumbnails refresh cycles (1.0 sec)
 
-            this.ThumbnailSize = new Size(384, 216);
+            this.ThumbnailSize = ThumbnailConfiguration.DefaultThumbnailSize;
             this.ThumbnailMinimumSize = new Size(192, 108);
             this.ThumbnailMaximumSize = new Size(960, 540);
 
@@ -251,6 +253,15 @@ namespace EveOPreview.Configuration.Implementation
             }
 
             layoutSource[currentClient] = location;
+        }
+
+        // Restores the default preview size and forgets every saved preview position,
+        // flat and per-commander. Game window layouts (ClientLayout) are kept.
+        public void ResetThumbnailLayout()
+        {
+            this.ThumbnailSize = ThumbnailConfiguration.DefaultThumbnailSize;
+            this.FlatLayout.Clear();
+            this.PerClientLayout.Clear();
         }
 
         public ClientLayout GetClientLayout(string currentClient)

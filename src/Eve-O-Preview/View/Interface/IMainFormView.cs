@@ -87,6 +87,7 @@ namespace EveOPreview.View
         Action AudioSettingsChanged { get; set; }
         Action ToggleHideAllActiveClients { get; set; }
         Action MinimizeAllClients { get; set; }
+        Action ResetThumbnailLayout { get; set; }
         public Action CloneCurrentProfile { get; set; }
         public Action DeleteCurrentProfile { get; set; }
         Action<string> RenameCurrentProfile { get; set; }

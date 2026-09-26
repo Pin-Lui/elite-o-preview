@@ -106,6 +106,7 @@ namespace EveOPreview.View
             activeClientsSplitContainer = new SplitContainer();
             groupBoxToggleHideAllThumbnails = new GroupBox();
             btnMinimizeAllClients = new Button();
+            ResetThumbnailLayoutButton = new Button();
             lblMinimizeAllClientsHotkey = new Label();
             txtMinimizeAllClientsHotkey = new TextBox();
             btnToggleHideAll = new Button();
@@ -422,6 +423,7 @@ namespace EveOPreview.View
             ThumbnailSettingsPanel.Controls.Add(WidthLabel);
             ThumbnailSettingsPanel.Controls.Add(ThumbnailsWidthNumericEdit);
             ThumbnailSettingsPanel.Controls.Add(ThumbnailsHeightNumericEdit);
+            ThumbnailSettingsPanel.Controls.Add(ResetThumbnailLayoutButton);
             ThumbnailSettingsPanel.Controls.Add(ThumbnailOpacityTrackBar);
             ThumbnailSettingsPanel.Controls.Add(OpacityLabel);
             ThumbnailSettingsPanel.Dock = DockStyle.Fill;
@@ -480,6 +482,17 @@ namespace EveOPreview.View
             ThumbnailsHeightNumericEdit.TabIndex = 22;
             ThumbnailsHeightNumericEdit.Value = new decimal(new int[] { 70, 0, 0, 0 });
             ThumbnailsHeightNumericEdit.ValueChanged += ThumbnailSizeChanged_Handler;
+            // 
+            // ResetThumbnailLayoutButton
+            // 
+            ResetThumbnailLayoutButton.Location = new Point(9, 96);
+            ResetThumbnailLayoutButton.Margin = new Padding(4, 3, 4, 3);
+            ResetThumbnailLayoutButton.Name = "ResetThumbnailLayoutButton";
+            ResetThumbnailLayoutButton.Size = new Size(169, 30);
+            ResetThumbnailLayoutButton.TabIndex = 23;
+            ResetThumbnailLayoutButton.Text = "Reset position and size";
+            ResetThumbnailLayoutButton.UseVisualStyleBackColor = true;
+            ResetThumbnailLayoutButton.Click += ResetThumbnailLayoutButton_Click;
             // 
             // ThumbnailOpacityTrackBar
             // 
@@ -1990,6 +2003,7 @@ namespace EveOPreview.View
         private TabPage ClientsTabPage;
         private GroupBox groupBoxToggleHideAllThumbnails;
         private Button btnMinimizeAllClients;
+        private Button ResetThumbnailLayoutButton;
         private Label lblMinimizeAllClientsHotkey;
         private TextBox txtMinimizeAllClientsHotkey;
         private TabPage tabPageProfiles;

@@ -806,6 +806,57 @@ namespace EveOPreview.Services
             this.SetThumbnailsSize(this._configuration.ThumbnailSize);
         }
 
+        public void ResetThumbnailLayoutToDefault()
+        {
+            if (_stopped) return;
+            _logger.Information("ThumbnailManager.ResetThumbnailLayoutToDefault: Resetting preview size and positions");
+
+            this._configuration.ResetThumbnailLayout();
+            this._enqueuedLocationChangeNotification = (IntPtr.Zero, null, null, Point.Empty, -1);
+            this.SetThumbnailsSize(this._configuration.ThumbnailSize);
+
+            // Line the previews up side by side from the top-left corner of the main
+            // screen, wrapping to a new row when the next one would not fit.
+            const int gap = 5;
+            Rectangle area = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1080);
+            int x = area.Left + gap;
+            int y = area.Top + gap;
+            int rowHeight = 0;
+
+            bool wasIgnoring = _ignoreViewEvents;
+            _ignoreViewEvents = true;
+            try
+            {
+                var previews = this._thumbnailViews.Values
+                    .Where(this.IsManageableThumbnail)
+                    .OrderBy(preview => preview.Title, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                foreach (IThumbnailView preview in previews)
+                {
+                    // Outer window size, so frames (if enabled) do not overlap the next preview
+                    Size outerSize = preview is Control control ? control.Size : preview.ThumbnailSize;
+                    if (x > area.Left + gap && x + outerSize.Width > area.Right)
+                    {
+                        x = area.Left + gap;
+                        y += rowHeight + gap;
+                        rowHeight = 0;
+                    }
+
+                    Point location = new Point(x, y);
+                    preview.ThumbnailLocation = location;
+                    this._configuration.SetThumbnailLocation(preview.Title, this._activeClient.Title, location);
+
+                    x += outerSize.Width + gap;
+                    rowHeight = Math.Max(rowHeight, outerSize.Height);
+                }
+            }
+            finally { _ignoreViewEvents = wasIgnoring; }
+
+            this._refreshThumbnailZOrder = true;
+            this.RefreshThumbnails();
+        }
+
         private void SetThumbnailsSize(Size size)
         {
             _logger.Verbose("ThumbnailManager.SetThumbnailsSize: Setting size for {ThumbnailCount} thumbnails to {Width}x{Height}", this._thumbnailViews.Count, size.Width, size.Height);

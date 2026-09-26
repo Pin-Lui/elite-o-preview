@@ -90,6 +90,7 @@ Messages live under [Mediator/Messages](../../Eve-O-Preview/Mediator/Messages); 
 | `ThumbnailToggleHideAll` | Handler toggles transient configuration state and publishes changed notification |
 | `ThumbnailToggleHideAllChangedNotification` | Handler -> presenter -> button/tab status; manager observes hide state on refresh |
 | `MinimizeClient`, `MinimizeAllClients` | Handlers call `WindowManager.MinimizeWindow(..., true)`; source filenames use `Minimise` |
+| `ResetThumbnailLayout` | Sent by the Thumbnail tab's reset button after a Yes/No confirmation. The handler calls `ThumbnailManager.ResetThumbnailLayoutToDefault`: `ThumbnailConfiguration.ResetThumbnailLayout` restores the 384x216 default size and clears flat and per-client preview positions (client window layouts are kept), then running previews are resized and lined up from the primary screen's top-left working area, wrapping rows. The presenter then updates the size fields and sends `SaveConfiguration` |
 
 [GlobalEvents](../../Eve-O-Preview/Services/Implementation/GlobalEvents.cs) is a synchronous bridge for two profile events. Presenter listeners reload controls/refresh lists; the manager's current-profile listener re-registers global hotkey delegates. Do not assume this bridge reapplies every feature when a profile changes.
 

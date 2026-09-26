@@ -1,5 +1,6 @@
 ﻿//Eve-O Preview Plus is a program designed to deliver quality of life tooling. Primarily but not limited to enabling rapid window foreground and focus changes for the online game Eve Online.
 //Copyright (C) 2026  Aura Asuna
+//Modified for Elite Dangerous (Elite-O Preview), 2026.
 //
 //This program is free software: you can redistribute it and/or modify
 //it under the terms of the GNU General Public License as published by
@@ -14,26 +15,11 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using EveOPreview.View;
-using System;
-using System.Collections.Generic;
+using MediatR;
 
-namespace EveOPreview.Services
+namespace EveOPreview.Mediator.Messages
 {
-    public interface IThumbnailManager
+    public class ResetThumbnailLayout : IRequest
     {
-        void Start();
-        void Stop();
-
-        void UpdateThumbnailsSize();
-        void UpdateThumbnailFrames();
-        void UpdateThumbnailTitleFont();
-        void ResetThumbnailLayoutToDefault();
-        void RegisterAllHotkeys();
-
-        IThumbnailView GetClientByTitle(string title);
-        IThumbnailView GetClientByPointer(System.IntPtr ptr);
-        IThumbnailView GetActiveClient();
-        Dictionary<IntPtr, IThumbnailView> GetAllKnownClients();
     }
 }

@@ -100,6 +100,7 @@ namespace EveOPreview.Presenters
             this.View.AudioSettingsChanged = this.TriggerSetAudioSettings;
             this.View.ToggleHideAllActiveClients = this.TriggerToggleHideAllActiveClients;
             this.View.MinimizeAllClients = this.TriggerMinimizeAllClientsHotkey;
+            this.View.ResetThumbnailLayout = this.TriggerResetThumbnailLayout;
             this.View.SwitchToProfile = this.ActionSwitchToNewProfile;
             this.View.CloneCurrentProfile = this.ActionCloneCurrentProfile;
             this.View.DeleteCurrentProfile = this.ActionDeleteCurrentProfile;
@@ -475,6 +476,14 @@ namespace EveOPreview.Presenters
         {
             _logger.Verbose("MainFormPresenter.TriggerToggleHideAllActiveClients: Toggling hide all active clients");
             this._mediator.Send(new ThumbnailToggleHideAll());
+        }
+
+        private async void TriggerResetThumbnailLayout()
+        {
+            _logger.Verbose("MainFormPresenter.TriggerResetThumbnailLayout: Resetting preview size and positions");
+            await this._mediator.Send(new ResetThumbnailLayout());
+            this.UpdateThumbnailSize(this._configuration.ThumbnailSize);
+            await this._mediator.Send(new SaveConfiguration());
         }
 
         private void TriggerMinimizeAllClientsHotkey()

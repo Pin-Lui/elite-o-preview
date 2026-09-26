@@ -1,0 +1,55 @@
+﻿//Eve-O Preview Plus is a program designed to deliver quality of life tooling. Primarily but not limited to enabling rapid window foreground and focus changes for the online game Eve Online.
+//Copyright (C) 2026  Aura Asuna
+//Modified for Elite Dangerous (Elite-O Preview), 2026.
+//
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using EveOPreview.Helper;
+using EveOPreview.Mediator.Messages;
+using EveOPreview.Services;
+using MediatR;
+using Serilog;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace EveOPreview.Mediator.Handlers.Thumbnails
+{
+    public class ResetThumbnailLayoutHandler : IRequestHandler<ResetThumbnailLayout>
+    {
+        private readonly IThumbnailManager _manager;
+        private readonly ILogger _logger;
+
+        public ResetThumbnailLayoutHandler(IThumbnailManager manager, ILogger logger)
+        {
+            _manager = manager;
+            _logger = logger;
+        }
+
+        public Task Handle(ResetThumbnailLayout request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.WithCallerInfo().Verbose("ResetThumbnailLayout handler: Resetting preview size and positions");
+                _manager.ResetThumbnailLayoutToDefault();
+                return Task.CompletedTask;
+            }
+            catch (Exception exception)
+            {
+                _logger.Error(exception, "Error while resetting preview size and positions");
+                return Task.FromException(exception);
+            }
+        }
+    }
+}

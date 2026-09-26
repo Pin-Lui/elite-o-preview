@@ -546,6 +546,8 @@ namespace EveOPreview.View
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Action MinimizeAllClients { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Action ResetThumbnailLayout { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Action CloneCurrentProfile { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Action DeleteCurrentProfile { get; set; }
@@ -1305,6 +1307,22 @@ namespace EveOPreview.View
             _logger.Verbose("MainForm: Set minimize all clients hotkey to {Hotkey}", captureHotkeyResponse.KeyString);
 
             this.ApplicationSettingsChanged?.Invoke();
+        }
+
+        private void ResetThumbnailLayoutButton_Click(object sender, EventArgs e)
+        {
+            _logger.Verbose("MainForm: ResetThumbnailLayoutButton_Click");
+            DialogResult answer = MessageBox.Show(this,
+                "Reset all previews to the default size (384 x 216) and line them up side by side in the top-left corner of the main screen?\n\n"
+                + "Your saved preview positions, including per-commander layouts, will be replaced.",
+                "Reset previews", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+            if (answer != DialogResult.Yes)
+            {
+                return;
+            }
+
+            this.ResetThumbnailLayout?.Invoke();
         }
 
         private void btnMinimizeAllClients_Click(object sender, EventArgs e)
