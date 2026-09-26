@@ -16,9 +16,6 @@
 
 namespace EveOPreview
 {
-    /// <summary>
-    /// Application controller
-    /// </summary>
     public interface IApplicationController
     {
 

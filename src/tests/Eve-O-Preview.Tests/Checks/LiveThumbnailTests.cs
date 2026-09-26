@@ -84,7 +84,7 @@ public sealed class LiveThumbnailTests(ITestOutputHelper output)
                     view.ClearBorder();
                     int beforeRaise = updates;
                     Assert.True(view.RestoreAndBringToFront());
-                    Assert.Equal(beforeRaise, updates); // Reordering does not redraw or replace the image.
+                    Assert.Equal(beforeRaise, updates);
                 }
                 Assert.Equal(1, registrations);
                 Assert.Equal(0, unregistrations);
@@ -99,7 +99,7 @@ public sealed class LiveThumbnailTests(ITestOutputHelper output)
                 Assert.True(calls.IndexOf("Update:2") < calls.IndexOf("Unregister:1"),
                     "The replacement must be populated before releasing the old image.");
                 view.Refresh(true);
-                Assert.Equal(2, registrations); // The healthy replacement stays registered.
+                Assert.Equal(2, registrations);
                 Assert.Equal(1, unregistrations);
                 break;
 

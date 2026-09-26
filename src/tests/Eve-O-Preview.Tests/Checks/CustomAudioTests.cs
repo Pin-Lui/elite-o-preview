@@ -67,7 +67,6 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
         };
         using var logger = new LoggerConfiguration().CreateLogger();
         var hook = new HookService(config, logger);
-        // A synthetic handle gives this test its own pipe; no EVE process or hook is used.
         var handle = new IntPtr(-Random.Shared.NextInt64(1, long.MaxValue));
         using var server = new NamedPipeServerStream($"EveoRobin_{handle}", PipeDirection.InOut,
             1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
@@ -87,7 +86,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
                     await server.WriteAsync(new byte[] { 2 }, timeout.Token);
                     server.WaitForPipeDrain();
                 }
-                server.Disconnect(); // Legacy servers don't answer unknown queries.
+                server.Disconnect();
                 first = false;
             }
             if (!atomicReplace)
@@ -147,7 +146,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             form.ApplicationSettingsChanged = () => { storage.Save(); saves++; };
             form.AudioSettingsChanged = () => updates++;
             form.AudioMuteSettings = config.AudioMuteSettings;
-            Assert.Equal(0, saves); // Loading a profile must not save it back.
+            Assert.Equal(0, saves);
             ((Form)form).Show();
             var tabs = (TabControl)form.Controls.Find("ContentTabControl", true).Single();
             tabs.SelectedTab = (TabPage)form.Controls.Find("FpsLimiterTabPage", true).Single();
@@ -197,7 +196,7 @@ public sealed class CustomAudioTests(ITestOutputHelper output)
             Assert.Equal(2, saves);
             Assert.Equal(2, updates);
             Leave();
-            Assert.Equal(2, saves); // Enter followed by leaving must not send the same change twice.
+            Assert.Equal(2, saves);
 
             input.Text = "";
             Leave();

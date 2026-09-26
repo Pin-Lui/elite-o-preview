@@ -30,19 +30,6 @@ using Microsoft.Win32;
 
 namespace EveOPreview.Services.Implementation
 {
-    /// <summary>
-    /// Works out which Elite Dangerous commander is playing in a game process, so every game
-    /// window gets its own stable client title ("Elite - CMDR NAME") even though all Elite
-    /// windows share the same caption.
-    ///
-    /// Chain: game process -> Windows user that owns it -> that user's Saved Games journal folder
-    /// -> newest journal written since the process started -> last Commander / LoadGame event.
-    /// When several games write into the same journal folder (same Windows user), the Windows
-    /// Restart Manager is asked which journal file each process has open.
-    ///
-    /// Reading other users' processes and folders needs the app to run as administrator.
-    /// All members are called from ProcessMonitor under its lock, so no extra locking is needed.
-    /// </summary>
     [SupportedOSPlatform("windows")]
     public sealed class EliteCommanderResolver
     {
@@ -76,7 +63,6 @@ namespace EveOPreview.Services.Implementation
         {
         }
 
-        /// <summary>Test seam: replaces the Windows lookups.</summary>
         public EliteCommanderResolver(
             Func<int, (string Sid, string UserName)> ownerLookup,
             Func<string, string> journalFolderLookup,
@@ -89,7 +75,6 @@ namespace EveOPreview.Services.Implementation
             _utcNow = utcNow;
         }
 
-        /// <summary>Client title for a running Elite process. Never throws.</summary>
         public string GetClientTitle(Process process)
         {
             try
@@ -106,7 +91,6 @@ namespace EveOPreview.Services.Implementation
         {
             if (!_entries.TryGetValue(pid, out var entry) || entry.StartUtc != startUtc)
             {
-                // New process (or a recycled PID): look up owner and journal folder once.
                 entry = new Entry { Pid = pid, StartUtc = startUtc };
                 var owner = SafeCall(() => _ownerLookup(pid), default((string Sid, string UserName)));
                 entry.UserName = owner.UserName;
@@ -124,7 +108,6 @@ namespace EveOPreview.Services.Implementation
             return BuildTitle(entry);
         }
 
-        /// <summary>Forget processes that are no longer running.</summary>
         public void Retain(ICollection<int> runningPids)
         {
             foreach (var pid in _entries.Keys.Where(p => !runningPids.Contains(p)).ToList())
@@ -152,8 +135,6 @@ namespace EveOPreview.Services.Implementation
 
             if (!string.Equals(journal, entry.JournalPath, StringComparison.OrdinalIgnoreCase))
             {
-                // A continuation part of the same session (Journal.<stamp>.02.log) does not repeat the
-                // Commander event, so keep the name; any other file starts from scratch.
                 if (!IsSameSession(entry.JournalPath, journal)) entry.Commander = null;
                 entry.JournalPath = journal;
                 entry.Offset = 0;
@@ -162,13 +143,12 @@ namespace EveOPreview.Services.Implementation
             ReadNewLines(entry);
         }
 
-        /// <summary>True when both files are parts of one journal session: Journal.2026-09-25T202149.01.log / .02.log.</summary>
         public static bool IsSameSession(string previousPath, string newPath)
         {
             if (previousPath == null) return false;
             string SessionOf(string path)
             {
-                var name = Path.GetFileNameWithoutExtension(path); // Journal.<stamp>.<part>
+                var name = Path.GetFileNameWithoutExtension(path);
                 int lastDot = name.LastIndexOf('.');
                 return lastDot > 0 ? name.Substring(0, lastDot) : name;
             }
@@ -193,14 +173,12 @@ namespace EveOPreview.Services.Implementation
 
             if (!folderShared) return candidates[0].FullName;
 
-            // Several games write into the same folder: ask Windows which file this process holds open.
             foreach (var file in candidates)
             {
                 var pids = SafeCall(() => _filePidsLookup(file.FullName), Array.Empty<int>());
                 if (pids.Contains(entry.Pid)) return file.FullName;
             }
 
-            // Could not tell; keep the previous choice rather than guessing another commander's file.
             return entry.JournalPath;
         }
 
@@ -208,7 +186,7 @@ namespace EveOPreview.Services.Implementation
         {
             using var stream = new FileStream(entry.JournalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
 
-            if (stream.Length < entry.Offset) entry.Offset = 0; // file was replaced
+            if (stream.Length < entry.Offset) entry.Offset = 0;
             long available = stream.Length - entry.Offset;
             if (available <= 0) return;
 
@@ -223,7 +201,6 @@ namespace EveOPreview.Services.Implementation
                 read += n;
             }
 
-            // Only consume complete lines; a half-written line is read again next time.
             int lastNewLine = read == 0 ? -1 : Array.LastIndexOf(buffer, (byte)'\n', read - 1);
             if (lastNewLine < 0) return;
             entry.Offset += lastNewLine + 1;
@@ -236,7 +213,6 @@ namespace EveOPreview.Services.Implementation
             }
         }
 
-        /// <summary>Commander name from a journal line, or null if the line does not name one.</summary>
         public static string ExtractCommander(string line)
         {
             if (string.IsNullOrWhiteSpace(line) ||
@@ -326,7 +302,6 @@ namespace EveOPreview.Services.Implementation
         [DllImport("shell32.dll")]
         private static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid folderId, uint flags, IntPtr token, out IntPtr path);
 
-        /// <summary>SID and short user name of the account running a process.</summary>
         private static (string Sid, string UserName) GetProcessOwner(int pid)
         {
             IntPtr process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
@@ -342,7 +317,7 @@ namespace EveOPreview.Services.Implementation
                     try
                     {
                         if (!GetTokenInformation(token, TokenUser, buffer, length, out _)) return (null, null);
-                        var sid = new SecurityIdentifier(Marshal.ReadIntPtr(buffer)); // TOKEN_USER.User.Sid
+                        var sid = new SecurityIdentifier(Marshal.ReadIntPtr(buffer));
                         string name = sid.Value;
                         try
                         {
@@ -372,7 +347,6 @@ namespace EveOPreview.Services.Implementation
             }
         }
 
-        /// <summary>Elite journal folder of a Windows user, e.g. C:\Users\Name\Saved Games\Frontier Developments\Elite Dangerous.</summary>
         private static string GetJournalFolder(string sid)
         {
             string savedGames = null;
@@ -416,14 +390,12 @@ namespace EveOPreview.Services.Implementation
 
             if (!string.IsNullOrEmpty(profile)) profile = Environment.ExpandEnvironmentVariables(profile);
 
-            // The user's registry hive is loaded while one of their processes (the game) is running.
             try
             {
                 using var key = Registry.Users.OpenSubKey(sid + @"\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders");
                 var raw = key?.GetValue(FOLDERID_SavedGames.ToString("B"), null, RegistryValueOptions.DoNotExpandEnvironmentNames) as string;
                 if (!string.IsNullOrEmpty(raw))
                 {
-                    // %USERPROFILE% must point at that user's profile, not ours.
                     if (!string.IsNullOrEmpty(profile)) raw = raw.Replace("%USERPROFILE%", profile, StringComparison.OrdinalIgnoreCase);
                     if (raw.IndexOf("%USERPROFILE%", StringComparison.OrdinalIgnoreCase) < 0)
                     {
@@ -441,7 +413,6 @@ namespace EveOPreview.Services.Implementation
         #endregion
     }
 
-    /// <summary>Asks Windows which processes have a file open (Restart Manager API; no admin needed for own files).</summary>
     [SupportedOSPlatform("windows")]
     internal static class RestartManager
     {

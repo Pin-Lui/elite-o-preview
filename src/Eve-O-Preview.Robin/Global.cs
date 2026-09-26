@@ -20,8 +20,6 @@ namespace EveOPreview.Robin;
 
 internal static class Global
 {
-    // We're going to assume that the MainWindowHandle is the one we care about.
-    // This may not be true for every game, but it should hold true most the time, and it should do what I need for now...
     internal static IntPtr ThisClientsHandle = Process.GetCurrentProcess().MainWindowHandle;
 
     internal static volatile int OwnerProcessId = -1;
@@ -31,7 +29,7 @@ internal static class Global
     internal static void ClaimOwnership(int pid)
     {
         if (pid <= 0) throw new InvalidDataException("An owner PID must be positive.");
-        IntPtr handle = NativeMethods.OpenProcess(0x100000, false, pid); // SYNCHRONIZE pins this process identity.
+        IntPtr handle = NativeMethods.OpenProcess(0x100000, false, pid);
         if (handle == IntPtr.Zero) throw new InvalidDataException("Owner process is unavailable.");
         lock (OwnerLock)
         {

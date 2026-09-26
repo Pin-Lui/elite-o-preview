@@ -54,7 +54,6 @@ namespace EveOPreview.Services
         private readonly DispatcherTimer _thumbnailUpdateTimer;
         private readonly IThumbnailViewFactory _thumbnailViewFactory;
         private readonly Dictionary<IntPtr, IThumbnailView> _thumbnailViews;
-        // Oldest activation first; the most recently active preview is raised last.
         private readonly List<IntPtr> _thumbnailActivationOrder = new List<IntPtr>();
         private bool _refreshThumbnailZOrder;
         private readonly ActiveClientFrame _activeClientFrame;
@@ -108,7 +107,6 @@ namespace EveOPreview.Services
 
             this._thumbnailViews = new Dictionary<IntPtr, IThumbnailView>();
 
-            //  DispatcherTimer setup
             this._thumbnailUpdateTimer = new DispatcherTimer();
             this._thumbnailUpdateTimer.Tick += ThumbnailUpdateTimerTick;
             this._thumbnailUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, configuration.ThumbnailRefreshPeriod);
@@ -135,7 +133,6 @@ namespace EveOPreview.Services
             _hideThumbnailsDelay = _configuration.HideThumbnailsDelay;
             _enqueuedLocationChangeNotification = (IntPtr.Zero, null, null, Point.Empty, -1);
             _isHoverEffectActive = false;
-            // A renderer change requires new views; ordinary profile changes preserve DWM.
             if (_compatibilityMode != _configuration.EnableCompatibilityMode)
             {
                 foreach (var view in _thumbnailViews.Values) view.Close();
@@ -210,8 +207,6 @@ namespace EveOPreview.Services
             }
 
             this.RaiseActivatedThumbnail(newClient.Value);
-            // All visible selection state is committed on the input thread, before
-            // native activation, affinity work, or any asynchronous continuation.
             this.SwitchActiveClient(newClient.Key, newClient.Value.Title, minimizePrevious: false);
             bool wasIgnoring = _ignoreViewEvents;
             _ignoreViewEvents = true;
@@ -268,7 +263,6 @@ namespace EveOPreview.Services
 
         private string FindNextClientInCycleGroup(bool isForwards, string findThisTitleFirst, SortedDictionary<int, string> cycleOrder)
         {
-            // Remove all clients in the cycle group that are not running right now.
             var filteredTitles = cycleOrder.Where(co => _thumbnailViews.Any(tv => tv.Value.Title == co.Value));
             var orderedTitles = isForwards ? filteredTitles.OrderBy(x => x.Key).ToList() : filteredTitles.OrderByDescending(x => x.Key).ToList();
             var remainingClients = orderedTitles.SkipWhile(x => x.Value != findThisTitleFirst).Skip(1).ToList();
@@ -392,7 +386,6 @@ namespace EveOPreview.Services
         {
             _logger.Verbose("ThumbnailManager.RegisterGeneralHotkeys: Registering general hotkeys (hide all, minimize all)");
             
-            // Using the KeyUp for this one so it has less chance of impacting the flow of other more important hotkeys (like client cycling)
             KeyEventHandler newUpDelegate = (sender, e) =>
             {
                 try
@@ -533,7 +526,6 @@ namespace EveOPreview.Services
 
                     this.ApplyClientLayout(view.Id, view.Title);
 
-                    // A commander can have an individual preview size
                     Size titleSize = this._configuration.GetThumbnailSize(view.Title);
                     if (view.ThumbnailSize != titleSize)
                     {
@@ -585,14 +577,11 @@ namespace EveOPreview.Services
             _logger.Verbose("ThumbnailManager.RefreshThumbnails: Starting refresh cycle. CurrentCount={RefreshCount}, ThumbnailCount={ThumbnailCount}", 
                 this._refreshCycleCount, this._thumbnailViews.Count);
             
-            // Frame around the focused Elite window follows focus by itself; this applies setting changes
             this._activeClientFrame.Enabled = this._configuration.EnableActiveWindowFrame;
             this._activeClientFrame.Refresh();
 
             IntPtr foregroundWindowHandle = this._windowManager.GetForegroundWindowHandle();
 
-            // The foreground window can be NULL in certain circumstances, such as when a window is losing activation.
-            // It is safer to just skip this refresh round than to do something while the system state is undefined
             if (foregroundWindowHandle == IntPtr.Zero)
             {
                 _logger.Verbose("ThumbnailManager.RefreshThumbnails: Foreground window is null, skipping refresh");
@@ -603,7 +592,6 @@ namespace EveOPreview.Services
 
             string foregroundWindowTitle = null;
 
-            // Check if the foreground window handle is one of the known handles for client windows or their thumbnails
             bool isClientWindow = this.IsClientWindowActive(foregroundWindowHandle);
             bool isMainWindowActive = this.IsMainWindowActive(foregroundWindowHandle);
 
@@ -624,7 +612,6 @@ namespace EveOPreview.Services
             }
             else if (this._thumbnailViews.TryGetValue(foregroundWindowHandle, out IThumbnailView foregroundView))
             {
-                // This code will work only on Alt+Tab switch between clients
                 foregroundWindowTitle = foregroundView.Title;
                 _logger.Verbose("ThumbnailManager.RefreshThumbnails: Thumbnail window is foreground: {Title}", foregroundWindowTitle);
             }
@@ -634,7 +621,6 @@ namespace EveOPreview.Services
                 this._externalApplication = foregroundWindowHandle;
             }
 
-            // No need to minimize EVE clients when switching out to non-EVE window (like thumbnail)
             if (!string.IsNullOrEmpty(foregroundWindowTitle))
             {
                 this.SwitchActiveClient(foregroundWindowHandle, foregroundWindowTitle);
@@ -644,7 +630,6 @@ namespace EveOPreview.Services
 
             _logger.Verbose("ThumbnailManager.RefreshThumbnails: HideAllThumbnails={HideAll} (OnLostFocus={OnLostFocus})", hideAllThumbnails, this._configuration.HideThumbnailsOnLostFocus);
 
-            // Wait for some time before hiding all previews
             if (hideAllThumbnails)
             {
                 this._hideThumbnailsDelay--;
@@ -652,18 +637,18 @@ namespace EveOPreview.Services
                 
                 if (this._hideThumbnailsDelay > 0)
                 {
-                    hideAllThumbnails = false; // Postpone the 'hide all' operation
+                    hideAllThumbnails = false;
                     _logger.Verbose("ThumbnailManager.RefreshThumbnails: Postponing hide operation");
                 }
                 else
                 {
-                    this._hideThumbnailsDelay = 0; // Stop the counter
+                    this._hideThumbnailsDelay = 0;
                     _logger.Verbose("ThumbnailManager.RefreshThumbnails: Hiding all thumbnails due to focus loss");
                 }
             }
             else
             {
-                this._hideThumbnailsDelay = this._configuration.HideThumbnailsDelay; // Reset the counter
+                this._hideThumbnailsDelay = this._configuration.HideThumbnailsDelay;
             }
 
             this._refreshCycleCount++;
@@ -682,8 +667,6 @@ namespace EveOPreview.Services
 
             this.DisableViewEvents();
 
-            // Snap thumbnail
-            // No need to update Thumbnails while one of them is highlighted
             if ((!this._isHoverEffectActive) && this.TryDequeueLocationChange(out var locationChange))
             {
                 _logger.Verbose("ThumbnailManager.RefreshThumbnails: Processing dequeued location change for {Title}", locationChange.Title);
@@ -700,7 +683,6 @@ namespace EveOPreview.Services
                 }
             }
 
-            // Hide, show, resize and move
             int visibleCount = 0;
             int hiddenCount = 0;
             
@@ -731,10 +713,8 @@ namespace EveOPreview.Services
                     continue;
                 }
 
-                // No need to update Thumbnails while one of them is highlighted
                 if (!this._isHoverEffectActive)
                 {
-                    // Do not even move thumbnails with default caption
                     if (this.IsManageableThumbnail(view))
                     {
                         view.ThumbnailLocation = this._configuration.GetThumbnailLocation(view.Title, this._activeClient.Title, view.ThumbnailLocation);
@@ -773,8 +753,6 @@ namespace EveOPreview.Services
 
         private void RaiseActivatedThumbnail(IThumbnailView view)
         {
-            // Give activation the same immediate feedback as highlighting. Do not wait
-            // for client activation, layout updates, or the periodic refresh to raise it.
             this._thumbnailActivationOrder.Remove(view.Id);
             this._thumbnailActivationOrder.Add(view.Id);
             this._refreshThumbnailZOrder = true;
@@ -800,8 +778,6 @@ namespace EveOPreview.Services
                 return;
             }
 
-            // Raising previews now would cover an open right-click menu. Keep the
-            // request pending; it runs on the first refresh after the menu closes.
             if (this._thumbnailViews.Values.Any(thumbnail => thumbnail.IsContextMenuOpen))
             {
                 return;
@@ -826,7 +802,6 @@ namespace EveOPreview.Services
         public void UpdateThumbnailsSize()
         {
             _logger.Verbose("ThumbnailManager.UpdateThumbnailsSize: Updating thumbnail size to {Width}x{Height}", this._configuration.ThumbnailSize.Width, this._configuration.ThumbnailSize.Height);
-            // Previews resized individually keep their own size; all others use ThumbnailSize
             this.DisableViewEvents();
 
             foreach (KeyValuePair<IntPtr, IThumbnailView> entry in this._thumbnailViews)
@@ -847,8 +822,6 @@ namespace EveOPreview.Services
             this._enqueuedLocationChangeNotification = (IntPtr.Zero, null, null, Point.Empty, -1);
             this.SetThumbnailsSize(this._configuration.ThumbnailSize);
 
-            // Line the previews up side by side from the top-left corner of the main
-            // screen, wrapping to a new row when the next one would not fit.
             const int gap = 5;
             Rectangle area = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1080);
             int x = area.Left + gap;
@@ -866,7 +839,6 @@ namespace EveOPreview.Services
 
                 foreach (IThumbnailView preview in previews)
                 {
-                    // Outer window size, so frames (if enabled) do not overlap the next preview
                     Size outerSize = preview is Control control ? control.Size : preview.ThumbnailSize;
                     if (x > area.Left + gap && x + outerSize.Width > area.Right)
                     {
@@ -1024,8 +996,6 @@ namespace EveOPreview.Services
             {
                 SetActive(new KeyValuePair<IntPtr, IThumbnailView>(view.Id, view));
                 if (predicted != IntPtr.Zero) _windowManager.PredictUpcomingClient(predicted);
-                // The production affinity handler applies its masks synchronously. It must
-                // never hold up the border, wake signal or initial Windows focus request.
                 UpdateActivationAffinity(view.Id, predicted, previous);
                 if (saveLayouts) UpdateClientLayouts();
             }
@@ -1075,16 +1045,12 @@ namespace EveOPreview.Services
 
             if (view.IsIndividualResizeActive)
             {
-                // "Resize" from the context menu: only this preview, remembered for its title
                 this._configuration.SetThumbnailSize(view.Title, view.ThumbnailSize);
                 view.Refresh(false);
-                // Schedules the delayed configuration save used for moved previews
                 this.EnqueueLocationChange(view);
                 return;
             }
 
-            // "Resize all" or a frame-border drag: one size for every preview.
-            // Store it right away so previews created or renamed later use it too.
             this._configuration.ClearIndividualThumbnailSizes();
             this._configuration.ThumbnailSize = view.ThumbnailSize;
             this.SetThumbnailsSize(view.ThumbnailSize);
@@ -1108,7 +1074,6 @@ namespace EveOPreview.Services
             this.EnqueueLocationChange(view);
         }
 
-        // Checks whether currently active window belongs to an EVE client or its thumbnail
         private bool IsClientWindowActive(IntPtr windowHandle)
         {
             if (windowHandle == IntPtr.Zero)
@@ -1129,7 +1094,6 @@ namespace EveOPreview.Services
             return false;
         }
 
-        // Check whether the currently active window belongs to EVE-O Preview itself
         private int GetActiveWindowFrameThickness(IntPtr windowHandle)
         {
             if (this._thumbnailViews.TryGetValue(windowHandle, out IThumbnailView view)
@@ -1143,7 +1107,6 @@ namespace EveOPreview.Services
 
         private Color GetActiveWindowFrameColor(IntPtr windowHandle)
         {
-            // Same colour as the active-client highlight of the previews, including per-commander colours
             if (this._thumbnailViews.TryGetValue(windowHandle, out IThumbnailView view)
                 && this._configuration.PerClientActiveClientHighlightColor.TryGetValue(view.Title, out Color color))
             {
@@ -1239,8 +1202,6 @@ namespace EveOPreview.Services
 
         private static (int X, int Y) TestViewPoints(Point[] viewPoints, Point[] testPoints, int thresholdX, int thresholdY)
         {
-            // Point combinations that we need to check
-            // No need to check all 4x4 combinations
             (int ViewOffset, int TestOffset)[] testOffsets =
                                 {   ( 0, 3 ), ( 0, 2 ), ( 1, 2 ),
                                     ( 0, 1 ), ( 0, 0 ), ( 1, 0 ),
@@ -1271,7 +1232,6 @@ namespace EveOPreview.Services
                 return;
             }
 
-            // No need to apply layout for not yet logged-in clients
             if (clientTitle == ThumbnailManager.DEFAULT_CLIENT_TITLE)
             {
                 _logger.Verbose("ThumbnailManager.ApplyClientLayout: Default client title, skipping layout");
@@ -1313,7 +1273,6 @@ namespace EveOPreview.Services
             {
                 IThumbnailView view = entry.Value;
 
-                // No need to save layout for not yet logged-in clients
                 if (view.Title == ThumbnailManager.DEFAULT_CLIENT_TITLE)
                 {
                     continue;

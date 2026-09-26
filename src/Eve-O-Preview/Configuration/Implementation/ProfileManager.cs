@@ -60,13 +60,11 @@ public class ProfileManager : IProfileManager
         string exePath = System.IO.Path.GetDirectoryName(System.Environment.ProcessPath);
         string localProfilesPath = Path.Combine(exePath, PROFILES_DIR);
 
-        // First use any existing profiles that live in the same folder.
         if (Directory.Exists(localProfilesPath))
         {
             return localProfilesPath;
         }
 
-        // Second check if any profiles live in %localappdata%
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         string appDataPath = Path.Combine(localAppData, APP_FOLDER_NAME);
         string appDataProfilesPath = Path.Combine(appDataPath, PROFILES_DIR);
@@ -76,7 +74,6 @@ public class ProfileManager : IProfileManager
             return appDataProfilesPath;
         }
 
-        // nothing exists so lets try and create the profiles in our current folder.
         try
         {
             Directory.CreateDirectory(localProfilesPath);
@@ -86,7 +83,6 @@ public class ProfileManager : IProfileManager
         }
         catch (UnauthorizedAccessException)
         {
-            // If we can't write to that folder for any reasons, fallback to using AppData.
             Directory.CreateDirectory(appDataProfilesPath);
             Directory.CreateDirectory(Path.Combine(appDataProfilesPath, DEFAULT_PROFILE_DIR));
 
@@ -96,7 +92,6 @@ public class ProfileManager : IProfileManager
 
     private void MigrateLegacySingleProfile()
     {
-        // The location we would expect to find EVE-O Preview.json before we started supporting multiple profiles.
         string exePath = System.IO.Path.GetDirectoryName(System.Environment.ProcessPath);
         string sourceFile = Path.Combine(exePath, BASE_FILENAME);
 
@@ -105,7 +100,6 @@ public class ProfileManager : IProfileManager
 
         if (!File.Exists(sourceFile) || File.Exists(destFile))
         {
-            // Either the old profile doesn't exist, or we've already migrated it (destination exists), so we can skip migration.
             return;
         }
 
@@ -116,7 +110,6 @@ public class ProfileManager : IProfileManager
             _logger.WithCallerInfo().Information($"Copying profile from {sourceFile} to {destFile}");
             File.Copy(sourceFile, destFile, overwrite: false);
 
-            // rename the old file so it's left as a backup.
             string backupPath = sourceFile + ".bak";
             int counter = 1;
 
@@ -145,7 +138,6 @@ public class ProfileManager : IProfileManager
             return locations;
         }
 
-        // Get all subdirectories in the Profiles folder
         string[] profileDirs = Directory.GetDirectories(this.ProfileRootDirectory);
 
         foreach (string dirPath in profileDirs)
@@ -153,10 +145,8 @@ public class ProfileManager : IProfileManager
             string baseJsonPath = Path.Combine(dirPath, BASE_FILENAME);
             string profileName = Path.GetFileName(dirPath);
 
-            // If this folder has a profile, add it to the list.
             if (File.Exists(baseJsonPath) || profileName.Equals(DEFAULT_PROFILE_DIR, StringComparison.OrdinalIgnoreCase))
             {
-                // Use the folder name as the friendly name.
                 locations.Add(new ProfileLocation
                 {
                     FriendlyName = profileName,
@@ -194,7 +184,6 @@ public class ProfileManager : IProfileManager
 
         try
         {
-            // A fresh Default profile can exist only in memory until its first edit.
             _mediator.Send(new SaveConfiguration()).GetAwaiter().GetResult();
             CopyDirectory(currentProfile.FolderPath, destDir);
 
@@ -251,7 +240,6 @@ public class ProfileManager : IProfileManager
         try
         {
             Directory.Move(currentProfile.FolderPath, destDir);
-            // Storage and the selected UI entry share this location. Keep saves on the moved path.
             currentProfile.FolderPath = destDir;
             currentProfile.FullPath = Path.Combine(destDir, BASE_FILENAME);
             currentProfile.FriendlyName = newProfileName;

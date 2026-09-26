@@ -6,7 +6,6 @@ using Xunit;
 
 namespace EveOPreview.Tests.Checks;
 
-/// <summary>Elite-O: commander detection from Elite Dangerous journals.</summary>
 public sealed class EliteCommanderResolverTests : IDisposable
 {
     private readonly string _root = Path.Combine(Path.GetTempPath(), "EliteO-Tests-" + Guid.NewGuid().ToString("N"));
@@ -82,7 +81,6 @@ public sealed class EliteCommanderResolverTests : IDisposable
         owners[a] = new[] { 100 };
         owners[b] = new[] { 200 };
 
-        // First pass registers both processes; the next scan resolves the shared folder by open-file owner.
         resolver.GetClientTitle(100, _now.AddMinutes(-1));
         resolver.GetClientTitle(200, _now.AddMinutes(-1));
         _now = _now.AddSeconds(3);

@@ -104,7 +104,7 @@ public sealed class FeatureAvailabilityTests(ITestOutputHelper output)
         using var logger = new LoggerConfiguration().CreateLogger();
         using var context = new ApplicationContext();
         using var form = new MainForm(context, logger);
-        ((Form)form).Show(); // Avoid MainForm.Show(), which starts an application message loop.
+        ((Form)form).Show();
         var tabs = (TabControl)form.Controls.Find("ContentTabControl", true).Single();
         tabs.SelectedTab = (TabPage)form.Controls.Find("FpsLimiterTabPage", true).Single();
         foreach (string name in new[] { "groupBoxFpsLimits", "groupBoxAudioMuting", "chbIsFpsThrottlingEnabled",

@@ -43,7 +43,6 @@ namespace EveOPreview
 
         private static Mutex _singleInstanceMutex;
 
-        /// <summary>The main entry point for the application.</summary>
         [STAThread]
         static void Main(params string[] args)
         {
@@ -57,13 +56,8 @@ namespace EveOPreview
                 
                 Log.Information("Starting new instance of Elite-O Preview");
                 
-                // The very usual Mutex-based single-instance screening
-                // 'token' variable is used to store reference to the instance Mutex
-                // during the app lifetime
                 Program._singleInstanceMutex = Program.GetInstanceToken();
 
-                // If it was not possible to acquire the app token then another app instance is already running
-                // Nothing to do here
                 if (Program._singleInstanceMutex == null)
                 {
                     Log.Warning("An existing instance of Elite-O Preview is already running. Exiting.");
@@ -89,8 +83,6 @@ namespace EveOPreview
             var isVerbose = args.Contains("--verbose") || args.Contains("-v");
             var minimumLevel = isVerbose ? LogEventLevel.Verbose : LogEventLevel.Information;
 
-            // No log file unless "Write log file" is enabled or the app was started with --verbose.
-            // The file sink opens its file on the first written event, so nothing is created while off.
             LogFileSwitch.ForceByCommandLine(isVerbose);
 
             Log.Logger = new LoggerConfiguration()
@@ -118,7 +110,6 @@ namespace EveOPreview
             try
             {
                 Mutex.OpenExisting(Program.MUTEX_NAME);
-                // if that didn't fail then another instance is already running
                 return null;
             }
             catch (UnauthorizedAccessException)
@@ -136,7 +127,6 @@ namespace EveOPreview
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            // Dark scroll bars, check boxes and drop-downs; DarkTheme sets the colours
 #pragma warning disable WFO5001
             Application.SetColorMode(SystemColorMode.Dark);
 #pragma warning restore WFO5001
@@ -150,14 +140,11 @@ namespace EveOPreview
             builder.RegisterInstance(Log.Logger).AsImplementedInterfaces().SingleInstance();
             builder.RegisterInstance(Hook.GlobalEvents()).AsImplementedInterfaces().SingleInstance();
 
-            // Singleton registration is used for services
-            // Low-level services
             builder.RegisterType<WindowManager>().As<IWindowManager>().SingleInstance();
             builder.RegisterType<HookService>().As<IHookService>().SingleInstance();
             builder.RegisterType<ProcessMonitor>().As<IProcessMonitor>().SingleInstance();
             builder.RegisterType<CpuAffinityService>().As<ICpuAffinityService>().SingleInstance();
 
-            // MediatR
             MediatR.Mediator.LicenseKey = "Community";
             
             builder.Register(ctx => new AutofacServiceProvider(ctx.Resolve<ILifetimeScope>()))
@@ -171,7 +158,6 @@ namespace EveOPreview
 
             builder.RegisterMediatR(mediatrConfig);
 
-            // Configuration services
             builder.RegisterType<ProfileManager>().As<IProfileManager>().SingleInstance();
             builder.RegisterType<ConfigurationStorage>().As<IConfigurationStorage>().SingleInstance();
             builder.RegisterType<AppConfig>().As<IAppConfig>().SingleInstance();
@@ -179,17 +165,14 @@ namespace EveOPreview
             builder.RegisterType<GlobalEvents>().As<IGlobalEvents>().SingleInstance();
 
 
-            // Application services
             builder.RegisterType<ThumbnailManager>().As<IThumbnailManager>().SingleInstance();
             builder.RegisterType<ThumbnailViewFactory>().As<IThumbnailViewFactory>().SingleInstance();
             builder.RegisterType<ThumbnailDescription>().As<IThumbnailDescription>().SingleInstance();
 
-            // Views
             builder.RegisterType<StaticThumbnailView>().AsSelf().InstancePerDependency();
             builder.RegisterType<LiveThumbnailView>().AsSelf().InstancePerDependency();
             builder.RegisterType<MainForm>().As<IMainFormView>().InstancePerDependency();
             
-            // Main presenter and controller
             builder.RegisterInstance(new ApplicationContext()).AsSelf().SingleInstance();
             builder.RegisterType<MainFormPresenter>().AsSelf().SingleInstance();
             builder.RegisterType<ApplicationController>().As<IApplicationController>().SingleInstance();

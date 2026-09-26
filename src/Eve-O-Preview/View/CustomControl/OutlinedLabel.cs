@@ -36,7 +36,7 @@ namespace EveOPreview.View.CustomControl
             set
             {
                 outlineColor = value;
-                Invalidate(); // Redraw the control
+                Invalidate();
             }
         }
 
@@ -47,7 +47,7 @@ namespace EveOPreview.View.CustomControl
             set
             {
                 outlineWidth = value;
-                Invalidate(); // Redraw the control
+                Invalidate();
             }
         }
 
@@ -72,7 +72,6 @@ namespace EveOPreview.View.CustomControl
             {
                 gp.AddString(Text, Font.FontFamily, (int)Font.Style, Font.Size, ClientRectangle, sf);
 
-                // Turn off any anti-alias because our background is going to be transparent and aliasing creates artifacts.
                 e.Graphics.SmoothingMode = SmoothingMode.None;
                 e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
 
@@ -82,7 +81,6 @@ namespace EveOPreview.View.CustomControl
 
                     if (this.outlineWidth > 1.9)
                     {
-                        // If we drew an outline that's tick enough, then we can anti-alias against that for smoother results.
                         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                         e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;

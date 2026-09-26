@@ -268,7 +268,6 @@ namespace EveOPreview.View
                     return this._cachedThumbnailZoomAnchor;
                 }
 
-                // Default value
                 return ViewZoomAnchor.NW;
             }
             set
@@ -479,7 +478,6 @@ namespace EveOPreview.View
         public new void Show()
         {
             _logger.Verbose("MainForm.Show: Registering as application main form");
-            // Registers the current instance as the application's Main Form
             this._context.MainForm = this;
 
             this._suppressEvents = true;
@@ -623,7 +621,6 @@ namespace EveOPreview.View
             }
 
             _logger.Verbose("MainForm: ThumbnailSizeChanged");
-            // Perform some View work that is not properly done in the Control
             this._suppressEvents = true;
             Size thumbnailSize = this.ThumbnailSize;
             thumbnailSize.Width = Math.Min(Math.Max(thumbnailSize.Width, this._minimumSize.Width), this._maximumSize.Width);
@@ -660,7 +657,6 @@ namespace EveOPreview.View
             this.UpdateClientColorControls();
         }
 
-        // Per-commander highlight colour: used by the preview highlight and the active window frame
         private void UpdateClientColorControls()
         {
             string title = this.SelectedClientTitle();
@@ -740,8 +736,6 @@ namespace EveOPreview.View
             this.UpdateClientColorControls();
         }
 
-        // The hide check box changes only when its square is clicked (or Space is pressed), so rows can be
-        // selected freely to set highlight colours
         private void ThumbnailsList_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left)
@@ -830,7 +824,6 @@ namespace EveOPreview.View
         private void RefreshCycleGroups(CycleGroup groupToSelect = null)
         {
             _logger.Verbose("MainForm: RefreshCycleGroups - {GroupCount} groups", CycleGroups.Count);
-            // Rebinding resets the selection to the first group, so remember which one to show
             groupToSelect ??= SelectedCycleGroup();
             selectCycleGroupComboBox.DataSource = null;
             selectCycleGroupComboBox.DataSource = CycleGroups;
@@ -899,7 +892,6 @@ namespace EveOPreview.View
         private void RestoreMainForm_Handler(object sender, EventArgs e)
         {
             _logger.Verbose("MainForm: Restoring main window");
-            // This is form's GUI lifecycle event that is invariant to the Form data
             base.Show();
             this.WindowState = FormWindowState.Normal;
             this.BringToFront();
@@ -1066,7 +1058,6 @@ namespace EveOPreview.View
                 return;
             }
 
-            // Empty or already used by another group: show the current name again
             if (newName.Length == 0 || CycleGroups.Any(x => x != selectedGroup && x.Description == newName))
             {
                 _logger.Verbose("MainForm: Rejected cycle group name {NewName}", newName);
@@ -1098,7 +1089,6 @@ namespace EveOPreview.View
             this.ApplicationSettingsChanged?.Invoke();
             RefreshCycleGroups(newGroup);
 
-            // Ready to type the real name and confirm it with Enter
             cycleGroupDescriptionText.Focus();
             cycleGroupDescriptionText.SelectAll();
         }
@@ -1462,7 +1452,7 @@ namespace EveOPreview.View
             var selectedProfile = txtLoadedProfileName.Text;
 
             notificationNewProfileLocations =
-                notificationNewProfileLocations.OrderByDescending(x => x.FriendlyName == "Default") // Put default on the top, then the rest.
+                notificationNewProfileLocations.OrderByDescending(x => x.FriendlyName == "Default")
                     .ThenBy(x => x.FriendlyName).ToList();
 
             listBoxProfiles.DataSource = null;

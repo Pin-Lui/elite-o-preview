@@ -29,10 +29,8 @@ namespace EveOPreview.Services.Implementation
             this.Title = title;
         }
 
-        /// <inheritdoc/>
         public IntPtr MainWindowHandle { get; }
 
-        /// <inheritdoc/>
         public IntPtr ProcessHandle => OwnedHandle.IsClosed ? IntPtr.Zero : OwnedHandle.DangerousGetHandle();
         internal SafeProcessHandle OwnedHandle { get; private set; }
 

@@ -56,7 +56,6 @@ namespace PreviewToy
 }";
         }
 
-        //StinkRay
         private void labelCopyright_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {       
             string url = "https://forums.eveonline.com/default.aspx?g=posts&t=246157";
@@ -64,7 +63,6 @@ namespace PreviewToy
             Process.Start(sInfo);
         }
 
-        //New Thread
         private void labelCompanyName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string url = "https://forums.eveonline.com/default.aspx?g=posts&m=5264866";

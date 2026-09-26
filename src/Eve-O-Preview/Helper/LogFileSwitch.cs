@@ -17,8 +17,6 @@
 
 namespace EveOPreview.Helper
 {
-    // Log files are only written when "Write log file" is enabled in the settings,
-    // or when the app is started with --verbose / -v (the Verbose Logging shortcut).
     public static class LogFileSwitch
     {
         private static volatile bool _enabledBySetting;

@@ -69,7 +69,6 @@ namespace Build
 		public override void Teardown(Context context, ITeardownContext info)
 		{
 			context.Information("Tearing things down...");
-			//this.DeleteDirectory(context, ToolsDirectoryName);
 		}
 	}
 }

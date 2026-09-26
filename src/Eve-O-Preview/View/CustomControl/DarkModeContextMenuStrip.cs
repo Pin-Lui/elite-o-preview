@@ -42,7 +42,6 @@ public class DarkModeContextMenuStrip : ContextMenuStrip
     {
         public DarkGoldRenderer() : base(new GoldColorTable()) { }
 
-        // Custom subtle separator
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
             using (var pen = new Pen(Color.FromArgb(40, GoldText))) 
@@ -51,7 +50,6 @@ public class DarkModeContextMenuStrip : ContextMenuStrip
             }
         }
 
-        // Clean border for the whole menu
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
         {
             using (var pen = new Pen(Color.FromArgb(45, 45, 48)))

@@ -68,10 +68,6 @@ namespace EveOPreview.Services.Implementation
                 string currentExe = Process.GetCurrentProcess().MainModule.FileName;
                 int myPid = Process.GetCurrentProcess().Id;
 
-                // The sidecar is a GUI-subsystem process that never shows a window. Started through
-                // Process.Start, Windows shows the "app starting" (arrow + busy circle) cursor for it
-                // until its feedback timeout expires (20-30 s in practice). CreateProcess with
-                // STARTF_FORCEOFFFEEDBACK starts it without that cursor.
                 if (!LaunchWithoutStartupCursor(currentExe, $"--attach-debug-sidecar {myPid}", out int win32Error))
                 {
                     Log.Logger.WithCallerInfo().Warning("Launching the sidecar without startup cursor failed (Win32 error {Error}). Falling back to Process.Start.", win32Error);
@@ -103,17 +99,13 @@ namespace EveOPreview.Services.Implementation
                 KernelNativeMethods.OutputDebugString($"[Eve-O Sidecar] Successfully attach to PID: {pid}");
 
                 DEBUG_EVENT dbgEvent;
-                // see https://learn.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-waitfordebugevent
-                // and https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-debug_event
                 while (KernelNativeMethods.WaitForDebugEvent(out dbgEvent, uint.MaxValue))
                 {
                     uint continueStatus = DBG_CONTINUE;
 
-                    //KernelNativeMethods.OutputDebugString($"[Eve-O Sidecar] Raw Event Code: {dbgEvent.dwDebugEventCode}");
-
                     switch (dbgEvent.dwDebugEventCode)
                     {
-                        case 1: // EXCEPTION_DEBUG_EVENT
+                        case 1:
                             uint exceptionCode = BitConverter.ToUInt32(dbgEvent.u, 0);
 
                             try
@@ -123,7 +115,6 @@ namespace EveOPreview.Services.Implementation
 
                                 string chance = (isFirstChance == 1) ? "First-Chance" : "Unhandled/Second-Chance";
 
-                                // Log the details to DebugView
                                 KernelNativeMethods.OutputDebugString(
                                     $"[Eve-O Sidecar] EXCEPTION: 0x{exceptionCode:X8} at 0x{exceptionAddr.ToInt64():X16} ({chance})"
                                 );
@@ -135,18 +126,18 @@ namespace EveOPreview.Services.Implementation
                             continueStatus = (exceptionCode == BreakpointHasBeenReachedErrorCode) ? DBG_CONTINUE : DBG_EXCEPTION_NOT_HANDLED;
                             break;
                         
-                        case 3: // CREATE_PROCESS_DEBUG_EVENT
-                            CloseHandleAtOffset(dbgEvent.u, 0); // hFile (at offset 0)
+                        case 3:
+                            CloseHandleAtOffset(dbgEvent.u, 0);
                             // DO NOT close hProcess or hThread (at offsets 8 and 16)
                             break;
-                        case 6: // LOAD_DLL_DEBUG_EVENT
-                            CloseHandleAtOffset(dbgEvent.u, 0); // hFile
+                        case 6:
+                            CloseHandleAtOffset(dbgEvent.u, 0);
                             break;
-                        case 5: // EXIT_PROCESS_DEBUG_EVENT
+                        case 5:
                             KernelNativeMethods.OutputDebugString($"[Eve-O Sidecar] EXIT_PROCESS_DEBUG_EVENT received, closing debugger.");
                             KernelNativeMethods.ContinueDebugEvent(dbgEvent.dwProcessId, dbgEvent.dwThreadId, DBG_CONTINUE);
                             return;
-                        case 8: // OUTPUT_DEBUG_STRING_EVENT
+                        case 8:
                             try
                             {
                                 KernelNativeMethods.OutputDebugString("[Eve-O Sidecar] OUTPUT_DEBUG_STRING_EVENT received, forwarding through.");
@@ -156,7 +147,6 @@ namespace EveOPreview.Services.Implementation
 
                                 if (stringLen > 0)
                                 {
-                                    // CAST dwProcessId to (int) to satisfy KernelNativeMethods.OpenProcess
                                     IntPtr hProcess = KernelNativeMethods.OpenProcess(PROCESS_VM_READ, false,
                                         (int)dbgEvent.dwProcessId);
 
@@ -172,7 +162,6 @@ namespace EveOPreview.Services.Implementation
                                                 ? System.Text.Encoding.Unicode.GetString(buffer)
                                                 : System.Text.Encoding.ASCII.GetString(buffer);
 
-                                            // This re-broadcasts it so Sysinternals DebugView can see it
                                             KernelNativeMethods.OutputDebugString(message.TrimEnd('\0'));
                                         }
 
@@ -186,10 +175,10 @@ namespace EveOPreview.Services.Implementation
 
                             continueStatus = DBG_CONTINUE;
                             break;
-                        case 2: // CREATE_THREAD_DEBUG_EVENT
-                        case 4: // EXIT_THREAD_DEBUG_EVENT
-                        case 7: // UNLOAD_DLL_DEBUG_EVENT
-                        case 9: // RIP_EVENT
+                        case 2:
+                        case 4:
+                        case 7:
+                        case 9:
                             break;
                     }
 

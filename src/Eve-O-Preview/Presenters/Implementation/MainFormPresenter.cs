@@ -36,7 +36,7 @@ namespace EveOPreview.Presenters
     public class MainFormPresenter : Presenter<IMainFormView>, IMainFormPresenter
     {
         #region Private constants
-        private const string DISCORD_URL = @"https://github.com/EveOPlus/eve-o-preview"; // upstream project (GPLv3 source)
+        private const string DISCORD_URL = @"https://github.com/EveOPlus/eve-o-preview";
         #endregion
 
         #region Private fields
@@ -211,8 +211,6 @@ namespace EveOPreview.Presenters
                 _shutdownInProgress = true;
                 try
                 {
-                    // Cancel this close, let the FormClosing callback return, and keep
-                    // pumping UI continuations while MediatR/native cleanup completes.
                     await Task.Yield();
                     await _mediator.Send(new StopService());
                     _configurationStorage.Save();
@@ -236,7 +234,6 @@ namespace EveOPreview.Presenters
             if (!this._suppressSizeNotifications)
             {
                 _logger.Verbose("MainFormPresenter.UpdateThumbnailsSize: Thumbnail size changed, saving settings");
-                // The Width/Height fields set one size for every preview
                 this._configuration.ClearIndividualThumbnailSizes();
                 this.SaveApplicationSettings();
                 await this._mediator.Publish(new ThumbnailConfiguredSizeUpdated());
@@ -334,8 +331,6 @@ namespace EveOPreview.Presenters
             this._configuration.MinimizeAllClientsHotkey = this.View.MinimizeAllClientsHotkey;
 
             this._configuration.EnableAutomaticCpuAffinity = this.View.EnableAutomaticCpuAffinity;
-
-            //this._configurationStorage.Save();
 
             this.View.RefreshZoomSettings();
 
@@ -455,7 +450,6 @@ namespace EveOPreview.Presenters
         private void OpenDocumentationLink()
         {
             _logger.Verbose("MainFormPresenter.OpenDocumentationLink: Opening project link");
-            // TODO Move out to a separate service / presenter / message handler
             ProcessStartInfo processStartInfo = new ProcessStartInfo(new Uri(MainFormPresenter.DISCORD_URL).AbsoluteUri);
             Process.Start(processStartInfo);
         }

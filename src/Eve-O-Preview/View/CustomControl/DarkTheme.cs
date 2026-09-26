@@ -22,8 +22,6 @@ using System.Windows.Forms;
 
 namespace EveOPreview.View.CustomControl;
 
-// Colours and styling of the dark theme with a purple accent
-// (#68217A, lighter #B180D7 for thin lines), applied to whole forms and menus at runtime.
 public static class DarkTheme
 {
     public static readonly Color EditorBackground = Color.FromArgb(0x1E, 0x1E, 0x1E);
@@ -120,7 +118,6 @@ public static class DarkTheme
                 break;
 
             case OutlinedLabel:
-                // Font sample: its text colour is the user's overlay font colour
                 control.ResetBackColor();
                 break;
 
@@ -140,15 +137,12 @@ public static class DarkTheme
                 break;
 
             case Panel panel when panel.BorderStyle == BorderStyle.FixedSingle && panel.Controls.Count > 0:
-                // Windows draws these frames in a light colour, so they are removed. Empty panels
-                // (colour swatches) keep their frame.
                 panel.BorderStyle = BorderStyle.None;
                 panel.ResetBackColor();
                 panel.ForeColor = Foreground;
                 break;
 
             default:
-                // Panels, check boxes, radio buttons, group boxes, split containers, ...
                 control.ResetBackColor();
                 control.ForeColor = Foreground;
                 break;
@@ -169,7 +163,6 @@ public static class DarkTheme
             }
             catch (Exception)
             {
-                // Older Windows versions have no dark title bar; keep the default one
             }
         }
 

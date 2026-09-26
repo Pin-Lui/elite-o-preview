@@ -44,8 +44,6 @@ public class SelectedProfileChangedNotificationHandler : INotificationHandler<Se
         _globalEvents.PublishCurrentProfileChanged(notification);
         await _mediator.Publish(new ThumbnailFontTitleSettingsUpdated(), cancellationToken);
         await _mediator.Send(new ResetAllCpuAffinity(), cancellationToken);
-        // Installation/reuse applies both the current FPS targets (including disabled)
-        // and audio settings to each existing client.
         await _mediator.Send(new SetAudioSettings(), cancellationToken);
     }
 }

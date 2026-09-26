@@ -40,7 +40,7 @@ namespace Build.Tasks
             context.Information("Code signing started...");
 
             context.Information("Please enter the code signing password:");
-            var password = Console.ReadLine(); // We can move this to pull it from CICD pipeline later if we move to github actions or similar. For now just prompt the user to type it each time.
+            var password = Console.ReadLine();
 
             var files = context.GetFiles($"{Configuration.BinFolder}/**/*.{{exe,dll}}");
 

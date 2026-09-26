@@ -51,7 +51,6 @@ try
     Check((await ReadIds(handle)).SequenceEqual(new uint[] { 42, 99 }), "Initial audio configuration was not applied");
     if (!mock) Check((await Exchange(handle, new byte[] { 0xA1, 0xB8 }, 1))[0] == 1, "Audio monitor was not installed");
     await Exchange(handle, new byte[] { 0xA2, 0xC7, 1 }, 1);
-    // Incomplete/oversized updates must not change state or kill the listener.
     await Exchange(handle, new byte[] { 0xA2, 0xC6, 2, 0, 0, 0, 1 }, 0);
     await Exchange(handle, new byte[] { 0xA2, 0xC6, 1, 4, 0, 0 }, 0);
     for (int i = 0; i < 110; i++) await Exchange(handle, new byte[] { 0xA2 }, 0);
@@ -77,7 +76,7 @@ try
         for (int i = 0; i < 8; i++)
         {
             Check(await target.StandardOutput.ReadLineAsync(deadline.Token) == "FOCUS_READY", "Native focus wait ready");
-            await Task.Delay(30, deadline.Token); // The render thread is now inside its 1 FPS wait.
+            await Task.Delay(30, deadline.Token);
             long sent = Stopwatch.GetTimestamp();
             Task wake = hooks.TellEveClientFocusIsComingAsync(handle);
             string[] fields = (await target.StandardOutput.ReadLineAsync(deadline.Token)).Split(' ');
@@ -90,7 +89,6 @@ try
         }
         Console.WriteLine($"PASS pipe wake to native Present/Present1 return at 1 FPS: {string.Join(", ", wakeTimes.Select(ms => ms.ToString("F2")))} ms");
     }
-    // Audio cleanup must work even when FPS is disabled and no Present calls arrive.
     config.FpsLimiterSettings.IsEnabled = false;
     Check(await hooks.UpdateTargetFpsAsync(handle), "Disable FPS");
     using (var owner = Process.Start(new ProcessStartInfo(Environment.ProcessPath, "--owner")
@@ -107,7 +105,6 @@ try
     Check((await ReadIds(handle)).Length == 0, "Host shutdown did not clear audio");
     var fps = await Exchange(handle, new byte[] { 0xA1, 0xA1 }, 16);
     Check(BitConverter.ToInt32(fps, 1) == 0 && BitConverter.ToInt32(fps, 6) == 0 && BitConverter.ToInt32(fps, 11) == 0, "Shutdown FPS targets");
-    // Replacing the installation copy succeeds while the injected, hash-addressed copy stays loaded.
     File.Copy(args[0], Path.Combine(AppContext.BaseDirectory, "Eve-O-Preview.Robin.dll"), true);
     Console.WriteLine("PASS injection, identity, malformed/stalled pipe recovery, owner exit, shutdown, unlocked installation DLL");
     if (!mock)
@@ -124,7 +121,6 @@ catch
 }
 finally { if (!target.HasExited) { target.Kill(); await target.WaitForExitAsync(); } }
 
-// These allocation checks use the production source in managed form; native timing above uses the published AOT DLL.
 var throttle = typeof(DxHook).GetMethod("ThrottleTheFrame", BindingFlags.NonPublic | BindingFlags.Static).CreateDelegate<Func<bool>>();
 DxHook.SetFpsTargets(1000, 1000, 1000);
 for (int i = 0; i < 100; i++) throttle();
@@ -202,7 +198,6 @@ static async Task LiveClient(string[] arguments)
     Check(client.ProcessName.Equals("exefile", StringComparison.OrdinalIgnoreCase) && client.MainWindowHandle != IntPtr.Zero, "Expected a running EVE client with a main window");
     var process = new ProbeProcess(client.Id, client.MainWindowHandle);
     var config = (IThumbnailConfiguration)Activator.CreateInstance(typeof(MainForm).Assembly.GetType("EveOPreview.Configuration.Implementation.ThumbnailConfiguration"));
-    // A sentinel enables injection; it is immediately cleared before diagnostics.
     config.AudioMuteSettings.CustomMutedEventIds = new() { uint.MaxValue };
     using var logger = new LoggerConfiguration().WriteTo.File(Path.Combine(AppContext.BaseDirectory, "native-smoke.log")).CreateLogger();
     var hooks = new HookService(config, logger);

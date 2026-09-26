@@ -23,11 +23,6 @@ using Serilog;
 
 namespace EveOPreview
 {
-    // A really very primitive exception handler stuff here
-    // No IoC, no fancy DI containers - just a plain exception stacktrace dump
-    // If this code is called then something was gone really bad
-    // so even the DI infrastructure might be dead already.
-    // So this dumb and non elegant approach is used
     sealed class ExceptionHandler
     {
         private const string EXCEPTION_MESSAGE = "Elite-O Preview has encountered a problem and needs to close. Additional information has been saved in the log file.";
@@ -64,8 +59,6 @@ namespace EveOPreview
             }
             catch
             {
-                // We are in unstable state now so even this operation might fail
-                // Still we actually don't care anymore - anyway the application has been cashed
             }
 
             System.Environment.Exit(1);

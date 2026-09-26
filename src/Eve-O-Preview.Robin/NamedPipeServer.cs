@@ -73,13 +73,9 @@ public static class NamedPipeServer
                 }
                 catch (Exception ex) when (ex is IOException || ex is InvalidDataException || ex is OperationCanceledException || ex is ArgumentException)
                 {
-                    // A disconnected, malformed or stalled client is not a server failure.
-                    // Keep the listener available for the next connection.
                 }
                 finally
                 {
-                    // EOF can leave the managed stream in Broken state even though IsConnected
-                    // is false. Recreate it instead of trying to reuse that disconnected instance.
                     _server.Dispose();
                     _server = null;
                 }
@@ -123,7 +119,6 @@ public static class NamedPipeServer
             Array.Resize(ref payload, 4 + count * 4);
             await stream.ReadExactlyAsync(payload.AsMemory(4), cancellation).ConfigureAwait(false);
         }
-        // Only complete, bounded requests reach the state-changing code.
         using var input = new MemoryStream(payload);
         using var reader = new BinaryReader(input);
         using var response = new MemoryStream();
@@ -132,8 +127,6 @@ public static class NamedPipeServer
         if (response.Length > 0)
         {
             await stream.WriteAsync(response.GetBuffer().AsMemory(0, (int)response.Length), cancellation).ConfigureAwait(false);
-            // Wait for the peer to consume the reply and close before disconnecting (which
-            // can discard unread pipe bytes). A stalled peer still has the same deadline.
             await stream.ReadAsync(new byte[1], cancellation).ConfigureAwait(false);
         }
     }
@@ -167,7 +160,7 @@ public static class NamedPipeServer
                 AudioMuteSystem.UpdateMutedIds(ids, replace: command == 0xC6, remove: command == 0xC2);
                 break;
             case (0xA1, 0xB2): writer.Write((byte)1); return;
-            case (0xA1, 0xB5): writer.Write((byte)2); return; // Protocol capabilities: atomic audio replacement.
+            case (0xA1, 0xB5): writer.Write((byte)2); return;
             case (0xA1, 0xB6): writer.Write((byte)(DxHook.HooksInstalled ? 1 : 0)); return;
             case (0xA1, 0xB8): writer.Write((byte)(AudioMuteSystem.IsMonitorReady ? 1 : 0)); return;
             case (0xA1, 0xB7):

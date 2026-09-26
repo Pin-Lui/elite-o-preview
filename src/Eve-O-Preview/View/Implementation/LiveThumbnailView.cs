@@ -79,7 +79,7 @@ namespace EveOPreview.View
 
             if ((this._startLocation.X == left) && (this._startLocation.Y == top) && (this._endLocation.X == right) && (this._endLocation.Y == bottom))
             {
-                return; // No update required
+                return;
             }
             
             _logger.Verbose("Resizing thumbnail for 0x{Handle:X}: ({Left},{Top}) -> ({Right},{Bottom})", this.Id, left, top, right, bottom);

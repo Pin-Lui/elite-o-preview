@@ -22,9 +22,6 @@ using System.Windows.Forms;
 
 namespace EveOPreview.Services
 {
-    // Thin coloured frame on top of the Elite window that has keyboard focus, so the focused client is
-    // visible even with previews hidden. Drawn as four click-through, non-activating topmost strips
-    // along the inside edges of the game window; follows focus changes and window moves via WinEvents.
     internal sealed class ActiveClientFrame : IDisposable
     {
         private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
@@ -89,7 +86,6 @@ namespace EveOPreview.Services
             }
         }
 
-        // Periodic safety net and settings changes (colour); cheap when nothing changed
         public void Refresh()
         {
             if (this._enabled)
@@ -145,7 +141,6 @@ namespace EveOPreview.Services
 
             this._target = window;
 
-            // Only follow moves/resizes of the focused game's process, not every window on the desktop
             uint processId = 0;
             if (window != IntPtr.Zero)
             {
@@ -231,7 +226,6 @@ namespace EveOPreview.Services
 
         private static bool TryGetVisibleBounds(IntPtr window, out Rectangle bounds)
         {
-            // Visible frame without the invisible resize borders of windowed mode
             if (DwmGetWindowAttribute(window, DWMWA_EXTENDED_FRAME_BOUNDS, out RECT rect, Marshal.SizeOf<RECT>()) != 0
                 && !GetWindowRect(window, out rect))
             {
@@ -304,7 +298,6 @@ namespace EveOPreview.Services
             protected override void OnHandleCreated(EventArgs e)
             {
                 base.OnHandleCreated(e);
-                // Fully opaque; layered + transparent makes the strip click-through
                 SetLayeredWindowAttributes(this.Handle, 0, 255, LWA_ALPHA);
             }
 

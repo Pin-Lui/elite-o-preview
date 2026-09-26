@@ -43,8 +43,6 @@ namespace EveOPreview.View
         #region Private fields
         private readonly ThumbnailOverlay _overlay;
 
-        // Part of the logic (namely current size / position management)
-        // was moved to the view due to the performance reasons
         private bool _isOverlayVisible;
         private bool _isTopMost;
         private bool _isHighlightEnabled;
@@ -67,8 +65,6 @@ namespace EveOPreview.View
         private Point _baseZoomLocation;
         private Point _baseMousePosition;
         private Size _baseZoomMaximumSize;
-
-        // private HotkeyHandler _hotkeyHandler;
 
         private IThumbnailConfiguration _config;
         private Lazy<Color> _myBorderColor;
@@ -254,7 +250,6 @@ namespace EveOPreview.View
             base.Dispose(disposing);
         }
 
-        // This method is used to determine if the provided MainWindowHandle is related to client or its thumbnail
         public bool IsKnownHandle(IntPtr handle)
         {
             return (this.Id == handle) || (this.Handle == handle) || (this._overlay.Handle == handle);
@@ -282,18 +277,12 @@ namespace EveOPreview.View
             {
                 this.Opacity = opacity;
 
-                // Overlay opacity settings
-                // Of the thumbnail's opacity is almost full then set the overlay's one to
-                // full. Otherwise set it to half of the thumbnail opacity
-                // Opacity value is stored even if the overlay is not displayed atm
                 this._overlay.Opacity = opacity > 0.8 ? 1.0 : 1.0 - (1.0 - opacity) / 2;
 
                 this._opacity = opacity;
             }
             catch (Win32Exception)
             {
-                // Something went wrong in WinForms internals
-                // Opacity will be updated in the next cycle
             }
         }
 
@@ -301,7 +290,6 @@ namespace EveOPreview.View
         {
             FormBorderStyle style = enable ? FormBorderStyle.SizableToolWindow : FormBorderStyle.None;
 
-            // No need to change the borders style if it is ALREADY correct
             if (this.FormBorderStyle == style)
             {
                 return;
@@ -312,12 +300,8 @@ namespace EveOPreview.View
             this.FormBorderStyle = style;
         }
 
-        // The right-click menu is a topmost window too. While it is open, raising the
-        // preview with HWND_TOPMOST would put the preview above its own menu.
         public bool IsContextMenuOpen => this.thumbnailContextMenu.Visible;
 
-        // True while "Resize" (this preview only) from the context menu is in progress.
-        // "Resize all" and dragging a frame border resize every preview.
         public bool IsIndividualResizeActive => this._resizeOnlyThisPreview && this._customMouseModeActive == MouseMode.Resize;
 
         public void SetTopMost(bool enableTopmost)
@@ -335,8 +319,6 @@ namespace EveOPreview.View
 
         public bool RestoreAndBringToFront()
         {
-            // IsActive describes the manager's intent, not the native window's visibility.
-            // Never restore a preview that the manager deliberately hid.
             if (!this.IsActive)
             {
                 return true;
@@ -355,11 +337,7 @@ namespace EveOPreview.View
             // The native calls below show both windows. Avoid Form.Show here: an
             // owned form can focus its active control even with ShowWithoutActivation.
             this._isOverlayVisible = true;
-            // Reordering/restoring windows must leave their existing rendered images
-            // intact. Image maintenance belongs to the normal refresh path.
 
-            // Reassert native visibility and z-order even when WinForms' cached state
-            // says the window is already visible/topmost. Keep keyboard focus on EVE.
             const uint flags = InteropConstants.SWP_NOMOVE | InteropConstants.SWP_NOSIZE
                 | InteropConstants.SWP_NOACTIVATE | InteropConstants.SWP_SHOWWINDOW | InteropConstants.SWP_NOOWNERZORDER;
             if (!User32NativeMethods.SetWindowPos(this.Handle, InteropConstants.HWND_TOPMOST, 0, 0, 0, 0, flags))
@@ -367,7 +345,6 @@ namespace EveOPreview.View
                 return false;
             }
 
-            // Keep this preview's label above its image without moving the owner again.
             return User32NativeMethods.SetWindowPos(this._overlay.Handle, InteropConstants.HWND_TOPMOST,
                 0, 0, 0, 0, flags);
         }
@@ -491,7 +468,6 @@ namespace EveOPreview.View
         {
             if (!forceRefresh && (this._isHighlightRequested == this._isHighlightEnabled))
             {
-                // Nothing to do here
                 return;
             }
 
@@ -502,7 +478,6 @@ namespace EveOPreview.View
 
             if (!this._isHighlightRequested)
             {
-                //No highlighting enabled, so no math required
                 this.ResizeThumbnail(baseWidth, baseHeight, 0, 0, 0, 0);
                 return;
             }
@@ -522,7 +497,6 @@ namespace EveOPreview.View
         {
             if (this._isOverlayVisible && !forceRefresh)
             {
-                // No need to update anything. Everything is already set up
                 return;
             }
 
@@ -530,8 +504,6 @@ namespace EveOPreview.View
 
             if (!this._isOverlayVisible)
             {
-                // One-time action to show the Overlay before it is set up
-                // Otherwise its position won't be set
                 this._overlay.Show();
                 this._isOverlayVisible = true;
             }
@@ -621,12 +593,6 @@ namespace EveOPreview.View
         #endregion
 
         #region Custom Mouse mode
-        // This pair of methods saves/restores certain window properties
-        // Methods are used to remove the 'Zoom' effect (if any) when the
-        // custom resize/move mode is activated
-        // Methods are kept on this level because moving to the presenter
-        // the code that responds to the mouse events like movement
-        // seems like a huge overkill
         private void SaveWindowSizeAndLocation()
         {
             this._baseZoomSize = this.Size;
@@ -678,14 +644,12 @@ namespace EveOPreview.View
                 case MouseMode.Resize:
                     if (isShiftDown)
                     {
-                        // Maintain Ratio
                         int newWidth = this.Size.Width + offsetX;
                         int newHeight = (int)(newWidth / this._thumbnailRatioAtStartOfResize);
                         this.Size = new Size(newWidth, newHeight);
                     }
                     else
                     {
-                        // Free Resize
                         this.Size = new Size(this.Size.Width + offsetX, this.Size.Height + offsetY);
                     }
                     break;
@@ -788,7 +752,7 @@ namespace EveOPreview.View
                         break;
                     case MouseButtons.Right:
                         _rightClickStartPosition = Cursor.Position;
-                        holdRightClickToMoveTimer.Start(); // If somebody tries to click and hold right click to move, lets override the menu and let them.
+                        holdRightClickToMoveTimer.Start();
                         var location = new Point(e.Location.X - 30, e.Location.Y - 10);
                         thumbnailContextMenu.Show(this, location);
                         break;

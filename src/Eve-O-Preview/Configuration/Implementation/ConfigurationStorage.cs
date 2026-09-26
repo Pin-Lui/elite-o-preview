@@ -67,8 +67,6 @@ namespace EveOPreview.Configuration.Implementation
                         ObjectCreationHandling = ObjectCreationHandling.Replace,
                         NullValueHandling = NullValueHandling.Ignore
                     };
-                    // Build a complete candidate first: omitted fields belong to this profile's defaults,
-                    // and malformed input must never partially overwrite the active singleton.
                     var candidate = new ThumbnailConfiguration();
                     JsonConvert.PopulateObject(rawData, candidate, jsonSerializerSettings);
                     candidate.ApplyRestrictions();
@@ -76,11 +74,8 @@ namespace EveOPreview.Configuration.Implementation
                     AutoMigrateVersion1Config(rawData, candidate);
                     AutoMigrateVersion2Config(rawData, candidate);
 
-                    // Validate data after loading it
                     candidate.ApplyRestrictions();
                     JsonConvert.PopulateObject(JsonConvert.SerializeObject(candidate), _thumbnailConfiguration, jsonSerializerSettings);
-                    // The candidate is committed. A subscriber failure must not report a
-                    // failed load and roll the selected path back while retaining these settings.
                     try { _mediator.Send(new RefreshHotkeys()).GetAwaiter().GetResult(); }
                     catch (Exception ex) { _logger.Error(ex, "Profile loaded, but refreshing hotkeys failed"); }
                     return true;
@@ -161,7 +156,7 @@ namespace EveOPreview.Configuration.Implementation
                 {
                     foreach (JProperty property in ((JObject)dynamicConfig.CycleGroup1ClientsOrder).Properties().OrderBy(p => (int)p.Value))
                     {
-                        string clientName = property.Name;      // e.g., "EVE - Example Toon 1"
+                        string clientName = property.Name;
 
                         cycleGroup1.ClientsOrder.Add(cycleGroup1.ClientsOrder.Count + 1, clientName);
                     }
@@ -189,7 +184,7 @@ namespace EveOPreview.Configuration.Implementation
                 {
                     foreach (JProperty property in ((JObject)dynamicConfig.CycleGroup2ClientsOrder).Properties().OrderBy(p => (int)p.Value))
                     {
-                        string clientName = property.Name;      // e.g., "EVE - Example Toon 1"
+                        string clientName = property.Name;
 
                         cycleGroup2.ClientsOrder.Add(cycleGroup2.ClientsOrder.Count + 1, clientName);
                     }

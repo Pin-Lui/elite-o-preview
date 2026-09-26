@@ -79,7 +79,7 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         new WindowManager(hooks, logger).ActivateWindow(target.Handle);
         Assert.True(activated);
         Assert.Equal(target.Handle, Native.GetActiveWindow());
-        Assert.Equal(0, responsivenessProbes); // A 1 FPS client must never fail a pre-focus WM_NULL gate.
+        Assert.Equal(0, responsivenessProbes);
     }
 
     private sealed class FocusProbeForm : Form
@@ -100,7 +100,7 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         async Task StopOnUiContext()
         {
             stops++;
-            await releaseCleanup.Task; // Deliberately requires the UI context to resume.
+            await releaseCleanup.Task;
         }
         var mediator = Stub.Create<IMediator>((method, args) =>
         {
@@ -119,7 +119,7 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         Assert.False(form.IsDisposed);
         Application.DoEvents();
         Assert.Equal(1, stops);
-        form.Close(); // Repeated close must not start another native cleanup.
+        form.Close();
         Assert.Equal(1, stops);
         releaseCleanup.SetResult();
         var deadline = Stopwatch.StartNew();
@@ -142,7 +142,7 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         form.EnableAutomaticCpuAffinity = false;
         Assert.Equal(0, saves);
         Control<CheckBox>(form, "chbAutoCpuAffinity").Checked = true;
-        Assert.Equal(1, saves); // Invalid font load must not leave all UI events suppressed.
+        Assert.Equal(1, saves);
         form.TitleFontSettings = config.TitleFontSettings;
         Control<TextBox>(form, "txtFontOutlineWidth").Text = "3.5";
         Call(form, "UpdateFontOutlineWidth");
@@ -278,12 +278,11 @@ public sealed class SettingsIntegrationTests(ITestOutputHelper output)
         foreach (var handler in down.ToArray()) handler(null, press);
         Assert.True(timer.ElapsedMilliseconds < 500, "Pending affinity must not delay the input callback");
         Assert.True(press.Handled);
-        Assert.Equal(1, activations); // No message pump or async continuation before activation/highlight.
+        Assert.Equal(1, activations);
         Assert.Equal(new IntPtr(102), manager.GetActiveClient()?.Id);
-        var keyUp = new KeyEventArgs(Keys.F8); // Modifier was released before the main key.
+        var keyUp = new KeyEventArgs(Keys.F8);
         foreach (var handler in up.ToArray()) handler(null, keyUp);
         Assert.True(keyUp.Handled);
-        // A second deliberate cycle is accepted immediately while unrelated async work is pending.
         foreach (var handler in down.ToArray()) handler(null, new KeyEventArgs(Keys.Control | Keys.F8));
         Assert.Equal(new IntPtr(103), manager.GetActiveClient()?.Id);
         Assert.Equal(2, activations);

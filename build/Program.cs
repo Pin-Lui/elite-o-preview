@@ -31,7 +31,6 @@ namespace Build
 			services.UseContext<Context>();
 			services.UseLifetime<Lifetime>();
 
-			//move up from build directory and searching for sln or csproj files
 			services.UseWorkingDirectory("..");
 		}
 	}

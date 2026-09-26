@@ -27,10 +27,8 @@ namespace EveOPreview.Robin;
 
 public unsafe class DxHook
 {
-    // See signature https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-present plus "this" pointer.
     private static delegate* unmanaged[Stdcall]<IntPtr, uint, uint, int> _originalPresent;
 
-    // See signature https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgiswapchain1-present1 "plus" this pointer.
     private static delegate* unmanaged[Stdcall]<IntPtr, uint, uint, IntPtr, int> _originalPresent1;
 
     internal sealed record FpsTargets(int Foreground, int Background, int Predicted)
@@ -69,26 +67,21 @@ public unsafe class DxHook
         if (Interlocked.Exchange(ref _initialized, 1) != 0) return 0;
         try
         {
-            // Name the pipe based on the MainWindowHandle so clients don't conflict and so it's easy to find, we can also use this like a mutex which should work on linux too.
             NamedPipeServer.Initialize();
 
-            // Setup a named pipe so we can manage the target fps from another process such as Eve-O Preview.
             _ = Task.Run(NamedPipeServer.StartPipeServer);
             Global.StartOwnerWatchdog();
         }
         catch (Exception ex)
         {
-            // Double on using the named pipe like a cross-platform mutex. If the named pipe is already taken then don't hook again.
             Error(ex, "Failed to create named pipe server");
             return 1;
         }
 
-        //Log($"Subscribing to EVENT_SYSTEM_FOREGROUND");
         WinEventHook.StartListening(HandleForegroundChangedEvent);
 
         try
         {
-            //Log($"Setup dummy DXGI objects to find the VTable address");
             using var factory = new Factory1();
             using var device = new SharpDX.Direct3D11.Device(DriverType.Hardware, DeviceCreationFlags.None);
             using var swapChain = new SwapChain(factory, device, new SwapChainDescription()
@@ -103,24 +96,17 @@ public unsafe class DxHook
 
             void** vTablePointer = *(void***)swapChain.NativePointer;
 
-            //Log($"Locating Present should at index 8 for DirectX 11");
             void** presentEntryPtr = &vTablePointer[8];
             _originalPresent = (delegate* unmanaged[Stdcall]<IntPtr, uint, uint, int>)*presentEntryPtr;
 
-            // Grant access to the memory address
             if (NativeMethods.VirtualProtect((IntPtr)presentEntryPtr, (UIntPtr)sizeof(nint), PAGE_EXECUTE_READWRITE, out var oldProtect))
             {
                 Info($"Hooking into Present");
                 HooksInstalled = true;
                 *presentEntryPtr = (delegate* unmanaged[Stdcall]<IntPtr, uint, uint, int>)&HookedPresent;
-                // Set the protection back to what it was before we got here.
                 NativeMethods.VirtualProtect((IntPtr)presentEntryPtr, (UIntPtr)sizeof(nint), oldProtect, out _);
             }
 
-            // Present1 belongs to IDXGISwapChain1, including on D3D11. Query the interface
-            // before reading its vtable; loading d3d12.dll says nothing about that layout.
-            // Use the COM ABI directly. SharpDX's generic QueryInterface constructs wrappers
-            // through reflection, which can be trimmed from a NativeAOT shared library.
             Guid swapChain1Id = new("790a45f7-0d42-4876-983a-0a55cfe6f4aa");
             IntPtr swapChain1 = IntPtr.Zero;
             var queryInterface = (delegate* unmanaged[Stdcall]<IntPtr, Guid*, IntPtr*, int>)vTablePointer[0];
@@ -191,20 +177,16 @@ public unsafe class DxHook
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsThisOurHandle(IntPtr theHandleToCheck)
     {
-        // If we know the handle, just check it directly
-        // Note: We should always know this because we've started being lazy and assuming it's the main window. but leaving code for future changes if needed.
         if (ThisClientsHandle != IntPtr.Zero)
         {
             return ThisClientsHandle == theHandleToCheck;
         }
 
-        // If there's no handle, it can't be ours.
         if (theHandleToCheck == IntPtr.Zero)
         {
             return false;
         }
 
-        // If we don't know the handle yet, compare the process Id until we find it.
         NativeMethods.GetWindowThreadProcessId(theHandleToCheck, out uint foregroundPid);
 
         if (foregroundPid == CurrentPid)
@@ -224,8 +206,6 @@ public unsafe class DxHook
 
     internal static void PrepareForFocus()
     {
-        // Release Present briefly even when the configured foreground rate is 1 FPS.
-        // This is request-time state only; the render callback allocates nothing.
         Volatile.Write(ref _focusBoostUntil, Stopwatch.GetTimestamp() + Stopwatch.Frequency / 4);
         SetOurWindowInFocus(FocusType.Foreground);
     }
@@ -242,7 +222,6 @@ public unsafe class DxHook
             if (interval <= 0) { _lastFrameTimestamp = 0; return false; }
             double remaining = interval - Stopwatch.GetElapsedTime(_lastFrameTimestamp).TotalMilliseconds;
             if (remaining <= 0) break;
-            // Recheck focus and disable during both the long wait and final remainder.
             if (remaining > 1) _precisionSleep.Sleep(Math.Min(15, remaining - 0.5));
             else Thread.SpinWait(10);
         }

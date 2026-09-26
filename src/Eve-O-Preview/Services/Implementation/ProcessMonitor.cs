@@ -26,7 +26,6 @@ namespace EveOPreview.Services.Implementation
     sealed class ProcessMonitor : IProcessMonitor, IDisposable
     {
         #region Private constants
-        // Elite Dangerous (Horizons/Odyssey) game client, e.g. started by min-ed-launcher
         private const string DEFAULT_PROCESS_NAME = "EliteDangerous64";
         private const string CURRENT_PROCESS_NAME = "Elite-O Preview";
         #endregion
@@ -37,7 +36,6 @@ namespace EveOPreview.Services.Implementation
         private IProcessInfo _currentProcessInfo;
         private readonly ILogger _logger;
         private readonly Func<Process[]> _enumerateProcesses;
-        // All Elite windows share one caption, so the client title comes from the commander in the journal.
         private readonly Func<Process, string> _titleOf;
         private readonly EliteCommanderResolver _commanderResolver;
         #endregion
@@ -54,8 +52,6 @@ namespace EveOPreview.Services.Implementation
             _titleOf = commanderResolver != null ? new Func<Process, string>(commanderResolver.GetClientTitle) : p => p.MainWindowTitle;
             this.ProcessCache = new Dictionary<IntPtr, IProcessInfo>(512);
             
-            // This field cannot be initialized properly in constructor
-            // At the moment this code is executed the main application window is not yet initialized
             this._currentProcessInfo = new ProcessInfo(IntPtr.Zero, IntPtr.Zero, 0, "");
             
             _logger.Verbose("ProcessMonitor initialized");
@@ -63,14 +59,12 @@ namespace EveOPreview.Services.Implementation
 
         private bool IsMonitoredProcess(string processName)
         {
-            // This is a possible extension point
             return String.Equals(processName, ProcessMonitor.DEFAULT_PROCESS_NAME, StringComparison.OrdinalIgnoreCase);
         }
 
         private IProcessInfo GetCurrentProcessInfo()
         {
             using var currentProcess = Process.GetCurrentProcess();
-            // The host's HWND is only used for visibility checks, not affinity.
             return new ProcessInfo(currentProcess.MainWindowHandle, IntPtr.Zero, currentProcess.Id, currentProcess.MainWindowTitle);
         }
 
@@ -80,7 +74,6 @@ namespace EveOPreview.Services.Implementation
             {
                 var processInfo = this.GetCurrentProcessInfo();
 
-                // Are we initialized yet?
                 if (processInfo.Title != "")
                 {
                     _logger.Verbose("Main application window initialized: {Title} (Handle: 0x{Handle:X})", processInfo.Title, processInfo.MainWindowHandle);
@@ -97,16 +90,6 @@ namespace EveOPreview.Services.Implementation
             {
                 return this.ProcessCache.Values.ToList();
             }
-            
-            //ICollection<IProcessInfo> result = new List<IProcessInfo>(this._processCache.Count);
-            //
-            //// TODO Lock list here just in case
-            //foreach (KeyValuePair<IntPtr, IProcessInfo> entry in this._processCache)
-            //{
-            //    result.Add(new ProcessInfo(entry.Key, entry.Value.ProcessId, entry.Value.Title));
-            //}
-
-            //return result;
         }
 
         public void GetUpdatedProcesses(out ICollection<IProcessInfo> addedProcesses, out ICollection<IProcessInfo> updatedProcesses, out ICollection<IProcessInfo> removedProcesses)
@@ -120,7 +103,6 @@ namespace EveOPreview.Services.Implementation
             var knownProcesses = new HashSet<IntPtr>(ProcessCache.Keys);
             var usedTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var runningPids = new HashSet<int>();
-            // Stable order so duplicate titles always get the same suffix.
             foreach (Process process in _enumerateProcesses().OrderBy(p => p.Id))
             using (process)
             {
@@ -130,7 +112,6 @@ namespace EveOPreview.Services.Implementation
                 if (mainWindowHandle == IntPtr.Zero) continue;
                 runningPids.Add(process.Id);
                 string title = _titleOf(process);
-                // Two clients must never share a title (e.g. two games of one Windows user before login).
                 if (!usedTitles.Add(title))
                 {
                     title = $"{title} [{process.Id}]";
@@ -154,7 +135,6 @@ namespace EveOPreview.Services.Implementation
                 }
                 else if (cachedProcess.Title != title)
                 {
-                    // A character/login rename still owns the same process handle.
                     var renamed = ((ProcessInfo)cachedProcess).WithTitle(title);
                     ProcessCache[mainWindowHandle] = renamed;
                     updatedProcesses.Add(renamed);

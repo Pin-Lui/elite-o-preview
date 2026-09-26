@@ -39,9 +39,6 @@ namespace EveOPreview.Helper
 
         public static IntPtr OpenKernelHandle(this Process process)
         {
-            // Open a lightweight Kernel MainWindowHandle for Affinity/Priority
-            // 0x0200 = PROCESS_SET_INFORMATION
-            // 0x1000 = PROCESS_QUERY_LIMITED_INFORMATION
             IntPtr pHandle = KernelNativeMethods.OpenProcess(0x1200, false, process.Id);
 
             return pHandle;
@@ -65,7 +62,6 @@ namespace EveOPreview.Helper
             }
             catch
             {
-                // Nothing to do here, just don't crash anything else.
             }
         }
     }

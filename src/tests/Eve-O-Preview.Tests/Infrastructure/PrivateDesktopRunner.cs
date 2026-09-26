@@ -20,10 +20,8 @@ internal static class PrivateDesktopRunner
             desktop = Native.CreateDesktop(name, IntPtr.Zero, IntPtr.Zero, 0, 0x01ff, IntPtr.Zero);
             if (desktop == IntPtr.Zero) throw new Win32Exception();
             var startup = new Native.StartupInfo { Size = Marshal.SizeOf<Native.StartupInfo>(), Desktop = name };
-            // Use this assembly's apphost, not the IDE/testhost/dotnet process hosting xUnit.
             string executable = Path.ChangeExtension(typeof(Program).Assembly.Location, ".exe");
             var command = new StringBuilder($"\"{executable}\" --private-desktop \"{scenario}\" \"{resultPath}\"");
-            // No console: the worker writes a log which becomes this xUnit test's output.
             const uint createNoWindow = 0x08000000;
             if (!Native.CreateProcess(executable, command, IntPtr.Zero, IntPtr.Zero,
                 false, createNoWindow, IntPtr.Zero, null, ref startup, out var process)) throw new Win32Exception();

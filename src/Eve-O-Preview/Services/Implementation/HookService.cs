@@ -35,11 +35,6 @@ namespace EveOPreview.Services.Implementation;
 
 public class HookService : IHookService
 {
-    /// <summary>
-    /// Elite-O: never inject the Robin DLL into Elite Dangerous. Frontier does not allow code
-    /// injection into the game client, and the preview/switching features do not need it.
-    /// FPS limiter and audio mute (which live inside Robin) therefore do nothing.
-    /// </summary>
     internal static readonly bool GameInjectionAllowed = false;
 
     private const int PipeTimeoutMs = 1000;
@@ -110,13 +105,9 @@ public class HookService : IHookService
         if (handle == IntPtr.Zero) return false;
         try
         {
-            // An available pipe accepts this tiny, buffered message inline. ConnectAsync
-            // dispatches the connect through the thread pool; don't put it ahead of focus.
             using var client = new NamedPipeClientStream(".", $"EveoRobin_{handle}", PipeDirection.Out, PipeOptions.Asynchronous);
             client.Connect(0);
             using var timeout = new CancellationTokenSource(150);
-            // Issue the write now, but don't block the input thread on an old, zero-buffer
-            // or unresponsive server. Overlapped completion only owns cleanup afterward.
             await client.WriteAsync(payload, timeout.Token).ConfigureAwait(false);
             return true;
         }
@@ -159,7 +150,6 @@ public class HookService : IHookService
             if (_stopping) return;
             if (!present)
             {
-                // When no native feature is requested, don't inject merely to send zero targets.
                 var audio = _configuration.AudioMuteSettings;
                 if (!_configuration.FpsLimiterSettings.IsEnabled && !audio.MuteJumpGateTunnel &&
                     !audio.MuteLocationBanner && audio.CustomMutedEventIds.Count == 0) return;
@@ -190,7 +180,6 @@ public class HookService : IHookService
             throw new InvalidOperationException("The target client changed before injection.");
         string source = Path.Combine(AppContext.BaseDirectory, "Eve-O-Preview.Robin.dll");
         if (!File.Exists(source)) throw new FileNotFoundException("Publish the native Robin DLL beside the host executable.", source);
-        // Loaded modules outlive the host. Load a versioned copy so installation files remain replaceable.
         string hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(source)));
         string directory = Path.Combine(Path.GetTempPath(), "Eve-O Preview", "Robin", hash);
         Directory.CreateDirectory(directory);
@@ -200,7 +189,6 @@ public class HookService : IHookService
         {
             if (Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))) != hash) throw;
         }
-        // Use only the rights needed to load the DLL and start its exported initializer.
         IntPtr target = KernelNativeMethods.OpenProcess(0x043A, false, info.ProcessId);
         if (target == IntPtr.Zero) throw new Win32Exception();
         IntPtr remotePath = IntPtr.Zero, loaderThread = IntPtr.Zero, initThread = IntPtr.Zero, localModule = IntPtr.Zero;
@@ -276,7 +264,6 @@ public class HookService : IHookService
         }
         if (_stopping) return false;
         if (replace) return await SendAudioIdsAsync(handle, 0xC6, ids).ConfigureAwait(false);
-        // Older already-injected Robin only supports clear then add. Hold the gate across both connections.
         var gate = _pipeGates.GetOrAdd(handle, _ => new SemaphoreSlim(1, 1));
         using var timeout = new CancellationTokenSource(PipeTimeoutMs * 2);
         try

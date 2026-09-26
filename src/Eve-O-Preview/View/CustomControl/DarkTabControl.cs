@@ -21,9 +21,6 @@ using System.Windows.Forms;
 
 namespace EveOPreview.View.CustomControl;
 
-// Tab control drawn completely by the application, so no light system-drawn areas remain
-// around the tabs in the dark theme. Tabs on the left are drawn as a dark side bar.
-// The side bar is made wide enough for the longest tab name at the current display scaling.
 public class DarkTabControl : TabControl
 {
     private const int DesignTabWidth = 120;
@@ -58,7 +55,6 @@ public class DarkTabControl : TabControl
         base.OnDpiChangedAfterParent(e);
         this._tabFont?.Dispose();
         this._tabFont = null;
-        // Windows already rescales the whole window when the scaling changes
         this.UpdateTabWidth(widenForm: false);
     }
 
@@ -101,7 +97,6 @@ public class DarkTabControl : TabControl
             this.ItemSize = new Size(this.ItemSize.Width, tabWidth);
         }
 
-        // Keep the settings pages as wide as designed by widening the window by the extra side bar width
         Form form = this.FindForm();
         if (widenForm && !this._formWidened && form != null && tabWidth > designWidth)
         {

@@ -21,9 +21,6 @@ using System.Reflection;
 
 namespace EveOPreview
 {
-    /// <summary>
-    /// Generic interface for an Inversion Of Control container
-    /// </summary>
     public interface IIocContainer
     {
         void Register<TService, TImplementation>()

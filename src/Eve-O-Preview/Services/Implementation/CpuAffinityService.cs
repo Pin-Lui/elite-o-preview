@@ -39,11 +39,11 @@ public class CpuAffinityService : ICpuAffinityService
     public List<int> PCores { get; } = [];
     public List<int> ECores { get; } = [];
 
-    private IntPtr _activeMask; // Where we will place the current active client.
-    private IntPtr _nextMask; // Where we will place the predicted next active client.
-    private IntPtr _prevMask; // Where we will place the previous client (ready to go back quickly if they reverse the expected order)
-    private IntPtr _backgroundMask; // Where all background processes will run otherwise.
-    private IntPtr _allCoresMask; // List of all cores so we can easily turn our automation back off.
+    private IntPtr _activeMask;
+    private IntPtr _nextMask;
+    private IntPtr _prevMask;
+    private IntPtr _backgroundMask;
+    private IntPtr _allCoresMask;
 
     private readonly HashSet<(int Pid, IntPtr Handle)> _currentBackgroundHandles = [];
     private readonly Dictionary<(int Pid, IntPtr Handle), IntPtr> _originalMasks = [];
@@ -76,7 +76,6 @@ public class CpuAffinityService : ICpuAffinityService
             if (next?.ProcessId == active?.ProcessId) next = null;
             if (prev?.ProcessId == active?.ProcessId || prev?.ProcessId == next?.ProcessId) prev = null;
 
-            // A process can have several HWNDs/records. The highest priority role wins once.
             foreach (var client in clients.GroupBy(p => p.ProcessId).Select(g => g.First()))
             {
                 var key = (client.ProcessId, client.ProcessHandle);
@@ -93,7 +92,6 @@ public class CpuAffinityService : ICpuAffinityService
                         if (!GetProcessAffinityMask(handle, out original, out _)) return false;
                         _originalMasks[key] = original;
                     }
-                    // Respect restrictions the user or launcher applied before automation.
                     IntPtr allowed = (IntPtr)(mask.ToInt64() & original.ToInt64());
                     if (allowed == IntPtr.Zero) allowed = original;
                     return SetProcessAffinityMask(handle, allowed);
@@ -179,8 +177,6 @@ public class CpuAffinityService : ICpuAffinityService
                         _logger.Verbose($"Core Information: {data}");
                     }
 
-                    // EfficiencyClass: Higher is better (P-Core), Lower is 0 (E-Core)
-                    // GroupMask contains the logical processor bits
                     byte effClass = core.EfficiencyClass;
                     ulong mask = core.GroupMask.Mask;
 
@@ -209,13 +205,11 @@ public class CpuAffinityService : ICpuAffinityService
             Marshal.FreeHGlobal(buffer);
         }
 
-        // Homogeneous CPUs report efficiency class zero for every core.
         if (PCores.Count == 0 && ECores.Count > 0)
         {
             PCores.AddRange(ECores);
             ECores.Clear();
         }
-        // Fallback only within the one processor group this strategy supports.
         if (ECores.Count == 0 && PCores.Count == 0)
         {
             if (Environment.ProcessorCount > 64) { _isOurCpuAbleToSupportAffinity = false; return; }
@@ -233,31 +227,30 @@ public class CpuAffinityService : ICpuAffinityService
 
         _allCoresMask = CreateMask(PCores.Concat(ECores));
 
-        // One-time logic to decide how to best divide the CPU into zones.
-        if (pCount >= 8) // High: 2 threads each plus 2 threads free for OS, events, etc.
+        if (pCount >= 8)
         {
             _logger.WithCallerInfo().Information("Using the High strategy with 8 or more performance threads.");
             _activeMask = CreateMask(pThreads.GetRange(0, 2));
             _nextMask = CreateMask(pThreads.GetRange(2, 2));
             _prevMask = CreateMask(pThreads.GetRange(4, 2));
-            _backgroundMask = CreateMask(pThreads.Skip(6)); // We will override this later if we have access to E-Cores. But if we have no E-Cores then put the rest of the clients here in the background.
+            _backgroundMask = CreateMask(pThreads.Skip(6));
         }
-        else if (pCount >= 4) // Mid: 1 thread each plus 1 thread free for OS, events, etc.
+        else if (pCount >= 4)
         {
             _logger.WithCallerInfo().Information("Using the Mid strategy with 4 or more performance threads.");
             _activeMask = CreateMask(pThreads.GetRange(0, 1));
             _nextMask = CreateMask(pThreads.GetRange(1, 1));
             _prevMask = CreateMask(pThreads.GetRange(2, 1));
-            _backgroundMask = CreateMask(pThreads.Skip(3)); // We will override this later if we have access to E-Cores. But if we have no E-Cores then put the rest of the clients here in the background.
+            _backgroundMask = CreateMask(pThreads.Skip(3));
 
         }
-        else // Low: Not enough threads available to be worth manually managing affinity.
+        else
         {
             _isOurCpuAbleToSupportAffinity = false;
             return;
         }
 
-        if (ECores.Count > 0) // If we have E-Cores then use them for the background clients. Otherwise, just use the remaining cores.
+        if (ECores.Count > 0)
         {
             _logger.WithCallerInfo().Information("Using E-Cores for all other background clients.");
             _backgroundMask = CreateMask(ECores);

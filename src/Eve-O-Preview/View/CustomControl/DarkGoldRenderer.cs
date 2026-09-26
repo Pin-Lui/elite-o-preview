@@ -61,20 +61,17 @@ public class GoldColorTable : ProfessionalColorTable
     private Color DarkSelection = Color.FromArgb(38, 38, 42);
     private Color AccentBorder = Color.FromArgb(60, 50, 20);
 
-    // Backgrounds
     public override Color ToolStripDropDownBackground => DarkBackground;
 
     public override Color ImageMarginGradientBegin => DarkBackground;
     public override Color ImageMarginGradientMiddle => DarkBackground;
     public override Color ImageMarginGradientEnd => DarkBackground;
 
-    // Hover
     public override Color MenuItemSelected => DarkSelection;
     public override Color MenuItemSelectedGradientBegin => DarkSelection;
     public override Color MenuItemSelectedGradientEnd => DarkSelection;
     public override Color MenuItemBorder => AccentBorder;
 
-    // Checkmark background for if we want a tick box later.
     public override Color CheckBackground => Color.FromArgb(50, 45, 30);
     public override Color CheckSelectedBackground => Color.FromArgb(70, 60, 40);
     public override Color CheckPressedBackground => Color.FromArgb(80, 70, 50);

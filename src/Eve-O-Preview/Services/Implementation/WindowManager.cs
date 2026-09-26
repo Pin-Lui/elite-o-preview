@@ -39,11 +39,10 @@ namespace EveOPreview.Services.Implementation
             _hookService = hookService;
             _logger = logger;
 
-            // Composition is always enabled for Windows 8+
             this.IsCompositionEnabled = 
-                ((Environment.OSVersion.Version.Major == 6) && (Environment.OSVersion.Version.Minor >= 2)) // Win 8 and Win 8.1
-                || (Environment.OSVersion.Version.Major >= 10) // Win 10
-                || DwmNativeMethods.DwmIsCompositionEnabled(); // In case of Win 7 an API call is requiredWin 7
+                ((Environment.OSVersion.Version.Major == 6) && (Environment.OSVersion.Version.Minor >= 2))
+                || (Environment.OSVersion.Version.Major >= 10)
+                || DwmNativeMethods.DwmIsCompositionEnabled();
             
             _logger.Information("WindowManager initialized: CompositionEnabled={IsCompositionEnabled}, OS={OSVersion}", 
                 this.IsCompositionEnabled, Environment.OSVersion.VersionString);
@@ -51,9 +50,6 @@ namespace EveOPreview.Services.Implementation
 
         public bool IsCompositionEnabled { get; }
         
-        /// <summary>
-        /// Track the state if the manager is part way through switching a client at the moment.
-        /// </summary>
         public bool IsCurrentlySwitching { get; set; } = false;
 
         public IntPtr GetForegroundWindowHandle()
@@ -127,7 +123,7 @@ namespace EveOPreview.Services.Implementation
                 param.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
                 User32NativeMethods.GetWindowPlacement(handle, ref param);
                 param.showCmd = WINDOWPLACEMENT.SW_MINIMIZE;
-                param.flags |= 4; // WPF_ASYNCWINDOWPLACEMENT: don't wait on another input queue.
+                param.flags |= 4;
                 User32NativeMethods.SetWindowPlacement(handle, ref param);
             }
         }
@@ -187,7 +183,6 @@ namespace EveOPreview.Services.Implementation
 
             _logger.Verbose("WindowManager.GetStaticThumbnail: Window size {Width}x{Height}", width, height);
 
-            // Check if there is anything to make thumbnail of
             if ((width < WINDOW_SIZE_THRESHOLD) || (height < WINDOW_SIZE_THRESHOLD))
             {
                 _logger.Verbose("WindowManager.GetStaticThumbnail: Window too small for thumbnail (threshold={Threshold})", WINDOW_SIZE_THRESHOLD);

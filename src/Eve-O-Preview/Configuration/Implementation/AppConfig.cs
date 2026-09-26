@@ -20,7 +20,6 @@ namespace EveOPreview.Configuration.Implementation
     {
         public AppConfig()
         {
-            // Default values
             this.ConfigFileName = null;
         }
 

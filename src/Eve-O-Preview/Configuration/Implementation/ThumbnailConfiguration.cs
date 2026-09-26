@@ -66,7 +66,7 @@ namespace EveOPreview.Configuration.Implementation
             this.EnablePerClientThumbnailLayouts = false;
 
             this.HideThumbnailsOnLostFocus = false;
-            this.HideThumbnailsDelay = 2; // 2 thumbnails refresh cycles (1.0 sec)
+            this.HideThumbnailsDelay = 2;
 
             this.ThumbnailSize = ThumbnailConfiguration.DefaultThumbnailSize;
             this.ThumbnailMinimumSize = new Size(192, 108);
@@ -92,7 +92,6 @@ namespace EveOPreview.Configuration.Implementation
             this.FpsLimiterSettings = new FpsLimiterSettings();
             this.AudioMuteSettings = new AudioMuteSettings();
 
-            // Off for Elite: the active client would be limited to 2 CPU threads, which hurts a multi-threaded game.
             this.EnableAutomaticCpuAffinity = false;
         }
 
@@ -148,16 +147,13 @@ namespace EveOPreview.Configuration.Implementation
 
         public bool HideThumbnailsOnLostFocus { get; set; }
 
-        // Thin frame around the focused Elite window (General tab)
         public bool EnableActiveWindowFrame { get; set; }
 
-        // "Write log file" (General tab); off by default
         public bool EnableLogFile { get; set; }
 
         public const int DefaultActiveWindowFrameThickness = 1;
         public const int MaximumActiveWindowFrameThickness = 10;
 
-        // Frame thickness in pixels per client title (Active Clients tab); others use DefaultActiveWindowFrameThickness
         [JsonProperty("PerClientActiveWindowFrameThickness")]
         public Dictionary<string, int> PerClientActiveWindowFrameThickness { get; set; }
         public int HideThumbnailsDelay { get; set; }
@@ -209,8 +205,6 @@ namespace EveOPreview.Configuration.Implementation
         [JsonProperty]
         private Dictionary<string, Point> FlatLayout { get; set; }
 
-        // Sizes set with "Resize" from a preview's right-click menu, keyed by preview title.
-        // Previews without an entry use ThumbnailSize.
         [JsonProperty]
         private Dictionary<string, Size> PerClientThumbnailSize { get; set; }
         
@@ -230,14 +224,6 @@ namespace EveOPreview.Configuration.Implementation
         {
             Point location;
 
-            // What this code does:
-            // If Per-Client layouts are enabled
-            //    and client name is known
-            //    and there is a separate thumbnails layout for this client
-            //    and this layout contains an entry for the current client
-            // then return that entry
-            // otherwise try to get client layout from the flat all-clients layout
-            // If there is no layout too then use the default one
             if (this.EnablePerClientThumbnailLayouts && !string.IsNullOrEmpty(activeClient))
             {
                 Dictionary<string, Point> layoutSource;
@@ -297,8 +283,6 @@ namespace EveOPreview.Configuration.Implementation
             this.PerClientThumbnailSize.Clear();
         }
 
-        // Restores the default preview size and forgets every saved preview position and
-        // individual preview size (flat and per-commander). Game window layouts (ClientLayout) are kept.
         public void ResetThumbnailLayout()
         {
             this.ThumbnailSize = ThumbnailConfiguration.DefaultThumbnailSize;
@@ -338,9 +322,6 @@ namespace EveOPreview.Configuration.Implementation
             this.DisableThumbnail[currentClient] = isDisabled;
         }
 
-        /// <summary>
-        /// Applies restrictions to different parameters of the config
-        /// </summary>
         public void ApplyRestrictions()
         {
             CycleGroups ??= new List<CycleGroup>();

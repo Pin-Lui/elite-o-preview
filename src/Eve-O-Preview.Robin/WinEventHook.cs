@@ -33,13 +33,11 @@ internal static unsafe class WinEventHook
     public static void OnForegroundChanged(IntPtr hWinEventHook, uint eventType, IntPtr hwnd,
         int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
     {
-        // Ignore anything that isn't a window, such as a dialog box that makes it hard to debug / troubleshoot.
         if (idObject != OBJID_WINDOW)
         {
             return;
         }
 
-        // If the focus hasn't actually changed since the last time, do nothing.
         if (_lastHandleChecked == hwnd)
         {
             return;
@@ -56,7 +54,6 @@ internal static unsafe class WinEventHook
         {
             _onForegroundAction = callback;
 
-            // We run the loop on a background thread so it doesn't block the UI
             Thread listenerThread = new Thread(RunHookListener)
             {
                 IsBackground = true
@@ -74,7 +71,6 @@ internal static unsafe class WinEventHook
         const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
         const uint WINEVENT_OUTOFCONTEXT = 0x0000;
 
-        // Pass the address (&) of the static OnForegroundChanged method
         IntPtr hook = NativeMethods.SetWinEventHook(
             EVENT_SYSTEM_FOREGROUND,
             EVENT_SYSTEM_FOREGROUND,
@@ -86,7 +82,6 @@ internal static unsafe class WinEventHook
 
         if (hook == IntPtr.Zero) return;
 
-        // The Message Pump: Keeps the thread alive and processes the Hook callbacks
         NativeMethods.MSG msg;
         while (NativeMethods.GetMessage(out msg, IntPtr.Zero, 0, 0) > 0)
         {

@@ -126,13 +126,11 @@ namespace EveOPreview.Mediator.Handlers.Configuration
 
             KeyEventHandler downHandler = (s, e) =>
             {
-                // Ignore if the user is just tapping Ctrl/Shift/Alt by themselves
                 if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey ||
                     e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey ||
                     e.KeyCode == Keys.Menu || e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
                     return;
 
-                // Don't allow Windows key all on its own, but with something else is okay.
                 if (e.KeyData == Keys.LWin || e.KeyData == Keys.RWin)
                 {
                     return;

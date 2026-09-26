@@ -119,7 +119,7 @@ Do not normalize KeyCode and KeyData as equivalent. Cycle key-down matches full 
 
 ## Geometry, hovering, and event feedback
 
-The [ThumbnailView](../../Eve-O-Preview/View/Implementation/ThumbnailView.cs) comment explicitly keeps current size/position management in the view for responsiveness. Do not route high-frequency mouse moves through configuration persistence or mediator handlers merely to enforce a stricter presenter pattern.
+[ThumbnailView](../../Eve-O-Preview/View/Implementation/ThumbnailView.cs) deliberately keeps current size/position management in the view for responsiveness. Do not route high-frequency mouse moves through configuration persistence or mediator handlers merely to enforce a stricter presenter pattern.
 
 - `Refresh` maintains the image, highlight rectangle, and overlay, in that order. `_isSizeChanged`/`_isLocationChanged` gate unnecessary work; live/static rectangle setters also skip unchanged values.
 - `SetOpacity` maps values at or above 0.9 to 1.0 and ignores differences below 0.1. The overlay uses 1.0 above 0.8, otherwise `1.0 - (1.0 - opacity) / 2`. Its implementation, not the nearby prose comment, is the precise formula.
@@ -147,7 +147,7 @@ Client-window layouts are separate from thumbnail locations. `ApplyClientLayout`
 | 4–7 | First 1 | Next 1 | Next 1 | Remaining indices after 3 |
 | Below 4 | Automatic affinity unsupported | — | — | — |
 
-If E threads exist, their mask replaces the background mask. The service does not set priority class (`SetPriorityClass` is commented out); comments about spare OS capacity describe intent, not an exclusive CPU reservation.
+If E threads exist, their mask replaces the background mask. The service does not set priority class; the zone sizing that leaves spare OS capacity describes intent, not an exclusive CPU reservation.
 
 `UpdateAffinity` returns unless CPU support and `EnableAutomaticCpuAffinity` permit it. A missing active record falls back to next, then previous. It applies active/next/previous masks directly and uses `_currentBackgroundHandles` to skip redundant native background assignments. Removing those foreground-role handles from the set allows later transitions back to background to be applied. `ResetAll` restores each saved original affinity mask; native failures remain retryable. Stop sets a terminal flag under the same lock before resetting, so late activation work cannot reapply affinity during shutdown. Active/next/previous aliases are deduplicated by PID, with active winning. Desired masks are intersected with the original restriction. Preserve reset wiring when changing configuration/shutdown behavior.
 

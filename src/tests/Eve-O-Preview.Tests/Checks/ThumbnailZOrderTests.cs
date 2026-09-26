@@ -100,8 +100,6 @@ public sealed class ThumbnailZOrderTests(ITestOutputHelper output)
             void Refresh() => Call(manager, "RefreshThumbnails");
             void Activate(Preview view, string focusCheck = null)
             {
-                // This desktop is intentionally not the input desktop. Set the calling
-                // thread's active window explicitly instead of requesting foreground focus.
                 Native.SetActiveWindow(client.Handle);
                 IntPtr activeBefore = Native.GetActiveWindow();
                 if (activeBefore != client.Handle)
@@ -204,13 +202,13 @@ public sealed class ThumbnailZOrderTests(ITestOutputHelper output)
 
                 case "ImmediateCycleActivation":
                     Native.SetActiveWindow(client.Handle);
-                    c.Refreshing = _ => AssertStack(c, b, a); // Image work must not precede the native raise either.
-                    activating = _ => AssertStack(c, b, a); // Must already be raised when client activation starts.
+                    c.Refreshing = _ => AssertStack(c, b, a);
+                    activating = _ => AssertStack(c, b, a);
                     manager.GetType().GetMethod("SetActive").Invoke(manager,
                         [new KeyValuePair<IntPtr, IThumbnailView>(c.Id, c)]);
                     activating = null;
                     c.Refreshing = null;
-                    AssertStack(c, b, a); // No refresh tick.
+                    AssertStack(c, b, a);
                     Check(Native.GetActiveWindow() == client.Handle, "immediate cycling preserves focus");
                     break;
 
@@ -227,7 +225,7 @@ public sealed class ThumbnailZOrderTests(ITestOutputHelper output)
                     a.ThumbnailActivated(a.Id);
                     a.Refreshing = null;
                     activating = null;
-                    AssertStack(a, b, c); // No UI continuation or refresh tick.
+                    AssertStack(a, b, c);
                     Check(Native.GetActiveWindow() == client.Handle, "immediate thumbnail activation preserves focus");
                     break;
 
@@ -241,7 +239,6 @@ public sealed class ThumbnailZOrderTests(ITestOutputHelper output)
                         a.IsActive = mode != "Inactive";
                         Native.ShowWindow(a.Handle, 0);
                         Native.ShowWindow(a.Overlay.Handle, 0);
-                        // Observe at entry to client activation, before any refresh reconciles visibility.
                         activating = _ => Check(!Native.IsWindowVisible(a.Handle) && !Native.IsWindowVisible(a.Overlay.Handle),
                             "immediate activation respects " + mode);
                         manager.GetType().GetMethod("SetActive").Invoke(manager,

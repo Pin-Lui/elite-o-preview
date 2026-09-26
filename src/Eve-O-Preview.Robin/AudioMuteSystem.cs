@@ -34,8 +34,8 @@ internal static unsafe class AudioMuteSystem
     private const int EXCEPTION_CONTINUE_EXECUTION = -1;
     private const int EXCEPTION_CONTINUE_SEARCH = 0;
 
-    private const ulong DR7_ENABLE_L0 = 0x1; // Bit 0: Enables Local Breakpoint 0 (Dr0)
-    private const ulong DR6_DETECT_B0 = 0x1; // Bit 0: Detected Breakpoint 0 Condition
+    private const ulong DR7_ENABLE_L0 = 0x1;
+    private const ulong DR6_DETECT_B0 = 0x1;
 
     private static delegate* unmanaged[Cdecl]<int, uint, int, int, void> _executeAction;
 
@@ -56,7 +56,7 @@ internal static unsafe class AudioMuteSystem
     internal static void InstallAudioMonitor()
     {
         var module = NativeMethods.GetModuleHandle("_audio2.dll");
-        if (module == IntPtr.Zero) return; // The DirectX mock has no EVE audio engine.
+        if (module == IntPtr.Zero) return;
         var postEvent = NativeMethods.GetProcAddress(module,
             "?PostEvent@SoundEngine@AK@@YAII_KIP6AXW4AkCallbackType@@PEAUAkCallbackInfo@@@ZPEAXIPEAUAkExternalSourceInfo@@I@Z");
         var action = NativeMethods.GetProcAddress(module,
@@ -114,7 +114,6 @@ internal static unsafe class AudioMuteSystem
         var ctx = pointers->ContextRecord;
         if (record->ExceptionCode == STATUS_GUARD_PAGE_VIOLATION)
         {
-            // Guard exceptions concern an entire page, including accesses from other code.
             if (_vehHandle == IntPtr.Zero || record->NumberParameters < 2 ||
                 record->ExceptionInformation[1] < _pageStart ||
                 record->ExceptionInformation[1] - _pageStart >= (ulong)Environment.SystemPageSize)
@@ -122,7 +121,6 @@ internal static unsafe class AudioMuteSystem
             if (ctx->Rip == (ulong)_postEventAddr && ctx->Rsp != 0 && !_executingAction && IsMonitoringEnabled)
             {
                 bool ownsSlot = _depth > 0 && ctx->Dr0 == _pending[_depth - 1].ReturnAddress && (ctx->Dr7 & 3) == 1;
-                // A foreign debugger's slot is never overwritten. Discard stale state after an unwind.
                 if (_depth > 0 && !ownsSlot) _depth = 0;
                 if (ownsSlot && ctx->Rsp >= _pending[0].StackPointer)
                 {
@@ -152,9 +150,6 @@ internal static unsafe class AudioMuteSystem
 
         bool handled = false;
         bool foreignTrap = false;
-        // Windows can report a trap-flag step with DR6 == 0 (observed in the native
-        // smoke process during DLL thread attach). Track the step we requested;
-        // don't require BS when no hardware slot reports a coincident exception.
         if (_rearmGuard && ((ctx->Dr6 & (1UL << 14)) != 0 || (ctx->Dr6 & 0xF) == 0))
         {
             _rearmGuard = false;
@@ -180,7 +175,6 @@ internal static unsafe class AudioMuteSystem
             if (_captureDiagnostics) AudioLog.Add(entry.EventId, entry.GameObjectId);
             handled = true;
         }
-        // Preserve debugger/other instrumentation exceptions even if one of our conditions coincided.
         return handled && !foreignTrap && (ctx->Dr6 & 0xE00F) == 0 ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_CONTINUE_SEARCH;
     }
 
@@ -206,7 +200,7 @@ internal static unsafe class AudioMuteSystem
     {
         lock (_muteLock)
         {
-            if (enabled) AudioLog.ClearEventHistory(); // Allocate the bounded ring on the pipe thread before capture.
+            if (enabled) AudioLog.ClearEventHistory();
             _captureDiagnostics = enabled;
             UpdatePageProtection();
         }
@@ -225,7 +219,6 @@ internal static unsafe class AudioMuteSystem
             var current = Volatile.Read(ref _mutedIds);
             uint[] replacement = (remove ? current.Except(ids) : replace ? ids : current.Concat(ids)).Distinct().Order().ToArray();
             if (replacement.Length > MaxMutedIds) throw new InvalidDataException("The audio mute set exceeds capacity.");
-            // Allocate/sort on the pipe thread, then publish once. Exception callbacks only read immutable data.
             Volatile.Write(ref _mutedIds, replacement);
             UpdatePageProtection();
         }
@@ -246,16 +239,16 @@ internal static unsafe class AudioMuteSystem
 
     internal enum AkCurveInterpolation : int
     {
-        Log3 = 0, // Logarithmic (Curving slowly at first, then fast)
-        Sine = 1, // Sine wave (Smooth start and end)
-        Log1 = 2, // Logarithmic (Faster initial drop than Log3)
-        InvSCurve = 3, // Inversed S-Curve
-        Linear = 4, // Linear (Default straight-line transition)
-        SCurve = 5, // S-Curve (Smooth transition)
-        Exp1 = 6, // Exponential (Slow drop, then accelerates)
-        SineRecip = 7, // Reciprocal of a sine curve
-        Exp3 = 8, // Exponential (Steepest acceleration)
-        Constant = 9  // Constant (Instant jump, no interpolation)
+        Log3 = 0,
+        Sine = 1,
+        Log1 = 2,
+        InvSCurve = 3,
+        Linear = 4,
+        SCurve = 5,
+        Exp1 = 6,
+        SineRecip = 7,
+        Exp3 = 8,
+        Constant = 9
     }
 }
 

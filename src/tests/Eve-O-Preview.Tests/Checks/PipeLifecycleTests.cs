@@ -34,7 +34,7 @@ public sealed class PipeLifecycleTests
             if (bufferSize > 0)
             {
                 Assert.True(PeekNamedPipe(server.SafePipeHandle.DangerousGetHandle(), IntPtr.Zero, 0, IntPtr.Zero, out uint available, IntPtr.Zero));
-                Assert.Equal(predicting ? 6u : 2u, available); // Bytes were issued before any UI continuation.
+                Assert.Equal(predicting ? 6u : 2u, available);
             }
             await connection;
             byte[] bytes = new byte[predicting ? 6 : 2];
@@ -97,7 +97,7 @@ public sealed class PipeLifecycleTests
         var version = hooks.GetVersionAsync(handle);
         await server.WaitForConnectionAsync(deadline.Token);
         await server.ReadExactlyAsync(new byte[2], deadline.Token);
-        await server.WriteAsync(new byte[] { 100, 0, 0, 0, 65 }, deadline.Token); // Deliberately truncated version.
+        await server.WriteAsync(new byte[] { 100, 0, 0, 0, 65 }, deadline.Token);
         Assert.Null(await version.WaitAsync(deadline.Token));
     }
 }
