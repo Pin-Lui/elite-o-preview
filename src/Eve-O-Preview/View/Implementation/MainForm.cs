@@ -451,6 +451,18 @@ namespace EveOPreview.View
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string ReleaseMouseHotkey
+        {
+            get => this.txtReleaseMouseHotkey.Text;
+            set
+            {
+                this._suppressEvents = true;
+                this.txtReleaseMouseHotkey.Text = value;
+                this._suppressEvents = false;
+            }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string LoadedProfileName
         {
             get => this.txtLoadedProfileName.Text;
@@ -1499,6 +1511,27 @@ namespace EveOPreview.View
             txtMinimizeAllClientsHotkey.Text = captureHotkeyResponse.KeyString;
             _logger.Verbose("MainForm: Set minimize all clients hotkey to {Hotkey}", captureHotkeyResponse.KeyString);
 
+            this.ApplicationSettingsChanged?.Invoke();
+        }
+
+        private void txtReleaseMouseHotkey_DoubleClick(object sender, EventArgs e)
+        {
+            _logger.Verbose("MainForm: txtReleaseMouseHotkey_DoubleClick");
+            if (WaitForHotkeyCapture(txtReleaseMouseHotkey, out var captureHotkeyResponse))
+            {
+                return;
+            }
+
+            txtReleaseMouseHotkey.Text = captureHotkeyResponse.KeyString;
+            _logger.Verbose("MainForm: Set release mouse hotkey to {Hotkey}", captureHotkeyResponse.KeyString);
+
+            this.ApplicationSettingsChanged?.Invoke();
+        }
+
+        private void btnClearReleaseMouseHotkey_Click(object sender, EventArgs e)
+        {
+            _logger.Verbose("MainForm: btnClearReleaseMouseHotkey_Click");
+            txtReleaseMouseHotkey.Text = string.Empty;
             this.ApplicationSettingsChanged?.Invoke();
         }
 

@@ -180,12 +180,16 @@ namespace EveOPreview.Configuration.Implementation
         
         public string ToggleHideActiveClientsHotkey { get; set; }
         public string MinimizeAllClientsHotkey { get; set; }
+        public string ReleaseMouseHotkey { get; set; }
 
         [JsonIgnore]
         public Keys ToggleHideActiveClientsHotkeyParsed { get; set; }
 
         [JsonIgnore]
         public Keys MinimizeAllClientsHotkeyParsed { get; set; }
+
+        [JsonIgnore]
+        public Keys ReleaseMouseHotkeyParsed { get; set; }
         
         public FontSettings TitleFontSettings { get; set; }
 

@@ -55,6 +55,7 @@ namespace EveOPreview.View
         AudioMuteSettings AudioMuteSettings { get; set; }
         string ToggleHideAllActiveHotkey { get; set; }
         string MinimizeAllClientsHotkey { get; set; }
+        string ReleaseMouseHotkey { get; set; }
         string LoadedProfileName { get; set; }
 
         List<CycleGroup> CycleGroups { get; set; }

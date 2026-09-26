@@ -407,6 +407,12 @@ namespace EveOPreview.Services
                         _mediator.Send(new MinimizeAllClients());
                         e.Handled = true;
                     }
+                    else if (e.KeyData == _configuration.ReleaseMouseHotkeyParsed)
+                    {
+                        _logger.Verbose("ThumbnailManager: Release mouse hotkey pressed");
+                        _windowManager.ReleaseMouse();
+                        e.Handled = true;
+                    }
                 }
                 catch (Exception ex)
                 {

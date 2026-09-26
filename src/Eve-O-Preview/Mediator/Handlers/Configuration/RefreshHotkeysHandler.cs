@@ -73,6 +73,7 @@ namespace EveOPreview.Mediator.Handlers.Configuration
 
                 _config.ToggleHideActiveClientsHotkeyParsed = _config.ToggleHideActiveClientsHotkey.ToHotkeys();
                 _config.MinimizeAllClientsHotkeyParsed = _config.MinimizeAllClientsHotkey.ToHotkeys();
+                _config.ReleaseMouseHotkeyParsed = _config.ReleaseMouseHotkey.ToHotkeys();
                 _events.PublishHotkeysChanged();
                 
                 _logger.Information("Hotkeys refreshed successfully: {CycleGroupCount} groups configured", cycleGroupCount);

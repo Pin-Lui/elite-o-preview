@@ -100,5 +100,11 @@ namespace EveOPreview.Services.Interop
         
         [DllImport("user32.dll")]
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool fUnknown);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetShellWindow();
+
+        [DllImport("user32.dll")]
+        public static extern bool ClipCursor(IntPtr rect);
     }
 }

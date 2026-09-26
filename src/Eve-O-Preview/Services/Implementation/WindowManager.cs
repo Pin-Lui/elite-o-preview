@@ -107,6 +107,20 @@ namespace EveOPreview.Services.Implementation
             }
         }
 
+        public void ReleaseMouse()
+        {
+            _logger.Verbose("WindowManager.ReleaseMouse: Releasing the cursor and moving focus to the desktop");
+            User32NativeMethods.ClipCursor(IntPtr.Zero);
+
+            IntPtr desktop = User32NativeMethods.GetShellWindow();
+            if (desktop != IntPtr.Zero && !User32NativeMethods.SetForegroundWindow(desktop))
+            {
+                User32NativeMethods.SwitchToThisWindow(desktop, false);
+            }
+
+            User32NativeMethods.ClipCursor(IntPtr.Zero);
+        }
+
         public void MinimizeWindow(IntPtr handle, bool enableAnimation)
         {
             _logger.Verbose("WindowManager.MinimizeWindow: Minimizing 0x{Handle:X}, Animation={EnableAnimation}", handle, enableAnimation);

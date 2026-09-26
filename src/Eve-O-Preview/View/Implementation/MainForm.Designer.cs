@@ -73,6 +73,9 @@ namespace EveOPreview.View
             EnablePerClientThumbnailsLayoutsCheckBox = new CheckBox();
             EnableActiveWindowFrameCheckBox = new CheckBox();
             EnableLogFileCheckBox = new CheckBox();
+            lblReleaseMouseHotkey = new Label();
+            txtReleaseMouseHotkey = new TextBox();
+            btnClearReleaseMouseHotkey = new Button();
             MinimizeToTrayCheckBox = new CheckBox();
             ThumbnailsWidthNumericEdit = new NumericUpDown();
             ThumbnailsHeightNumericEdit = new NumericUpDown();
@@ -300,6 +303,9 @@ namespace EveOPreview.View
             GeneralSettingsPanel.Controls.Add(EnablePerClientThumbnailsLayoutsCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableActiveWindowFrameCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableLogFileCheckBox);
+            GeneralSettingsPanel.Controls.Add(lblReleaseMouseHotkey);
+            GeneralSettingsPanel.Controls.Add(txtReleaseMouseHotkey);
+            GeneralSettingsPanel.Controls.Add(btnClearReleaseMouseHotkey);
             GeneralSettingsPanel.Controls.Add(MinimizeToTrayCheckBox);
             GeneralSettingsPanel.Dock = DockStyle.Fill;
             GeneralSettingsPanel.Location = new Point(4, 3);
@@ -429,6 +435,39 @@ namespace EveOPreview.View
             instantToolTip.SetToolTip(EnableLogFileCheckBox, "Writes a log to the logs folder next to the exe. Off by default; only needed when something goes wrong.");
             EnableLogFileCheckBox.UseVisualStyleBackColor = true;
             EnableLogFileCheckBox.CheckedChanged += OptionChanged_Handler;
+            // 
+            // lblReleaseMouseHotkey
+            // 
+            lblReleaseMouseHotkey.AutoSize = true;
+            lblReleaseMouseHotkey.Location = new Point(9, 268);
+            lblReleaseMouseHotkey.Margin = new Padding(4, 0, 4, 0);
+            lblReleaseMouseHotkey.Name = "lblReleaseMouseHotkey";
+            lblReleaseMouseHotkey.Size = new Size(120, 15);
+            lblReleaseMouseHotkey.TabIndex = 26;
+            lblReleaseMouseHotkey.Text = "Release mouse hotkey";
+            // 
+            // txtReleaseMouseHotkey
+            // 
+            txtReleaseMouseHotkey.Location = new Point(170, 264);
+            txtReleaseMouseHotkey.Margin = new Padding(4, 3, 4, 3);
+            txtReleaseMouseHotkey.Name = "txtReleaseMouseHotkey";
+            txtReleaseMouseHotkey.ReadOnly = true;
+            txtReleaseMouseHotkey.Size = new Size(109, 23);
+            txtReleaseMouseHotkey.TabIndex = 27;
+            instantToolTip.SetToolTip(txtReleaseMouseHotkey, "Double-click, then press a key. The key frees the mouse from the Elite window by moving focus to the desktop.");
+            txtReleaseMouseHotkey.DoubleClick += txtReleaseMouseHotkey_DoubleClick;
+            // 
+            // btnClearReleaseMouseHotkey
+            // 
+            btnClearReleaseMouseHotkey.Location = new Point(284, 263);
+            btnClearReleaseMouseHotkey.Margin = new Padding(4, 3, 4, 3);
+            btnClearReleaseMouseHotkey.Name = "btnClearReleaseMouseHotkey";
+            btnClearReleaseMouseHotkey.Size = new Size(30, 25);
+            btnClearReleaseMouseHotkey.TabIndex = 28;
+            btnClearReleaseMouseHotkey.Text = "X";
+            instantToolTip.SetToolTip(btnClearReleaseMouseHotkey, "Remove the release mouse hotkey");
+            btnClearReleaseMouseHotkey.UseVisualStyleBackColor = true;
+            btnClearReleaseMouseHotkey.Click += btnClearReleaseMouseHotkey_Click;
             // 
             // MinimizeToTrayCheckBox
             // 
@@ -2045,6 +2084,9 @@ namespace EveOPreview.View
 		private CheckBox EnablePerClientThumbnailsLayoutsCheckBox;
 		private CheckBox EnableActiveWindowFrameCheckBox;
 		private CheckBox EnableLogFileCheckBox;
+		private Label lblReleaseMouseHotkey;
+		private TextBox txtReleaseMouseHotkey;
+		private Button btnClearReleaseMouseHotkey;
 		private CheckBox MinimizeToTrayCheckBox;
 		private NumericUpDown ThumbnailsWidthNumericEdit;
 		private NumericUpDown ThumbnailsHeightNumericEdit;

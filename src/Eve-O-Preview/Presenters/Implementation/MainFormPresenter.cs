@@ -285,6 +285,7 @@ namespace EveOPreview.Presenters
             this.View.TitleFontSettings = this._configuration.TitleFontSettings;
             this.View.ToggleHideAllActiveHotkey = this._configuration.ToggleHideActiveClientsHotkey;
             this.View.MinimizeAllClientsHotkey = this._configuration.MinimizeAllClientsHotkey;
+            this.View.ReleaseMouseHotkey = this._configuration.ReleaseMouseHotkey;
 
             this.View.FpsLimiterSettings = this._configuration.FpsLimiterSettings;
             this.View.AudioMuteSettings = this._configuration.AudioMuteSettings;
@@ -329,6 +330,7 @@ namespace EveOPreview.Presenters
             this._configuration.TitleFontSettings = this.View.TitleFontSettings;
             this._configuration.ToggleHideActiveClientsHotkey = this.View.ToggleHideAllActiveHotkey;
             this._configuration.MinimizeAllClientsHotkey = this.View.MinimizeAllClientsHotkey;
+            this._configuration.ReleaseMouseHotkey = this.View.ReleaseMouseHotkey;
 
             this._configuration.EnableAutomaticCpuAffinity = this.View.EnableAutomaticCpuAffinity;
 

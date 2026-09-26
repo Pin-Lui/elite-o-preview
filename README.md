@@ -87,6 +87,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
 | Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
 | Write log file | Write a log to the `logs` folder next to the exe, for troubleshooting. Off by default (no log files at all). The Verbose Logging shortcut always writes a detailed log |
+| Release mouse hotkey | Elite keeps the mouse inside its window while it has focus. Double-click the box and press a key: pressing it frees the mouse by moving focus to the desktop (the game stays where it is, nothing opens). Your cycle hotkeys switch back into the game. **X** removes the hotkey |
 | Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in that commander's highlight colour and frame thickness (Active Clients tab); otherwise the highlight colour from the Overlay tab and 1 px. Useful for switching windows with the cycle hotkeys while previews are hidden |
 
 ### **Thumbnail** Tab

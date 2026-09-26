@@ -93,6 +93,11 @@ namespace EveOPreview.Mediator.Handlers.Configuration
                 AddOrMeaningfulError(hotkeysInConfig, _config.MinimizeAllClientsHotkeyParsed, "Minimize All Clients");
             }
 
+            if (_config.ReleaseMouseHotkeyParsed != Keys.None)
+            {
+                AddOrMeaningfulError(hotkeysInConfig, _config.ReleaseMouseHotkeyParsed, "Release Mouse");
+            }
+
             foreach (var cycleGroup in _config.CycleGroups)
             {
                 foreach (var forwardKeyString in cycleGroup.ForwardHotkeys)

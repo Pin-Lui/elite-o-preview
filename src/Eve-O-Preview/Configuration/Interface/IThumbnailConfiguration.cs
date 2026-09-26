@@ -72,8 +72,10 @@ namespace EveOPreview.Configuration
 
         string ToggleHideActiveClientsHotkey { get; set; }
         string MinimizeAllClientsHotkey { get; set; }
+        string ReleaseMouseHotkey { get; set; }
         Keys ToggleHideActiveClientsHotkeyParsed { get; set; }
         Keys MinimizeAllClientsHotkeyParsed { get; set; }
+        Keys ReleaseMouseHotkeyParsed { get; set; }
 
         Point GetThumbnailLocation(string currentClient, string activeClient, Point defaultLocation);
         void SetThumbnailLocation(string currentClient, string activeClient, Point location);
