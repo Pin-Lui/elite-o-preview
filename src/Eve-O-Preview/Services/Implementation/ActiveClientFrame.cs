@@ -36,10 +36,10 @@ namespace EveOPreview.Services
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_SHOWWINDOW = 0x0040;
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        private const int FrameThickness = 2;
 
         private readonly Func<IntPtr, bool> _isClientWindow;
         private readonly Func<IntPtr, Color> _getFrameColor;
+        private readonly Func<IntPtr, int> _getFrameThickness;
         private readonly WinEventDelegate _winEventCallback;
         private readonly EdgeWindow[] _edges = new EdgeWindow[4];
         private FrameOwnerWindow _owner;
@@ -54,10 +54,11 @@ namespace EveOPreview.Services
         private Color _lastColor;
         private int _lastThickness;
 
-        public ActiveClientFrame(Func<IntPtr, bool> isClientWindow, Func<IntPtr, Color> getFrameColor)
+        public ActiveClientFrame(Func<IntPtr, bool> isClientWindow, Func<IntPtr, Color> getFrameColor, Func<IntPtr, int> getFrameThickness)
         {
             this._isClientWindow = isClientWindow;
             this._getFrameColor = getFrameColor;
+            this._getFrameThickness = getFrameThickness;
             // Keep a reference: the native hook calls this delegate
             this._winEventCallback = this.OnWinEvent;
         }
@@ -174,7 +175,7 @@ namespace EveOPreview.Services
             }
 
             uint dpi = GetDpiForWindow(this._target);
-            int thickness = Math.Max(1, (int)Math.Round(FrameThickness * (dpi == 0 ? 96 : dpi) / 96.0));
+            int thickness = Math.Max(1, (int)Math.Round(this._getFrameThickness(this._target) * (dpi == 0 ? 96 : dpi) / 96.0));
             Color color = this._getFrameColor(this._target);
 
             if (!forceReposition && this._isShown && bounds == this._lastBounds && color == this._lastColor && thickness == this._lastThickness)

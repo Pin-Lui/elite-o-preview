@@ -119,6 +119,8 @@ namespace EveOPreview.View
             ClientColorSwatch = new Panel();
             ClientColorChooseButton = new Button();
             ClientColorDefaultButton = new Button();
+            ClientFrameThicknessLabel = new Label();
+            ClientFrameThicknessNumericEdit = new NumericUpDown();
             CycleGroupPanel = new Panel();
             splitContainerMainCycleGroup = new SplitContainer();
             CycleGroupLabel = new Label();
@@ -206,6 +208,7 @@ namespace EveOPreview.View
             ThumbnailSettingsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ThumbnailsWidthNumericEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ThumbnailsHeightNumericEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ClientFrameThicknessNumericEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ThumbnailOpacityTrackBar).BeginInit();
             ZoomSettingsPanel.SuspendLayout();
             ZoomAnchorPanel.SuspendLayout();
@@ -1078,7 +1081,7 @@ namespace EveOPreview.View
             // 
             ThumbnailsList.BackColor = SystemColors.Window;
             ThumbnailsList.BorderStyle = BorderStyle.FixedSingle;
-            ThumbnailsList.CheckOnClick = true;
+            ThumbnailsList.CheckOnClick = false;
             ThumbnailsList.Dock = DockStyle.Fill;
             ThumbnailsList.FormattingEnabled = true;
             ThumbnailsList.IntegralHeight = false;
@@ -1089,6 +1092,8 @@ namespace EveOPreview.View
             ThumbnailsList.TabIndex = 34;
             ThumbnailsList.ItemCheck += ThumbnailsList_ItemCheck_Handler;
             ThumbnailsList.SelectedIndexChanged += ThumbnailsList_SelectedIndexChanged;
+            ThumbnailsList.MouseDown += ThumbnailsList_MouseDown;
+            ThumbnailsList.KeyDown += ThumbnailsList_KeyDown;
             // 
             // ClientColorPanel
             // 
@@ -1096,9 +1101,11 @@ namespace EveOPreview.View
             ClientColorPanel.Controls.Add(ClientColorSwatch);
             ClientColorPanel.Controls.Add(ClientColorChooseButton);
             ClientColorPanel.Controls.Add(ClientColorDefaultButton);
+            ClientColorPanel.Controls.Add(ClientFrameThicknessLabel);
+            ClientColorPanel.Controls.Add(ClientFrameThicknessNumericEdit);
             ClientColorPanel.Dock = DockStyle.Bottom;
             ClientColorPanel.Name = "ClientColorPanel";
-            ClientColorPanel.Size = new Size(330, 72);
+            ClientColorPanel.Size = new Size(330, 104);
             ClientColorPanel.TabIndex = 35;
             // 
             // ClientColorLabel
@@ -1108,7 +1115,7 @@ namespace EveOPreview.View
             ClientColorLabel.Name = "ClientColorLabel";
             ClientColorLabel.Size = new Size(322, 17);
             ClientColorLabel.TabIndex = 0;
-            ClientColorLabel.Text = "Highlight colour: select a commander above";
+            ClientColorLabel.Text = "Select a commander above to set its highlight";
             // 
             // ClientColorSwatch
             // 
@@ -1141,6 +1148,28 @@ namespace EveOPreview.View
             ClientColorDefaultButton.Text = "Default";
             ClientColorDefaultButton.UseVisualStyleBackColor = true;
             ClientColorDefaultButton.Click += ClientColorDefaultButton_Click;
+            // 
+            // ClientFrameThicknessLabel
+            // 
+            ClientFrameThicknessLabel.AutoSize = true;
+            ClientFrameThicknessLabel.Location = new Point(4, 72);
+            ClientFrameThicknessLabel.Name = "ClientFrameThicknessLabel";
+            ClientFrameThicknessLabel.Size = new Size(150, 15);
+            ClientFrameThicknessLabel.TabIndex = 4;
+            ClientFrameThicknessLabel.Text = "Window frame thickness (px)";
+            // 
+            // ClientFrameThicknessNumericEdit
+            // 
+            ClientFrameThicknessNumericEdit.BorderStyle = BorderStyle.FixedSingle;
+            ClientFrameThicknessNumericEdit.Location = new Point(204, 69);
+            ClientFrameThicknessNumericEdit.Margin = new Padding(4, 3, 4, 3);
+            ClientFrameThicknessNumericEdit.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            ClientFrameThicknessNumericEdit.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            ClientFrameThicknessNumericEdit.Name = "ClientFrameThicknessNumericEdit";
+            ClientFrameThicknessNumericEdit.Size = new Size(56, 23);
+            ClientFrameThicknessNumericEdit.TabIndex = 5;
+            ClientFrameThicknessNumericEdit.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            ClientFrameThicknessNumericEdit.ValueChanged += ClientFrameThicknessNumericEdit_ValueChanged;
             // 
             // CycleGroupTabPage
             // 
@@ -1934,6 +1963,7 @@ namespace EveOPreview.View
             ThumbnailSettingsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ThumbnailsWidthNumericEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)ThumbnailsHeightNumericEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ClientFrameThicknessNumericEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)ThumbnailOpacityTrackBar).EndInit();
             ZoomSettingsPanel.ResumeLayout(false);
             ZoomSettingsPanel.PerformLayout();
@@ -2026,6 +2056,8 @@ namespace EveOPreview.View
 		private Panel ClientColorSwatch;
 		private Button ClientColorChooseButton;
 		private Button ClientColorDefaultButton;
+		private Label ClientFrameThicknessLabel;
+		private NumericUpDown ClientFrameThicknessNumericEdit;
 		private LinkLabel DocumentationLink;
 		private Label VersionLabel;
 		private CheckBox MinimizeInactiveClientsCheckBox;

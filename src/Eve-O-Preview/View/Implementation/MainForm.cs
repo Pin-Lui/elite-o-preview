@@ -326,6 +326,15 @@ namespace EveOPreview.View
         public Action<string, Color?> SetClientHighlightColor { get; set; }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Func<string, int?> GetClientFrameThickness { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Action<string, int?> SetClientFrameThickness { get; set; }
+
+        private bool _updatingClientHighlightControls;
+        private bool _allowThumbnailCheckChange;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public FontSettings TitleFontSettings
         {
             get
@@ -501,7 +510,9 @@ namespace EveOPreview.View
 
             foreach (IThumbnailDescription view in thumbnails)
             {
+                this._allowThumbnailCheckChange = true;
                 this.ThumbnailsList.SetItemChecked(this.ThumbnailsList.Items.Add(view), view.IsDisabled);
+                this._allowThumbnailCheckChange = false;
             }
 
             this.ThumbnailsList.EndUpdate();
@@ -643,14 +654,26 @@ namespace EveOPreview.View
             string title = this.SelectedClientTitle();
             bool hasSelection = !string.IsNullOrEmpty(title);
             Color? customColor = hasSelection ? this.GetClientHighlightColor?.Invoke(title) : null;
+            int? customThickness = hasSelection ? this.GetClientFrameThickness?.Invoke(title) : null;
 
-            this.ClientColorChooseButton.Enabled = hasSelection;
-            this.ClientColorDefaultButton.Enabled = customColor.HasValue;
-            this.ClientColorSwatch.Enabled = hasSelection;
-            this.ClientColorSwatch.BackColor = hasSelection ? (customColor ?? this.ActiveClientHighlightColor) : this.ClientColorPanel.BackColor;
-            this.ClientColorLabel.Text = !hasSelection
-                ? "Highlight colour: select a commander above"
-                : $"Highlight colour of {title}: {(customColor.HasValue ? "own colour" : "default")}";
+            this._updatingClientHighlightControls = true;
+            try
+            {
+                this.ClientColorChooseButton.Enabled = hasSelection;
+                this.ClientColorDefaultButton.Enabled = customColor.HasValue || customThickness.HasValue;
+                this.ClientColorSwatch.Enabled = hasSelection;
+                this.ClientColorSwatch.BackColor = hasSelection ? (customColor ?? this.ActiveClientHighlightColor) : this.ClientColorPanel.BackColor;
+                this.ClientFrameThicknessNumericEdit.Enabled = hasSelection;
+                this.ClientFrameThicknessNumericEdit.Value = Math.Clamp(customThickness ?? ThumbnailConfiguration.DefaultActiveWindowFrameThickness,
+                    (int)this.ClientFrameThicknessNumericEdit.Minimum, (int)this.ClientFrameThicknessNumericEdit.Maximum);
+                this.ClientColorLabel.Text = !hasSelection
+                    ? "Select a commander above to set its highlight"
+                    : $"{title}: {(customColor.HasValue ? "own colour" : "default colour")}, {(customThickness.HasValue ? "own" : "default")} frame thickness";
+            }
+            finally
+            {
+                this._updatingClientHighlightControls = false;
+            }
         }
 
         private void ClientColorChooseButton_Click(object sender, EventArgs e)
@@ -688,11 +711,80 @@ namespace EveOPreview.View
 
             _logger.Verbose("MainForm: ClientColorDefaultButton_Click for {Title}", title);
             this.SetClientHighlightColor?.Invoke(title, null);
+            this.SetClientFrameThickness?.Invoke(title, null);
             this.UpdateClientColorControls();
+        }
+
+        private void ClientFrameThicknessNumericEdit_ValueChanged(object sender, EventArgs e)
+        {
+            string title = this.SelectedClientTitle();
+            if (this._updatingClientHighlightControls || string.IsNullOrEmpty(title))
+            {
+                return;
+            }
+
+            _logger.Verbose("MainForm: Frame thickness for {Title} set to {Thickness}", title, this.ClientFrameThicknessNumericEdit.Value);
+            this.SetClientFrameThickness?.Invoke(title, (int)this.ClientFrameThicknessNumericEdit.Value);
+            this.UpdateClientColorControls();
+        }
+
+        // The hide check box changes only when its square is clicked (or Space is pressed), so rows can be
+        // selected freely to set highlight colours
+        private void ThumbnailsList_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            int index = this.ThumbnailsList.IndexFromPoint(e.Location);
+            if (index < 0 || index >= this.ThumbnailsList.Items.Count)
+            {
+                return;
+            }
+
+            Rectangle itemBounds = this.ThumbnailsList.GetItemRectangle(index);
+            int checkBoxWidth = this.ThumbnailsList.ItemHeight + 2;
+            if (e.X - itemBounds.Left <= checkBoxWidth)
+            {
+                this.ToggleThumbnailHidden(index);
+            }
+        }
+
+        private void ThumbnailsList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                if (this.ThumbnailsList.SelectedIndex >= 0)
+                {
+                    this.ToggleThumbnailHidden(this.ThumbnailsList.SelectedIndex);
+                }
+
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void ToggleThumbnailHidden(int index)
+        {
+            this._allowThumbnailCheckChange = true;
+            try
+            {
+                this.ThumbnailsList.SetItemChecked(index, !this.ThumbnailsList.GetItemChecked(index));
+            }
+            finally
+            {
+                this._allowThumbnailCheckChange = false;
+            }
         }
 
         private void ThumbnailsList_ItemCheck_Handler(object sender, ItemCheckEventArgs e)
         {
+            if (!this._allowThumbnailCheckChange)
+            {
+                e.NewValue = e.CurrentValue;
+                return;
+            }
+
             if (!(this.ThumbnailsList.Items[e.Index] is IThumbnailDescription selectedItem))
             {
                 return;

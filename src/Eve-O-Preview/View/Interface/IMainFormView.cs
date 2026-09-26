@@ -90,6 +90,8 @@ namespace EveOPreview.View
         Action MinimizeAllClients { get; set; }
         Func<string, Color?> GetClientHighlightColor { get; set; }
         Action<string, Color?> SetClientHighlightColor { get; set; }
+        Func<string, int?> GetClientFrameThickness { get; set; }
+        Action<string, int?> SetClientFrameThickness { get; set; }
         Action ResetThumbnailLayout { get; set; }
         public Action CloneCurrentProfile { get; set; }
         public Action DeleteCurrentProfile { get; set; }

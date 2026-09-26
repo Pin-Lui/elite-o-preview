@@ -102,6 +102,8 @@ namespace EveOPreview.Presenters
             this.View.MinimizeAllClients = this.TriggerMinimizeAllClientsHotkey;
             this.View.GetClientHighlightColor = this.GetClientHighlightColor;
             this.View.SetClientHighlightColor = this.SetClientHighlightColor;
+            this.View.GetClientFrameThickness = this.GetClientFrameThickness;
+            this.View.SetClientFrameThickness = this.SetClientFrameThickness;
             this.View.ResetThumbnailLayout = this.TriggerResetThumbnailLayout;
             this.View.SwitchToProfile = this.ActionSwitchToNewProfile;
             this.View.CloneCurrentProfile = this.ActionCloneCurrentProfile;
@@ -507,6 +509,26 @@ namespace EveOPreview.Presenters
             else
             {
                 this._configuration.PerClientActiveClientHighlightColor.Remove(title);
+            }
+
+            await this._mediator.Send(new SaveConfiguration());
+        }
+
+        private int? GetClientFrameThickness(string title)
+        {
+            return this._configuration.PerClientActiveWindowFrameThickness.TryGetValue(title, out int thickness) ? thickness : null;
+        }
+
+        private async void SetClientFrameThickness(string title, int? thickness)
+        {
+            _logger.Verbose("MainFormPresenter.SetClientFrameThickness: {Title} -> {Thickness}", title, thickness?.ToString() ?? "default");
+            if (thickness.HasValue)
+            {
+                this._configuration.PerClientActiveWindowFrameThickness[title] = thickness.Value;
+            }
+            else
+            {
+                this._configuration.PerClientActiveWindowFrameThickness.Remove(title);
             }
 
             await this._mediator.Send(new SaveConfiguration());

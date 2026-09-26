@@ -47,6 +47,7 @@ namespace EveOPreview.Configuration.Implementation
             this.PerClientLayout = new Dictionary<string, Dictionary<string, Point>>();
             this.FlatLayout = new Dictionary<string, Point>();
             this.PerClientThumbnailSize = new Dictionary<string, Size>();
+            this.PerClientActiveWindowFrameThickness = new Dictionary<string, int>();
             this.ClientLayout = new Dictionary<string, ClientLayout>();
             this.DisableThumbnail = new Dictionary<string, bool>();
             this.PriorityClients = new List<string>();
@@ -149,6 +150,13 @@ namespace EveOPreview.Configuration.Implementation
 
         // Thin frame around the focused Elite window (General tab)
         public bool EnableActiveWindowFrame { get; set; }
+
+        public const int DefaultActiveWindowFrameThickness = 1;
+        public const int MaximumActiveWindowFrameThickness = 10;
+
+        // Frame thickness in pixels per client title (Active Clients tab); others use DefaultActiveWindowFrameThickness
+        [JsonProperty("PerClientActiveWindowFrameThickness")]
+        public Dictionary<string, int> PerClientActiveWindowFrameThickness { get; set; }
         public int HideThumbnailsDelay { get; set; }
 
         public Size ThumbnailSize { get; set; }
@@ -347,6 +355,9 @@ namespace EveOPreview.Configuration.Implementation
             foreach (var key in PerClientLayout.Where(x => x.Value == null).Select(x => x.Key).ToArray()) PerClientLayout.Remove(key);
             FlatLayout ??= new Dictionary<string, Point>();
             PerClientThumbnailSize ??= new Dictionary<string, Size>();
+            PerClientActiveWindowFrameThickness ??= new Dictionary<string, int>();
+            foreach (var key in PerClientActiveWindowFrameThickness.Keys.ToArray())
+                PerClientActiveWindowFrameThickness[key] = ThumbnailConfiguration.ApplyRestrictions(PerClientActiveWindowFrameThickness[key], 1, MaximumActiveWindowFrameThickness);
             ClientLayout ??= new Dictionary<string, ClientLayout>();
             DisableThumbnail ??= new Dictionary<string, bool>();
             PriorityClients ??= new List<string>();

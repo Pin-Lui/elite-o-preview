@@ -121,7 +121,8 @@ namespace EveOPreview.Services
 
             RegisterAllHotkeys();
             
-            this._activeClientFrame = new ActiveClientFrame(handle => this._thumbnailViews.ContainsKey(handle), this.GetActiveWindowFrameColor);
+            this._activeClientFrame = new ActiveClientFrame(handle => this._thumbnailViews.ContainsKey(handle),
+                this.GetActiveWindowFrameColor, this.GetActiveWindowFrameThickness);
             _logger.Verbose("ThumbnailManager: Constructor completed");
         }
 
@@ -1129,6 +1130,17 @@ namespace EveOPreview.Services
         }
 
         // Check whether the currently active window belongs to EVE-O Preview itself
+        private int GetActiveWindowFrameThickness(IntPtr windowHandle)
+        {
+            if (this._thumbnailViews.TryGetValue(windowHandle, out IThumbnailView view)
+                && this._configuration.PerClientActiveWindowFrameThickness.TryGetValue(view.Title, out int thickness))
+            {
+                return thickness;
+            }
+
+            return ThumbnailConfiguration.DefaultActiveWindowFrameThickness;
+        }
+
         private Color GetActiveWindowFrameColor(IntPtr windowHandle)
         {
             // Same colour as the active-client highlight of the previews, including per-commander colours

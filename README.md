@@ -34,6 +34,12 @@ The build is a single, self-contained `Elite-O Preview.exe` with .NET built in. 
 2. Launch your games as usual, for example with min-ed-launcher. The start order does not matter.
 3. Set Elite's display mode to **Windowed** or **Borderless**. Exclusive fullscreen cannot be previewed.
 
+> [!IMPORTANT]
+> **Set up commander settings only after the commander has loaded into the game.**
+> Cycle groups, highlight colours, frame thickness, preview sizes and layouts are saved under the preview's name.
+> In Elite's **main menu** the preview is still called `Elite - <Windows user> (not logged in)`; only after loading into the game does it become `Elite - <CMDR NAME>`.
+> Anything set while a client shows *(not logged in)* is saved for that temporary name and will **not** apply to the commander.
+
 Settings are stored in the `Profiles` folder next to the exe. `Launch Elite-O Preview with Verbose Logging.cmd` writes a detailed log to the `logs` folder, which helps when something goes wrong.
 
 ## How clients are named
@@ -63,7 +69,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Previews always on top | Keep thumbnails above all other windows |
 | Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
 | Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
-| Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in that commander's highlight colour (Active Clients tab), otherwise the highlight colour from the Overlay tab. Useful for switching windows with the cycle hotkeys while previews are hidden |
+| Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in that commander's highlight colour and frame thickness (Active Clients tab); otherwise the highlight colour from the Overlay tab and 1 px. Useful for switching windows with the cycle hotkeys while previews are hidden |
 
 ### **Thumbnail** Tab
 | Option | Description |
@@ -90,12 +96,21 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Title Font | Font, colours, outline and offset of the name shown on thumbnails |
 
 ### **Active Clients** Tab
+
+> [!IMPORTANT]
+> **Set up commander settings only after the commander has loaded into the game.**
+> Cycle groups, highlight colours, frame thickness, preview sizes and layouts are saved under the preview's name.
+> In Elite's **main menu** the preview is still called `Elite - <Windows user> (not logged in)`; only after loading into the game does it become `Elite - <CMDR NAME>`.
+> Anything set while a client shows *(not logged in)* is saved for that temporary name and will **not** apply to the commander.
+
 | Option | Description |
 | --- | --- |
-| Thumbnails list | Running clients. Checking one hides its thumbnail until the client or the app restarts |
+| Thumbnails list | Running clients. Click a name to select it (for the highlight settings below). Click the **check box square** (or press Space) to hide that client's thumbnail until the client or the app restarts |
 | Hide Thumbnails | Hide all thumbnails until toggled again. Double-click the box next to "Hotkey" to set a hotkey |
 | Minimize | Minimize all Elite clients. Double-click the box next to "Hotkey" to set a hotkey |
-| Highlight colour | Select a commander in the list, then **Choose...** (or click the colour square) to give it its own highlight colour, or **Default** to use the normal colour again. Used by the preview highlight and by **Highlight active Elite window** |
+| Highlight colour | Select a commander in the list, then **Choose...** (or click the colour square) to give it its own highlight colour. Used by the preview highlight and by **Highlight active Elite window** |
+| Window frame thickness | Thickness in pixels (**1**...**10**, default **1**) of that commander's **Highlight active Elite window** frame |
+| Default | Removes the commander's own colour and frame thickness |
 
 ### **Cycle Groups** Tab
 | Option | Description |

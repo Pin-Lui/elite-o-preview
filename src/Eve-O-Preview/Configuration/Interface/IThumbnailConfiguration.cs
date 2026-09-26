@@ -43,6 +43,7 @@ namespace EveOPreview.Configuration
 
         bool HideThumbnailsOnLostFocus { get; set; }
         bool EnableActiveWindowFrame { get; set; }
+        Dictionary<string, int> PerClientActiveWindowFrameThickness { get; set; }
         int HideThumbnailsDelay { get; set; }
 
         Size ThumbnailSize { get; set; }
