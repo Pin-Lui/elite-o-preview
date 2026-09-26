@@ -99,7 +99,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Option | Description |
 | --- | --- |
 | Select Cycle Group | Pick the group to view or edit. `+` creates a group, `-` deletes it |
-| Description | Name of the group |
+| Group Name | Name of the group. `+` selects the new group with its name highlighted: type a name and press **Enter** (or click elsewhere) to save it, **Esc** to undo. Names must be unique |
 | Forward Key / Backward Key | Hotkeys to cycle through the group. Double-click a box to set a primary or secondary key. With a single client, only set the forward key |
 | Clients and Order `+` / `-` / Up | Add a running client, remove the selected one, or move it up in the cycle order |
 

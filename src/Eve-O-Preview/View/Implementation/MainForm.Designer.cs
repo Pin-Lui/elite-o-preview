@@ -1173,6 +1173,7 @@ namespace EveOPreview.View
             // selectCycleGroupComboBox
             // 
             selectCycleGroupComboBox.FormattingEnabled = true;
+            selectCycleGroupComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             selectCycleGroupComboBox.Location = new Point(19, 30);
             selectCycleGroupComboBox.Margin = new Padding(4, 3, 4, 3);
             selectCycleGroupComboBox.Name = "selectCycleGroupComboBox";
@@ -1200,7 +1201,7 @@ namespace EveOPreview.View
             cycleGroupDescriptionLabel.Name = "cycleGroupDescriptionLabel";
             cycleGroupDescriptionLabel.Size = new Size(70, 15);
             cycleGroupDescriptionLabel.TabIndex = 3;
-            cycleGroupDescriptionLabel.Text = "Description:";
+            cycleGroupDescriptionLabel.Text = "Group Name:";
             // 
             // addNewGroupButton
             // 
@@ -1221,6 +1222,7 @@ namespace EveOPreview.View
             cycleGroupDescriptionText.Name = "cycleGroupDescriptionText";
             cycleGroupDescriptionText.Size = new Size(190, 23);
             cycleGroupDescriptionText.TabIndex = 4;
+            cycleGroupDescriptionText.KeyDown += cycleGroupDescriptionText_KeyDown;
             cycleGroupDescriptionText.Leave += cycleGroupDescriptionText_Leave;
             // 
             // cycleGroupClientOrderLabel
