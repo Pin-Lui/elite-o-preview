@@ -40,7 +40,7 @@ The build is a single, self-contained `Elite-O Preview.exe` with .NET built in. 
 > In Elite's **main menu** the preview is still called `Elite - <Windows user> (not logged in)`; only after loading into the game does it become `Elite - <CMDR NAME>`.
 > Anything set while a client shows *(not logged in)* is saved for that temporary name and will **not** apply to the commander.
 
-Settings are stored in the `Profiles` folder next to the exe. `Launch Elite-O Preview with Verbose Logging.cmd` writes a detailed log to the `logs` folder, which helps when something goes wrong.
+Settings are stored in the `Profiles` folder next to the exe. No log files are written by default. If something goes wrong, tick **Write log file** on the General tab, or start `Launch Elite-O Preview with Verbose Logging.cmd` for a detailed log; either writes to the `logs` folder next to the exe.
 
 ## How clients are named
 
@@ -69,6 +69,7 @@ If two games run under the **same** Windows user, Windows is asked which journal
 | Previews always on top | Keep thumbnails above all other windows |
 | Hide previews when no Elite client is active | Only show thumbnails while an Elite client (or a thumbnail) has focus |
 | Unique layout for each commander | Remember separate thumbnail positions depending on which commander is active |
+| Write log file | Write a log to the `logs` folder next to the exe, for troubleshooting. Off by default (no log files at all). The Verbose Logging shortcut always writes a detailed log |
 | Highlight active Elite window | Draw a thin frame around the Elite window that has focus, in that commander's highlight colour and frame thickness (Active Clients tab); otherwise the highlight colour from the Overlay tab and 1 px. Useful for switching windows with the cycle hotkeys while previews are hidden |
 
 ### **Thumbnail** Tab

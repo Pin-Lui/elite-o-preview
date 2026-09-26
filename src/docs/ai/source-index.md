@@ -145,6 +145,7 @@ Use [the entry guide](../../README.md) to route by feature; use this page when a
 | --- | --- | --- |
 | [src/Eve-O-Preview/Helper/HotkeyHelpers.cs](../../../src/Eve-O-Preview/Helper/HotkeyHelpers.cs) | KeysConverter parsing; invalid input becomes Keys.None. | [windows-and-thumbnails](windows-and-thumbnails.md) |
 | [src/Eve-O-Preview/Helper/LoggerHelpers.cs](../../../src/Eve-O-Preview/Helper/LoggerHelpers.cs) | Structured compile-time caller metadata. | [application-and-configuration](application-and-configuration.md) |
+| [src/Eve-O-Preview/Helper/LogFileSwitch.cs](../../../src/Eve-O-Preview/Helper/LogFileSwitch.cs) | Static switch gating the Serilog file sink: forced by `--verbose`, otherwise the `EnableLogFile` setting (off by default). | [application-and-configuration](application-and-configuration.md) |
 | [src/Eve-O-Preview/Helper/ProcessHelpers.cs](../../../src/Eve-O-Preview/Helper/ProcessHelpers.cs) | Open/close raw kernel handles and construct ProcessInfo. | [windows-and-thumbnails](windows-and-thumbnails.md) |
 
 ## Main application: Mediator (55)

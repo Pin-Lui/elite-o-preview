@@ -186,6 +186,18 @@ namespace EveOPreview.View
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EnableLogFile
+        {
+            get => this.EnableLogFileCheckBox.Checked;
+            set
+            {
+                this._suppressEvents = true;
+                this.EnableLogFileCheckBox.Checked = value;
+                this._suppressEvents = false;
+            }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EnablePerClientThumbnailLayouts
         {
             get => this.EnablePerClientThumbnailsLayoutsCheckBox.Checked;

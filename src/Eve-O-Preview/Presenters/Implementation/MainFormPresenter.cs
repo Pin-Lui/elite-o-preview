@@ -14,6 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using EveOPreview.Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -269,6 +270,8 @@ namespace EveOPreview.Presenters
             this.View.ShowThumbnailsAlwaysOnTop = this._configuration.ShowThumbnailsAlwaysOnTop;
             this.View.HideThumbnailsOnLostFocus = this._configuration.HideThumbnailsOnLostFocus;
             this.View.EnableActiveWindowFrame = this._configuration.EnableActiveWindowFrame;
+            this.View.EnableLogFile = this._configuration.EnableLogFile;
+            LogFileSwitch.SetEnabledBySetting(this._configuration.EnableLogFile);
             this.View.EnablePerClientThumbnailLayouts = this._configuration.EnablePerClientThumbnailLayouts;
 
             this.View.SetThumbnailSizeLimitations(this._configuration.ThumbnailMinimumSize, this._configuration.ThumbnailMaximumSize);
@@ -309,6 +312,8 @@ namespace EveOPreview.Presenters
             this._configuration.ShowThumbnailsAlwaysOnTop = this.View.ShowThumbnailsAlwaysOnTop;
             this._configuration.HideThumbnailsOnLostFocus = this.View.HideThumbnailsOnLostFocus;
             this._configuration.EnableActiveWindowFrame = this.View.EnableActiveWindowFrame;
+            this._configuration.EnableLogFile = this.View.EnableLogFile;
+            LogFileSwitch.SetEnabledBySetting(this._configuration.EnableLogFile);
             this._configuration.EnablePerClientThumbnailLayouts = this.View.EnablePerClientThumbnailLayouts;
 
             this._configuration.ThumbnailSize = this.View.ThumbnailSize;

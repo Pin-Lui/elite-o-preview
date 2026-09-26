@@ -151,6 +151,9 @@ namespace EveOPreview.Configuration.Implementation
         // Thin frame around the focused Elite window (General tab)
         public bool EnableActiveWindowFrame { get; set; }
 
+        // "Write log file" (General tab); off by default
+        public bool EnableLogFile { get; set; }
+
         public const int DefaultActiveWindowFrameThickness = 1;
         public const int MaximumActiveWindowFrameThickness = 10;
 

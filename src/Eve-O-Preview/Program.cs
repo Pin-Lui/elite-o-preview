@@ -16,6 +16,7 @@
 
 using Autofac;
 using EveOPreview.Configuration;
+using EveOPreview.Helper;
 using EveOPreview.Configuration.Implementation;
 using EveOPreview.Configuration.Interface;
 using EveOPreview.Presenters;
@@ -88,16 +89,20 @@ namespace EveOPreview
             var isVerbose = args.Contains("--verbose") || args.Contains("-v");
             var minimumLevel = isVerbose ? LogEventLevel.Verbose : LogEventLevel.Information;
 
+            // No log file unless "Write log file" is enabled or the app was started with --verbose.
+            // The file sink opens its file on the first written event, so nothing is created while off.
+            LogFileSwitch.ForceByCommandLine(isVerbose);
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Is(minimumLevel)
                 .Enrich.FromLogContext()
-                .WriteTo.File("logs/Elite-O Preview Log-.txt",
+                .WriteTo.Conditional(_ => LogFileSwitch.IsEnabled, sink => sink.File("logs/Elite-O Preview Log-.txt",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 7,
                     fileSizeLimitBytes: 10 * 1024 * 1024,
                     rollOnFileSizeLimit: true,
                     restrictedToMinimumLevel: minimumLevel,
-                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Properties:j} {Message:lj}{NewLine}{Exception}")
+                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Properties:j} {Message:lj}{NewLine}{Exception}"))
                 .CreateLogger();
 
             Log.Logger.Information("Logger initialized. Application arguments: {Arguments}", string.Join(", ", args ?? Array.Empty<string>()));

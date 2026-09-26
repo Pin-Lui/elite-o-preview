@@ -72,6 +72,7 @@ namespace EveOPreview.View
             HideThumbnailsOnLostFocusCheckBox = new CheckBox();
             EnablePerClientThumbnailsLayoutsCheckBox = new CheckBox();
             EnableActiveWindowFrameCheckBox = new CheckBox();
+            EnableLogFileCheckBox = new CheckBox();
             MinimizeToTrayCheckBox = new CheckBox();
             ThumbnailsWidthNumericEdit = new NumericUpDown();
             ThumbnailsHeightNumericEdit = new NumericUpDown();
@@ -298,6 +299,7 @@ namespace EveOPreview.View
             GeneralSettingsPanel.Controls.Add(HideThumbnailsOnLostFocusCheckBox);
             GeneralSettingsPanel.Controls.Add(EnablePerClientThumbnailsLayoutsCheckBox);
             GeneralSettingsPanel.Controls.Add(EnableActiveWindowFrameCheckBox);
+            GeneralSettingsPanel.Controls.Add(EnableLogFileCheckBox);
             GeneralSettingsPanel.Controls.Add(MinimizeToTrayCheckBox);
             GeneralSettingsPanel.Dock = DockStyle.Fill;
             GeneralSettingsPanel.Location = new Point(4, 3);
@@ -414,6 +416,19 @@ namespace EveOPreview.View
             instantToolTip.SetToolTip(EnableActiveWindowFrameCheckBox, "Draws a thin frame around the Elite window that has focus, in the active client highlight colour from the Overlay tab. Works with previews hidden.");
             EnableActiveWindowFrameCheckBox.UseVisualStyleBackColor = true;
             EnableActiveWindowFrameCheckBox.CheckedChanged += OptionChanged_Handler;
+            // 
+            // EnableLogFileCheckBox
+            // 
+            EnableLogFileCheckBox.AutoSize = true;
+            EnableLogFileCheckBox.Location = new Point(9, 230);
+            EnableLogFileCheckBox.Margin = new Padding(4, 3, 4, 3);
+            EnableLogFileCheckBox.Name = "EnableLogFileCheckBox";
+            EnableLogFileCheckBox.Size = new Size(160, 19);
+            EnableLogFileCheckBox.TabIndex = 25;
+            EnableLogFileCheckBox.Text = "Write log file (troubleshooting)";
+            instantToolTip.SetToolTip(EnableLogFileCheckBox, "Writes a log to the logs folder next to the exe. Off by default; only needed when something goes wrong.");
+            EnableLogFileCheckBox.UseVisualStyleBackColor = true;
+            EnableLogFileCheckBox.CheckedChanged += OptionChanged_Handler;
             // 
             // MinimizeToTrayCheckBox
             // 
@@ -2029,6 +2044,7 @@ namespace EveOPreview.View
 		private CheckBox HideThumbnailsOnLostFocusCheckBox;
 		private CheckBox EnablePerClientThumbnailsLayoutsCheckBox;
 		private CheckBox EnableActiveWindowFrameCheckBox;
+		private CheckBox EnableLogFileCheckBox;
 		private CheckBox MinimizeToTrayCheckBox;
 		private NumericUpDown ThumbnailsWidthNumericEdit;
 		private NumericUpDown ThumbnailsHeightNumericEdit;

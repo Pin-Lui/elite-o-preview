@@ -7,6 +7,8 @@ Read this page for startup, UI changes, persistence, profiles, and message routi
 
 [Program.Main](../../Eve-O-Preview/Program.cs) is STA. `--attach-debug-sidecar` takes an early alternate path and does not run ordinary startup. Normal startup configures Serilog, acquires the single-instance token, installs exception handlers, builds the Autofac controller, initializes WinForms, launches the debugger sidecar, and runs `MainFormPresenter`.
 
+Log files are off by default: the Serilog file sink sits behind `WriteTo.Conditional(LogFileSwitch.IsEnabled)`, and the file sink only opens its file on the first written event. [LogFileSwitch](../../Eve-O-Preview/Helper/LogFileSwitch.cs) is forced on by `--verbose`/`-v` and otherwise follows the profile setting `EnableLogFile` (General tab), applied by `MainFormPresenter` on load and save. Events logged before the profile is loaded are dropped unless verbose.
+
 `GetInstanceToken` first tries `Mutex.OpenExisting`, treats an existing/inaccessible mutex as another instance, and creates a named mutex only after the other failure path. A static field retains the token for the application lifetime. Its comment records a prior Windows mutex failure that paralyzed the .NET finalizer thread and later manifested as out-of-memory exceptions. Preserve that rationale when evaluating a simpler implementation; the source review does not reproduce or independently confirm the historic failure.
 
 `InitializeApplicationController` explicitly registers the runtime graph:
