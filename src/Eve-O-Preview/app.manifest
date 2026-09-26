@@ -16,7 +16,7 @@
             Remove this element if your application requires this virtualization for backwards
             compatibility.
         -->
-        <!-- Elite-O: admin is needed to see which Windows user runs each game and to read their journals. -->
+        <!-- Elite-O-Preview: admin is needed to see which Windows user runs each game and to read their journals. -->
         <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
       </requestedPrivileges>
     </security>

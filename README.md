@@ -1,8 +1,8 @@
-# Elite-O Preview
+# Elite-O-Preview
 
 Live thumbnails of every running **Elite Dangerous** client, with click or hotkey switching between them. Made for multiboxing several commanders on one PC.
 
-Elite-O Preview is adapted from [EVE-O Preview](https://github.com/EveOPlus/eve-o-preview) by Aura Asuna and is licensed under the GPLv3, like the original. It is not affiliated with or endorsed by Frontier Developments.
+Elite-O-Preview is adapted from [EVE-O Preview](https://github.com/EveOPlus/eve-o-preview) by Aura Asuna and is licensed under the GPLv3, like the original. It is not affiliated with or endorsed by Frontier Developments.
 
 ## License
 Original work Copyright © 2026 Aura Asuna. Elite Dangerous adaptation © 2026 Pin-Lui.
@@ -24,13 +24,13 @@ The program does NOT:
 ## Build
 
 1. Install the **.NET 10 SDK** (Windows x64): https://dotnet.microsoft.com/download/dotnet/10.0
-2. Double-click `build.cmd`. The app is placed in the `Elite-O Preview` folder next to it.
+2. Double-click `build.cmd`. The app is placed in the `Elite-O-Preview` folder next to it.
 
-The build is a single, self-contained `Elite-O Preview.exe` with .NET built in. To use it on another PC, copying that one file is enough; nothing needs to be installed there. The other files in the folder (licence, verbose-logging shortcut) are optional.
+The build is a single, self-contained `Elite-O-Preview.exe` with .NET built in. To use it on another PC, copying that one file is enough; nothing needs to be installed there. The other files in the folder (licence, verbose-logging shortcut) are optional.
 
 ## Install & Use
 
-1. Start `Elite-O Preview\Elite-O Preview.exe`. It asks for **administrator rights**, which it needs to see which Windows user runs each game and to read that user's journals.
+1. Start `Elite-O-Preview\Elite-O-Preview.exe`. It asks for **administrator rights**, which it needs to see which Windows user runs each game and to read that user's journals.
 2. Launch your games as usual, for example with min-ed-launcher. The start order does not matter.
 3. Set Elite's display mode to **Windowed** or **Borderless**. Exclusive fullscreen cannot be previewed.
 
@@ -57,11 +57,11 @@ Do this with all commanders **loaded into the game** (see the note above). Every
 
 Hotkeys work everywhere, also while Elite has focus, so pick keys Elite does not use. Tip: tick **Highlight active Elite window** on the General tab to see at a glance which window has focus.
 
-Settings are stored in the `Profiles` folder next to the exe. No log files are written by default. If something goes wrong, tick **Write log file** on the General tab, or start `Launch Elite-O Preview with Verbose Logging.cmd` for a detailed log; either writes to the `logs` folder next to the exe.
+Settings are stored in the `Profiles` folder next to the exe. No log files are written by default. If something goes wrong, tick **Write log file** on the General tab, or start `Launch Elite-O-Preview with Verbose Logging.cmd` for a detailed log; either writes to the `logs` folder next to the exe.
 
 ## How clients are named
 
-Every Elite window has the same caption (`Elite - Dangerous (CLIENT)`), so Elite-O Preview works out each client's name from the game's journal:
+Every Elite window has the same caption (`Elite - Dangerous (CLIENT)`), so Elite-O-Preview works out each client's name from the game's journal:
 
 game process → Windows user that runs it → that user's `Saved Games\Frontier Developments\Elite Dangerous` folder → newest journal written since the game started → the commander named in it.
 
@@ -161,7 +161,7 @@ Profiles are complete, independent copies of all settings that can be switched w
 
 ### Configuration File-Only Options
 
-Edit `Profiles\<profile>\Elite-O Preview.json` only while Elite-O Preview is closed, and keep a backup.
+Edit `Profiles\<profile>\Elite-O-Preview.json` only while Elite-O-Preview is closed, and keep a backup.
 
 | Option | Description |
 | --- | --- |
@@ -196,9 +196,9 @@ Clients not listed use the global highlight colour. Supported colour names: http
 
 ## Credits
 
-Elite-O Preview is made by **Pin-Lui** and is based on EVE-O Preview.
+Elite-O-Preview is made by **Pin-Lui** and is based on EVE-O Preview.
 
-* Elite-O Preview: **Pin-Lui**. Source: https://github.com/Pin-Lui/elite-o-preview
+* Elite-O-Preview: **Pin-Lui**. Source: https://github.com/Pin-Lui/elite-o-preview
 * EVE-O Preview maintained by **Aura Asuna**. Source: https://github.com/EveOPlus/eve-o-preview
 * Created by **StinkRay**
 * Previous maintainers: **Phrynohyas Tig-Rah**, **Makari Aeron**, **StinkRay**

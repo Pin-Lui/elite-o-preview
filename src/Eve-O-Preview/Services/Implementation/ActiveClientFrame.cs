@@ -1,6 +1,6 @@
 ﻿//Eve-O Preview Plus is a program designed to deliver quality of life tooling. Primarily but not limited to enabling rapid window foreground and focus changes for the online game Eve Online.
 //Copyright (C) 2026  Aura Asuna
-//Modified for Elite Dangerous (Elite-O Preview), 2026.
+//Modified for Elite Dangerous (Elite-O-Preview), 2026.
 //
 //This program is free software: you can redistribute it and/or modify
 //it under the terms of the GNU General Public License as published by
@@ -252,7 +252,7 @@ namespace EveOPreview.Services
         {
             public FrameOwnerWindow()
             {
-                this.CreateHandle(new CreateParams { Caption = "Elite-O Preview frame owner" });
+                this.CreateHandle(new CreateParams { Caption = "Elite-O-Preview frame owner" });
             }
         }
 

@@ -39,7 +39,7 @@ namespace EveOPreview
 {
     static class Program
     {
-        private static string MUTEX_NAME = "Elite-O Preview Single Instance Mutex";
+        private static string MUTEX_NAME = "Elite-O-Preview Single Instance Mutex";
 
         private static Mutex _singleInstanceMutex;
 
@@ -54,13 +54,13 @@ namespace EveOPreview
             {
                 SetupLogger(args);
                 
-                Log.Information("Starting new instance of Elite-O Preview");
+                Log.Information("Starting new instance of Elite-O-Preview");
                 
                 Program._singleInstanceMutex = Program.GetInstanceToken();
 
                 if (Program._singleInstanceMutex == null)
                 {
-                    Log.Warning("An existing instance of Elite-O Preview is already running. Exiting.");
+                    Log.Warning("An existing instance of Elite-O-Preview is already running. Exiting.");
                     return;
                 }
 
@@ -88,7 +88,7 @@ namespace EveOPreview
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Is(minimumLevel)
                 .Enrich.FromLogContext()
-                .WriteTo.Conditional(_ => LogFileSwitch.IsEnabled, sink => sink.File("logs/Elite-O Preview Log-.txt",
+                .WriteTo.Conditional(_ => LogFileSwitch.IsEnabled, sink => sink.File("logs/Elite-O-Preview Log-.txt",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 7,
                     fileSizeLimitBytes: 10 * 1024 * 1024,

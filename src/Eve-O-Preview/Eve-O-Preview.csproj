@@ -3,7 +3,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>EveOPreview</RootNamespace>
-    <AssemblyName>Elite-O Preview</AssemblyName>
+    <AssemblyName>Elite-O-Preview</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <UseWindowsForms>true</UseWindowsForms>
@@ -77,7 +77,7 @@
     <None Update="EveoPreviewRootCA.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Launch Elite-O Preview with Verbose Logging.cmd">
+    <None Update="Launch Elite-O-Preview with Verbose Logging.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </None>

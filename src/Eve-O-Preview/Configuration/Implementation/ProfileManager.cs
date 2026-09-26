@@ -29,10 +29,12 @@ namespace EveOPreview.Configuration.Implementation;
 
 public class ProfileManager : IProfileManager
 {
-    private const string BASE_FILENAME = "Elite-O Preview.json";
+    private const string BASE_FILENAME = "Elite-O-Preview.json";
     private const string PROFILES_DIR = "Profiles";
     private const string DEFAULT_PROFILE_DIR = "Default";
-    private const string APP_FOLDER_NAME = "Elite-O Preview";
+    private const string APP_FOLDER_NAME = "Elite-O-Preview";
+    private const string LEGACY_BASE_FILENAME = "Elite-O Preview.json";
+    private const string LEGACY_APP_FOLDER_NAME = "Elite-O Preview";
 
     private readonly ILogger _logger;
     private readonly IMediator _mediator;
@@ -51,6 +53,7 @@ public class ProfileManager : IProfileManager
         _logger.WithCallerInfo().Information($"Profiles Root Directory located at {ProfileRootDirectory}");
 
         if (profileRootDirectory == null) MigrateLegacySingleProfile();
+        MigrateLegacyProfileFileNames();
 
         ProfileLocations = RefreshProfileLocations();
     }
@@ -68,6 +71,7 @@ public class ProfileManager : IProfileManager
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         string appDataPath = Path.Combine(localAppData, APP_FOLDER_NAME);
         string appDataProfilesPath = Path.Combine(appDataPath, PROFILES_DIR);
+        MigrateLegacyAppDataFolder(Path.Combine(localAppData, LEGACY_APP_FOLDER_NAME), appDataPath);
 
         if (Directory.Exists(appDataProfilesPath))
         {
@@ -87,6 +91,47 @@ public class ProfileManager : IProfileManager
             Directory.CreateDirectory(Path.Combine(appDataProfilesPath, DEFAULT_PROFILE_DIR));
 
             return appDataProfilesPath;
+        }
+    }
+
+    private void MigrateLegacyAppDataFolder(string legacyPath, string newPath)
+    {
+        if (Directory.Exists(newPath) || !Directory.Exists(legacyPath))
+        {
+            return;
+        }
+
+        try
+        {
+            Directory.Move(legacyPath, newPath);
+            _logger.WithCallerInfo().Information("Renamed settings folder {LegacyPath} to {NewPath}", legacyPath, newPath);
+        }
+        catch (Exception ex)
+        {
+            _logger.WithCallerInfo().Warning(ex, "Could not rename settings folder {LegacyPath}", legacyPath);
+        }
+    }
+
+    private void MigrateLegacyProfileFileNames()
+    {
+        foreach (string dirPath in Directory.GetDirectories(this.ProfileRootDirectory))
+        {
+            string legacyFile = Path.Combine(dirPath, LEGACY_BASE_FILENAME);
+            string newFile = Path.Combine(dirPath, BASE_FILENAME);
+            if (File.Exists(newFile) || !File.Exists(legacyFile))
+            {
+                continue;
+            }
+
+            try
+            {
+                File.Move(legacyFile, newFile);
+                _logger.WithCallerInfo().Information("Renamed profile file {LegacyFile} to {NewFile}", legacyFile, newFile);
+            }
+            catch (Exception ex)
+            {
+                _logger.WithCallerInfo().Warning(ex, "Could not rename profile file {LegacyFile}", legacyFile);
+            }
         }
     }
 

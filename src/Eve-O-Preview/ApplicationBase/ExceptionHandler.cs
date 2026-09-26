@@ -25,7 +25,7 @@ namespace EveOPreview
 {
     sealed class ExceptionHandler
     {
-        private const string EXCEPTION_MESSAGE = "Elite-O Preview has encountered a problem and needs to close. Additional information has been saved in the log file.";
+        private const string EXCEPTION_MESSAGE = "Elite-O-Preview has encountered a problem and needs to close. Additional information has been saved in the log file.";
 
         public void SetupExceptionHandlers()
         {
@@ -55,7 +55,7 @@ namespace EveOPreview
             {
                 Log.Logger.WithCallerInfo().Error(exception, EXCEPTION_MESSAGE);
 
-                MessageBox.Show(ExceptionHandler.EXCEPTION_MESSAGE, @"Elite-O Preview", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ExceptionHandler.EXCEPTION_MESSAGE, @"Elite-O-Preview", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch
             {

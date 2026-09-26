@@ -27,7 +27,7 @@ namespace EveOPreview.Services.Implementation
     {
         #region Private constants
         private const string DEFAULT_PROCESS_NAME = "EliteDangerous64";
-        private const string CURRENT_PROCESS_NAME = "Elite-O Preview";
+        private const string CURRENT_PROCESS_NAME = "Elite-O-Preview";
         #endregion
 
         #region Private fields

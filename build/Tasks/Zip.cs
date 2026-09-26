@@ -32,11 +32,11 @@ namespace Build.Tasks
 			context.Zip(Configuration.BinFolder, Configuration.PublishFolder + "/EVE-O Preview.zip",
 			new[]
             {
-                Configuration.BinFolder + "/EVE-O Preview.exe", 
+                Configuration.BinFolder + "/Elite-O-Preview.exe", 
                 Configuration.BinFolder + "/LICENSE.txt", 
                 Configuration.BinFolder + "/readme.pdf", 
                 Configuration.BinFolder + "/Eve-O-Preview.Robin.dll",
-                Configuration.BinFolder + "/Launch Eve-O Preview with Verbose Logging.cmd"
+                Configuration.BinFolder + "/Launch Elite-O-Preview with Verbose Logging.cmd"
             });
 
 			context.CopyFile(Configuration.BinFolder + "/net10.0-windows/win-x64/EveoPreviewRootCA.crt", Configuration.PublishFolder + "/EveoPreviewRootCA.crt");
