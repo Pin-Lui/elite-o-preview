@@ -16,9 +16,12 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using EveOPreview.Helper;
+using EveOPreview.View;
+using EveOPreview.View.CustomControl;
 using Serilog;
 
 namespace EveOPreview
@@ -26,6 +29,11 @@ namespace EveOPreview
     sealed class ExceptionHandler
     {
         private const string EXCEPTION_MESSAGE = "Elite-O-Preview has encountered a problem and needs to close. Additional information has been saved in the log file.";
+        private const string EXCEPTION_NOTICE = "Elite-O-Preview has encountered a problem and needs to close.";
+        private const string LOG_ON_NOTICE = "The details were saved in the logs folder.";
+        private const string LOG_OFF_NOTICE = "To get the details next time, turn on \"Write log file\" in the General tab.";
+
+        private int _isHandlingException;
 
         public void SetupExceptionHandlers()
         {
@@ -54,14 +62,40 @@ namespace EveOPreview
             try
             {
                 Log.Logger.WithCallerInfo().Error(exception, EXCEPTION_MESSAGE);
-
-                MessageBox.Show(ExceptionHandler.EXCEPTION_MESSAGE, @"Elite-O-Preview", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch
             {
             }
 
+            if (Interlocked.Exchange(ref this._isHandlingException, 1) == 0 && TryShowNotice())
+            {
+                return;
+            }
+
             System.Environment.Exit(1);
+        }
+
+        private static bool TryShowNotice()
+        {
+            try
+            {
+                Form host = Application.OpenForms.OfType<MainForm>()
+                    .FirstOrDefault(form => !form.IsDisposed && form.Visible && form.WindowState != FormWindowState.Minimized);
+
+                if (host == null || host.InvokeRequired)
+                {
+                    return false;
+                }
+
+                string notice = EXCEPTION_NOTICE + "\n\n" + (LogFileSwitch.IsEnabled ? LOG_ON_NOTICE : LOG_OFF_NOTICE);
+                DarkAlertOverlay.ShowMessage(host, "Elite-O-Preview has to close", notice, AlertKind.Error, "Close",
+                    () => System.Environment.Exit(1));
+                return DarkAlertOverlay.IsShowing(host);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

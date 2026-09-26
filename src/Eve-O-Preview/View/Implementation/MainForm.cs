@@ -946,7 +946,7 @@ namespace EveOPreview.View
             if (selectedGroup.ClientsOrder.ContainsValue(toonToAdd))
             {
                 _logger.Verbose("MainForm: Client {Client} already in group", toonToAdd);
-                MessageBox.Show($"{toonToAdd} is already part of this group.");
+                DarkAlertOverlay.ShowMessage(this, "Already in this group", $"{toonToAdd} is already part of this group.");
                 return;
             }
 
@@ -1115,9 +1115,23 @@ namespace EveOPreview.View
                 return;
             }
 
-            _logger.Verbose("MainForm: Removing cycle group: {GroupName}", selectedGroup.Description);
-            int removedIndex = CycleGroups.IndexOf(selectedGroup);
-            CycleGroups.Remove(selectedGroup);
+            string groupName = string.IsNullOrWhiteSpace(selectedGroup.Description) ? "this cycle group" : $"the cycle group \"{selectedGroup.Description}\"";
+            DarkAlertOverlay.ShowConfirm(this, "Delete cycle group",
+                $"Do you really want to delete {groupName}?\n\nIts commanders and hotkeys will be removed. This cannot be undone.",
+                "Delete",
+                () => this.RemoveCycleGroup(selectedGroup));
+        }
+
+        private void RemoveCycleGroup(CycleGroup group)
+        {
+            int removedIndex = CycleGroups.IndexOf(group);
+            if (removedIndex < 0)
+            {
+                return;
+            }
+
+            _logger.Verbose("MainForm: Removing cycle group: {GroupName}", group.Description);
+            CycleGroups.Remove(group);
 
             this.ApplicationSettingsChanged?.Invoke();
             RefreshCycleGroups(CycleGroups.Count > 0 ? CycleGroups[Math.Min(removedIndex, CycleGroups.Count - 1)] : null);
@@ -1192,7 +1206,7 @@ namespace EveOPreview.View
             {
                 inputBox.Text = previousValue;
                 _logger.Verbose("MainForm.WaitForHotkeyCapture: Hotkey capture failed: {ErrorMessage}", captureHotkeyResponse.ErrorMessage);
-                MessageBox.Show(captureHotkeyResponse.ErrorMessage);
+                DarkAlertOverlay.ShowMessage(this, "Hotkey not set", captureHotkeyResponse.ErrorMessage);
                 return true;
             }
 
@@ -1538,17 +1552,11 @@ namespace EveOPreview.View
         private void ResetThumbnailLayoutButton_Click(object sender, EventArgs e)
         {
             _logger.Verbose("MainForm: ResetThumbnailLayoutButton_Click");
-            DialogResult answer = MessageBox.Show(this,
+            DarkAlertOverlay.ShowConfirm(this, "Reset previews",
                 "Reset all previews to the default size (384 x 216) and line them up side by side in the top-left corner of the main screen?\n\n"
                 + "Your saved preview positions, including per-commander layouts, will be replaced.",
-                "Reset previews", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-
-            if (answer != DialogResult.Yes)
-            {
-                return;
-            }
-
-            this.ResetThumbnailLayout?.Invoke();
+                "Reset",
+                () => this.ResetThumbnailLayout?.Invoke());
         }
 
         private void btnMinimizeAllClients_Click(object sender, EventArgs e)
@@ -1583,21 +1591,19 @@ namespace EveOPreview.View
             if (this.txtLoadedProfileName.Text == "Default")
             {
                 _logger.Verbose("MainForm: Cannot delete Default profile");
-                MessageBox.Show("Cannot delete the Default profile");
+                DarkAlertOverlay.ShowMessage(this, "Profile not deleted", "The Default profile cannot be deleted.");
                 return;
             }
 
-            DialogResult result = MessageBox.Show(
-                $"Are you sure you want to permanently delete the profile '{this.txtLoadedProfileName.Text}'?\n\nThis action cannot be undone. Please ensure you have a backup if needed.",
-                "Confirm Deletion",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
-            {
-                _logger.Verbose("MainForm: Deleting profile: {ProfileName}", this.txtLoadedProfileName.Text);
-                this.DeleteCurrentProfile?.Invoke();
-            }
+            string profileName = this.txtLoadedProfileName.Text;
+            DarkAlertOverlay.ShowConfirm(this, "Delete profile",
+                $"Do you really want to permanently delete the profile \"{profileName}\"?\n\nThis cannot be undone. Make a backup first if you might need it again.",
+                "Delete",
+                () =>
+                {
+                    _logger.Verbose("MainForm: Deleting profile: {ProfileName}", profileName);
+                    this.DeleteCurrentProfile?.Invoke();
+                });
         }
 
         private void txtLoadedProfileName_Leave(object sender, EventArgs e)
@@ -1625,7 +1631,7 @@ namespace EveOPreview.View
             if (!ValidateProfileName(newName, out var message))
             {
                 _logger.Verbose("MainForm: Profile name validation failed: {Message}", message);
-                MessageBox.Show(message);
+                DarkAlertOverlay.ShowMessage(this, "Profile name not valid", message);
                 return;
             }
 

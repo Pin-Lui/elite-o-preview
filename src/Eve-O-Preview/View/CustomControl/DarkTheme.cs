@@ -69,6 +69,12 @@ public static class DarkTheme
         menu.Font = MenuFont;
     }
 
+    public static void ApplyTo(Control root)
+    {
+        ApplyToControl(root);
+        ApplyToChildren(root);
+    }
+
     private static void ApplyToChildren(Control parent)
     {
         foreach (Control control in parent.Controls)
