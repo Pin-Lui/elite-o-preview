@@ -40,6 +40,23 @@ The build is a single, self-contained `Elite-O Preview.exe` with .NET built in. 
 > In Elite's **main menu** the preview is still called `Elite - <Windows user> (not logged in)`; only after loading into the game does it become `Elite - <CMDR NAME>`.
 > Anything set while a client shows *(not logged in)* is saved for that temporary name and will **not** apply to the commander.
 
+### Quick setup: hotkeys to switch between commanders
+
+Do this with all commanders **loaded into the game** (see the note above). Everything is on the **Cycle Groups** tab.
+
+**One key per commander** (jump straight to that commander):
+1. Click **+** next to *Select Cycle Group*, type a name (e.g. `Alpha`) and press **Enter**.
+2. Click **+** next to *Clients and Order* and double-click the commander, e.g. `Elite - CMDR ALPHA`.
+3. Double-click the first **Forward Key** box. When it shows *Listening...*, press the key you want, e.g. **F1**.
+4. Repeat for every commander with its own key (**F2**, **F3**, ...).
+
+**One key to cycle through all commanders**:
+1. Create another group, e.g. `All`.
+2. Add every commander with **+** next to *Clients and Order*. Use **Up** to change the order.
+3. Set its **Forward Key**, e.g. **F4**. Each press switches to the next commander in the list and starts again at the top. Optionally set a **Backward Key** to go the other way.
+
+Hotkeys work everywhere, also while Elite has focus, so pick keys Elite does not use. Tip: tick **Highlight active Elite window** on the General tab to see at a glance which window has focus.
+
 Settings are stored in the `Profiles` folder next to the exe. No log files are written by default. If something goes wrong, tick **Write log file** on the General tab, or start `Launch Elite-O Preview with Verbose Logging.cmd` for a detailed log; either writes to the `logs` folder next to the exe.
 
 ## How clients are named
