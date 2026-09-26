@@ -777,6 +777,13 @@ namespace EveOPreview.Services
                 return;
             }
 
+            // Raising previews now would cover an open right-click menu. Keep the
+            // request pending; it runs on the first refresh after the menu closes.
+            if (this._thumbnailViews.Values.Any(thumbnail => thumbnail.IsContextMenuOpen))
+            {
+                return;
+            }
+
             this._refreshThumbnailZOrder = false;
             foreach (IntPtr handle in this._thumbnailActivationOrder)
             {

@@ -313,6 +313,10 @@ namespace EveOPreview.View
             this.FormBorderStyle = style;
         }
 
+        // The right-click menu is a topmost window too. While it is open, raising the
+        // preview with HWND_TOPMOST would put the preview above its own menu.
+        public bool IsContextMenuOpen => this.thumbnailContextMenu.Visible;
+
         public void SetTopMost(bool enableTopmost)
         {
             if (this._isTopMost == enableTopmost)
